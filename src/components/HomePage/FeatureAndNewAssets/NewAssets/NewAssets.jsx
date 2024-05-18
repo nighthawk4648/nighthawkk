@@ -66,6 +66,7 @@ const NewAssets = () => {
                             height={800}
                             width={800}
                             alt=''
+                            className='w-full mx-auto'
                         ></Image>
                         <div className='bg-secondary text-white text-center py-2'>
                             <p>{newAsset?.title}</p>

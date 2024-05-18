@@ -1,6 +1,7 @@
 import React from 'react';
 
 import Image from 'next/image';
+import Link from 'next/link';
 
 const Features = () => {
 
@@ -8,19 +9,22 @@ const Features = () => {
         {
             id: 1,
             image: '/assets/homepage/secondSection/features.png',
-            title: '3D Model'
+            title: '3D Model',
+            slug: '3d-model'
         },
 
         {
             id: 2,
             image: '/assets/homepage/secondSection/features.png',
-            title: 'Texture'
+            title: 'Texture',
+            slug: 'texture-model'
         },
 
         {
             id: 3,
             image: '/assets/homepage/secondSection/features.png',
-            title: 'Scenes'
+            title: 'Scenes',
+            slug: 'scenes-model'
         }
     ]
 
@@ -31,6 +35,7 @@ const Features = () => {
             {
                 features?.map((feature) => (
                     <div key={feature?.id} className=' '>
+                        <Link href={`/${feature?.slug}/${feature?.id}`}>
                         <Image
                             src={feature?.image}
                             height={500}
@@ -38,6 +43,7 @@ const Features = () => {
                             alt='feattures'
                             className='w-[150px] h-[150px] mx-auto '
                         ></Image>
+                        </Link>
 
                         <p className='text-center font-semibold text-xl mt-2'>{feature?.title}</p>
 
