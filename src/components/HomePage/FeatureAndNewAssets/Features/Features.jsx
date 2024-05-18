@@ -41,7 +41,7 @@ const Features = () => {
                             height={500}
                             width={500}
                             alt='feattures'
-                            className='w-[150px] h-[150px] mx-auto '
+                            className='md:w-[150px] md:h-[150px] w-[100px] h-[100px] mx-auto '
                         ></Image>
                         </Link>
 

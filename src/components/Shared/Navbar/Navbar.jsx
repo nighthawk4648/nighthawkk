@@ -49,13 +49,15 @@ const Navbar = () => {
 
                             <div>
                                 {/* <p className='text-md:2xl text-xl font-semibold'>NIGHTHAWK</p> */}
-                                <Image
+                              <Link href="/">
+                              <Image
                                 src={navLogo}
                                 height={200}
                                 width={500}
                                 className='h-auto w-28'
                                 alt='nighthawk'
                                 ></Image>
+                              </Link>
                             </div>
                         </div>
 
@@ -104,10 +106,16 @@ const Navbar = () => {
                         <div className=" h-full  mt-3">
 
                             <div className="flex gap-3 items-center mb-7 border-b border-gray-200 shadow-sm  px-3 py-3">
-                                <MdOutlineAccountCircle className="text-4xl" />
-                                <div className="text-sm">
-                                    <Link href='/' className="font-semibold">NightHawk</Link>
-                                </div>
+                                {/* <MdOutlineAccountCircle className="text-4xl" /> */}
+                                <Link href="/">
+                              <Image
+                                src={navLogo}
+                                height={200}
+                                width={500}
+                                className='h-auto w-28'
+                                alt='nighthawk'
+                                ></Image>
+                              </Link>
 
                             </div>
 
@@ -115,8 +123,8 @@ const Navbar = () => {
                             <div className="flex gap-2 items-center mb-4 px-3 " onClick={toggleNavbar} >
                                 <MdDashboard className="text-xl" />
                                 <div className="text-sm">
-                                    <Link href='/merchant/parcel-list'>
-                                        Dashboard
+                                    <Link href='/'>
+                                        Home
                                     </Link>
                                 </div>
                             </div>
