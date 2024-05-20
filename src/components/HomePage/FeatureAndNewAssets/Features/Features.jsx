@@ -23,7 +23,7 @@ const Features = () => {
         {
             id: 3,
             image: '/assets/homepage/secondSection/features.png',
-            title: 'Scenes',
+            title: 'Interior Design',
             slug: 'scenes-model'
         }
     ]
@@ -41,7 +41,7 @@ const Features = () => {
                             height={500}
                             width={500}
                             alt='feattures'
-                            className='md:w-[150px] md:h-[150px] w-[100px] h-[100px] mx-auto '
+                            className='md:w-[200px] md:h-[200px] w-[150px] h-[150px] mx-auto rounded-full'
                         ></Image>
                         </Link>
 

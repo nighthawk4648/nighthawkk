@@ -61,9 +61,9 @@ const Carousel = () => {
                                 <div className="relative">
                                     <Image
                                         src={carousel?.image}
-                                        height={900}
-                                        width={900}
-                                        className='w-full md:h-[500px] h-[430px]'
+                                        height={800}
+                                        width={1300}
+                                        className='w-full md:h-[800px] h-[430px]'
                                         alt='carousels'
                                     ></Image>
 

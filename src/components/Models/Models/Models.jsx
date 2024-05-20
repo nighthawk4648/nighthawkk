@@ -8,7 +8,7 @@ import React from 'react';
 
 const Models = () => {
 
-    const {slug, slugId} = useParams()
+    const { slug, slugId } = useParams()
 
     // console.log("params", params);
 
@@ -162,7 +162,7 @@ const Models = () => {
                 <h1 className='text-white font-semibold text-2xl text-center'>TEXTURES</h1>
             </div>
 
-            <div className='grid md:grid-cols-6 grid-cols-2 gap-4 bg-primary py-5'>
+            <div className='grid md:grid-cols-8 grid-cols-2 gap-4 bg-primary py-8'>
                 {
                     models?.map((model) => (
                         <div className='cursor-pointer'>
@@ -171,7 +171,7 @@ const Models = () => {
                                 height={400}
                                 width={500}
                                 alt=''
-                                className='w-full h-40'
+                                className='w-full h-28'
                             ></Image>
 
                             <div className='bg-secondary py-1'>
@@ -183,18 +183,20 @@ const Models = () => {
                 }
             </div>
 
-            <div className='mt-5 bg-secondary py-5 grid md:grid-cols-6 grid-cols-2 gap-4'>
+            <div className='mt-5 bg-secondary py-8 grid md:grid-cols-4 grid-cols-2 gap-4 px-1'>
                 {
                     modelExs?.map((modelEx) => (
-                        <div>
-                           <Link href={`/${slug}/${slugId}/${modelEx?.slug}/${modelEx?.id}`}>
-                           <Image
-                                src={modelEx?.image}
-                                height={300}
-                                width={300}
-                                alt=''
-                                className='w-[100px] h-[100px] mx-auto rounded-full' 
-                            ></Image>
+                        <div className='md:w-[300px] w-full h-auto md:h-[308px] mx-auto mb-5'>
+                            <Link href={`/${slug}/${slugId}/${modelEx?.slug}/${modelEx?.id}`}>
+                                <Image
+                                    src={modelEx?.image}
+                                    height={400}
+                                    width={400}
+                                    alt=''
+                                    className=' rounded-full'
+                                ></Image>
+
+                                <p className='text-white text-center font-semibold mt-1 '>{modelEx?.title}</p>
                             </Link>
 
                         </div>

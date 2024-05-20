@@ -12,7 +12,7 @@ import 'swiper/css/thumbs';
 // import required modules
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
 
-const Page = () => {
+const ModelDetails = () => {
 
     const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
@@ -68,32 +68,33 @@ const Page = () => {
         },
 
     ]
+
     return (
         <div className=''>
             <div className='bg-secondary py-5'>
-                <Swiper
-                    style={{
-                        '--swiper-navigation-color': '#fff',
-                        '--swiper-pagination-color': '#fff',
-                    }}
-                    loop={true}
-                    spaceBetween={10}
-                    // navigation={true}
-                    thumbs={{ swiper: thumbsSwiper }}
-                    modules={[FreeMode, Navigation, Thumbs]}
-                    className="mySwiper2"
-                >
-                    {
-                        demos?.map((demo) => (
-                            <SwiperSlide key={demo?.id}>
-                                <img src={demo?.image} className='md:w-[1147px] mx-auto md:h-[578px] w-full h-[200px] rounded-md' />
-                            </SwiperSlide>
+            <Swiper
+                style={{
+                    '--swiper-navigation-color': '#fff',
+                    '--swiper-pagination-color': '#fff',
+                }}
+                loop={true}
+                spaceBetween={10}
+                // navigation={true}
+                thumbs={{ swiper: thumbsSwiper }}
+                modules={[FreeMode, Navigation, Thumbs]}
+                className="mySwiper2"
+            >
+                {
+                    demos?.map((demo) => (
+                        <SwiperSlide key={demo?.id}>
+                            <img src={demo?.image} className='md:w-[1147px] mx-auto md:h-[578px] w-full h-[200px] rounded-md' />
+                        </SwiperSlide>
 
-                        ))
-                    }
+                    ))
+                }
 
 
-                </Swiper>
+            </Swiper>
             </div>
 
             <div className='bg-primary  py-5'>
@@ -132,8 +133,9 @@ const Page = () => {
                         {
                             demos?.map((demo) => (
                                 <SwiperSlide key={demo?.id} className=''>
-                                    <img src={demo?.image} className='md:w-28 w-24 mx-auto h-auto rounded-md' />
+                                    <img src={demo?.image} className='md:w-28 w-20 mx-auto h-auto rounded-md' />
                                 </SwiperSlide>
+
                             ))
                         }
 
@@ -157,4 +159,4 @@ const Page = () => {
     );
 };
 
-export default Page;
+export default ModelDetails;

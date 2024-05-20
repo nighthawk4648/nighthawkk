@@ -5,16 +5,15 @@ import { MdEmail, MdLocalPhone } from 'react-icons/md';
 
 const Footer = () => {
     return (
-        <div className='bg-secondary  '>
+        <div className='bg-secondary px-5 '>
             <div className='grid md:grid-cols-3 grid-cols-1 text-white container py-5 md:gap-0 gap-5'>
                 <div className='flex md:justify-start justify-center'>
                     <div>
-                        <h1 className='font-semibold'> Service</h1>
+                        <h1 className='font-semibold'> Assets</h1>
                         <div className='text-xs mt-2'>
-                            <p className='mb-1'>Branding</p>
-                            <p className='mb-1'>Design</p>
-                            <p className='mb-1'>Marketing</p>
-                            <p className='mb-1'>Advertisement</p>
+                            <p className='mb-1'>Model</p>
+                            <p className='mb-1'>Textures</p>
+                            <p className='mb-1'>Interior Design</p>
                         </div>
                     </div>
                 </div>
@@ -23,10 +22,8 @@ const Footer = () => {
                     <div className=''>
                         <h1 className='font-semibold'> Company</h1>
                         <div className='text-xs mt-2'>
-                            <p className='mb-1'>Branding</p>
-                            <p className='mb-1'>Design</p>
-                            <p className='mb-1'>Marketing</p>
-                            <p className='mb-1'>Advertisement</p>
+                            <p className='mb-1'>About Us</p>
+                            <p className='mb-1'>Contact Us</p>
                         </div>
                     </div>
                 </div>
@@ -35,11 +32,11 @@ const Footer = () => {
                 <div className='flex md:justify-end justify-center'>
                     <div className=''>
                         <h1 className='font-semibold'> Social</h1>
-                        <div className=' flex gap-3 mt-2'>
-                            <IoLogoWhatsapp className='bg-white text-black rounded-full text-2xl' />
-                            <FaSquarePhone className=' text-white  text-2xl' />
-                            <MdEmail className=' text-white  text-2xl' />
-
+                        <div className='text-xs mt-2'>
+                            <p className='mb-1'>Facebook </p>
+                            <p className='mb-1'>Twitter</p>
+                            <p className='mb-1'>Instagram </p>
+                            <p className='mb-1'>Linkedin</p>
                         </div>
                     </div>
                 </div>
