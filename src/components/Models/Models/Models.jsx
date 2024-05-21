@@ -183,10 +183,10 @@ const Models = () => {
                 }
             </div>
 
-            <div className='mt-5 bg-secondary py-8 grid md:grid-cols-4 grid-cols-2 gap-4 px-1'>
+            <div className='mt-5 bg-secondary py-8 grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4 px-1'>
                 {
                     modelExs?.map((modelEx) => (
-                        <div className='md:w-[300px] w-full h-auto md:h-[308px] mx-auto mb-5'>
+                        <div className='lg:w-[300px] md:[1-200px]  w-full  lg:h-[308px]  md:[h-200px] h-auto mx-auto mb-5'>
                             <Link href={`/${slug}/${slugId}/${modelEx?.slug}/${modelEx?.id}`}>
                                 <Image
                                     src={modelEx?.image}
