@@ -1,9 +1,10 @@
+import Link from 'next/link';
 import React from 'react';
 import { FaSquarePhone } from 'react-icons/fa6';
 import { IoLogoWhatsapp } from 'react-icons/io5';
 import { MdEmail, MdLocalPhone } from 'react-icons/md';
 
-const Footer = () => {
+const Footer = ({ categories, footerPages, socials }) => {
     return (
         <div className='bg-secondary px-5 '>
             <div className='md:block hidden'>
@@ -12,9 +13,9 @@ const Footer = () => {
                         <div>
                             <h1 className='font-semibold'> Assets</h1>
                             <div className='text-xs mt-2'>
-                                <p className='mb-1'>Model</p>
-                                <p className='mb-1'>Textures</p>
-                                <p className='mb-1'>Interior Design</p>
+                                {categories?.map((category) => (
+                                    <p className='mb-1' key={category?._id}>{category?.name}</p>
+                                ))}
                             </div>
                         </div>
                     </div>
@@ -23,8 +24,13 @@ const Footer = () => {
                         <div className=''>
                             <h1 className='font-semibold'> Company</h1>
                             <div className='text-xs mt-2'>
-                                <p className='mb-1'>About Us</p>
-                                <p className='mb-1'>Contact Us</p>
+                                {
+                                    footerPages?.map((footerPage) => (
+                                        <div key={footerPage?._id}>
+                                            {footerPage?.slug && <Link to={`/pages/${footerPage?.slug}`} ><p className='mb-1'>{footerPage?.title}</p></Link>}
+                                        </div>
+                                    ))
+                                }
                             </div>
                         </div>
                     </div>
@@ -34,10 +40,12 @@ const Footer = () => {
                         <div className=''>
                             <h1 className='font-semibold'> Social</h1>
                             <div className='text-xs mt-2'>
-                                <p className='mb-1'>Facebook </p>
-                                <p className='mb-1'>Twitter</p>
-                                <p className='mb-1'>Instagram </p>
-                                <p className='mb-1'>Linkedin</p>
+
+                                {socials?.map((social) => (
+                                    <div key={social?._id}>
+                                        {social?.url && <Link to={social?.url} ><p className='mb-1'>{social?.name}</p></Link>}
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>
@@ -52,9 +60,9 @@ const Footer = () => {
                         <div>
                             <h1 className='font-semibold'> Assets</h1>
                             <div className='text-xs mt-2'>
-                                <p className='mb-1'>Model</p>
-                                <p className='mb-1'>Textures</p>
-                                <p className='mb-1'>Interior Design</p>
+                                {categories?.map((category) => (
+                                    <p className='mb-1' key={category?._id}>{category?.name}</p>
+                                ))}
                             </div>
                         </div>
 
@@ -63,8 +71,13 @@ const Footer = () => {
                         <div className=''>
                             <h1 className='font-semibold'> Company</h1>
                             <div className='text-xs mt-2'>
-                                <p className='mb-1'>About Us</p>
-                                <p className='mb-1'>Contact Us</p>
+                                {
+                                    footerPages?.map((footerPage) => (
+                                        <div key={footerPage?._id}>
+                                            {footerPage?.slug && <Link to={`/pages/${footerPage?.slug}`} ><p className='mb-1'>{footerPage?.title}</p></Link>}
+                                        </div>
+                                    ))
+                                }
                             </div>
                         </div>
 
@@ -75,10 +88,11 @@ const Footer = () => {
                         <div className=''>
                             <h1 className='font-semibold'> Social</h1>
                             <div className='text-xs mt-2'>
-                                <p className='mb-1'>Facebook </p>
-                                <p className='mb-1'>Twitter</p>
-                                <p className='mb-1'>Instagram </p>
-                                <p className='mb-1'>Linkedin</p>
+                                {socials?.map((social) => (
+                                    <div key={social?._id}>
+                                        {social?.url && <Link to={social?.url} ><p className='mb-1'>{social?.name}</p></Link>}
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </div>

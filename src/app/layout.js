@@ -16,20 +16,46 @@ export const metadata = {
 
 export default async function RootLayout({ children }) {
 
-  const data = await getData('general/application-settings');
+  const dataPromise = await getData('general/application-settings');
+  const aboutUsPromise = await getData('general/about-us');
+  const categoriesPromise = await getData('categories');
+  const subCategoriesPromise = await getData('sub-categories');
+  const assetsPromise = await getData('assets');
+  const footerPagesPromise = await getData('pages');
+  const socialsPromise = await getData('social');
 
-  console.log(data);
+
+
+  const [data, aboutUs, categories, subCategories, assets, footerPages, socials] = await Promise.all([
+    dataPromise,
+    aboutUsPromise,
+    categoriesPromise,
+    subCategoriesPromise,
+    assetsPromise,
+    footerPagesPromise,
+    socialsPromise,
+  ]);
+
 
   return (
     <html lang="en">
       <body className={inter.className}>
         <div className="sticky top-0 z-50">
-          <Navbar />
+          <Navbar
+            categories={categories?.data}
+            subCategories={subCategories?.data}
+            assets={assets?.data}
+          />
         </div>
+
         {children}
 
-        <AboutUs />
-        <Footer />
+        <AboutUs aboutUs={aboutUs?.data} />
+        <Footer
+          categories={categories?.data}
+          footerPages={footerPages?.data}
+          socials={socials?.data}
+        />
       </body>
     </html>
   );

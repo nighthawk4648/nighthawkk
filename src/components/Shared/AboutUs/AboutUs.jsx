@@ -1,9 +1,16 @@
 import React from 'react';
 
-const AboutUs = () => {
+const AboutUs = ({ aboutUs }) => {
     return (
-        <div className='bg-thirdColor py-5'>
-            <h1 className='text-center font-semibold text-2xl'>About Us</h1>
+        <div className='bg-thirdColor p-5'>
+            {aboutUs?.title && <h1 className='text-center font-semibold text-2xl'>{aboutUs?.title}</h1>}
+
+            {
+                aboutUs?.short_description && <p className='text-center mt-2'>{aboutUs?.short_description}</p>
+            }
+
+            <div dangerouslySetInnerHTML={{ __html: aboutUs?.content }} ></div>
+
         </div>
     );
 };

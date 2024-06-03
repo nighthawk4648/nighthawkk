@@ -2,8 +2,9 @@ import React from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
+import slugify from '@/utils/slugify';
 
-const Features = () => {
+const Features = ({categories}) => {
 
     const features = [
         {
@@ -33,20 +34,21 @@ const Features = () => {
         <div className='mt-5 grid  md:grid-cols-3 grid-cols-1 gap-5'>
 
             {
-                features?.map((feature) => (
-                    <div key={feature?.id} className=' '>
-                        <Link href={`/${feature?.slug}/${feature?.id}`}>
-                        <Image
-                            src={feature?.image}
+                categories?.map((category) => (
+                    <div key={category?._id} className=' '>
+                        <Link href={`/${slugify(category?.name)}`}>
+                        { category?.image &&  <Image
+                            src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
+                                category?.image}
                             height={500}
                             width={500}
-                            alt='feattures'
+                            alt={category?.name}
                             className='md:w-[200px] md:h-[200px] w-[150px] h-[150px] mx-auto rounded-full'
-                        ></Image>
+                        ></Image>}
+                        
+
+                        <p className='text-center font-semibold text-xl mt-2'>{category?.name}</p>
                         </Link>
-
-                        <p className='text-center font-semibold text-xl mt-2'>{feature?.title}</p>
-
                     </div>
                 ))
             }
