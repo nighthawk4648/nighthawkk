@@ -29,14 +29,13 @@ const Features = ({categories}) => {
         }
     ]
 
-
     return (
         <div className='mt-5 grid  md:grid-cols-3 grid-cols-1 gap-5'>
 
             {
                 categories?.map((category) => (
                     <div key={category?._id} className=' '>
-                        <Link href={`/${slugify(category?.name)}`}>
+                        <Link href={`/${slugify(category?.name)}-${category?._id}`}>
                         { category?.image &&  <Image
                             src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
                                 category?.image}

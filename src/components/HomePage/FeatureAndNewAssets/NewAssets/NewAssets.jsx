@@ -60,15 +60,15 @@ const NewAssets = () => {
             <div className='grid md:grid-cols-4 grid-cols-2 gap-5 mt-5'>
             {
                 newAssets?.map((newAsset) => (
-                    <div key={newAsset?.id}>
+                    <div key={newAsset?.id} className=''>
                         <Image
                             src={newAsset?.image}
                             height={800}
                             width={800}
                             alt=''
-                            className='w-full mx-auto'
+                            className='w-full mx-auto rounded-md'
                         ></Image>
-                        <div className='bg-secondary text-white text-center py-2'>
+                        <div className='bg-secondary text-white text-center py-2 rounded-md'>
                             <p>{newAsset?.title}</p>
                         </div>
 

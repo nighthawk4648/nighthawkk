@@ -74,7 +74,7 @@ const Navbar = () => {
 									<div className="group py-3">
 										<p className="font-semibold group cursor-pointer">ABOUT</p>
 
-										<div className="bg-white fixed w-full left-0 top-14 hidden group-hover:flex gap-5 p-4 text-black min-h-72 ">
+										<div className="bg-secondary text-white fixed w-[70%] mx-auto left-0 right-0 top-16 hidden group-hover:flex gap-5 p-4  min-h-72 ">
 											<div className="">
 												<ul>
 													<li>Item</li>

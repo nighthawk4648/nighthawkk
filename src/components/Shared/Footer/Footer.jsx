@@ -27,7 +27,7 @@ const Footer = ({ categories, footerPages, socials }) => {
                                 {
                                     footerPages?.map((footerPage) => (
                                         <div key={footerPage?._id}>
-                                            {footerPage?.slug && <Link to={`/pages/${footerPage?.slug}`} ><p className='mb-1'>{footerPage?.title}</p></Link>}
+                                            {footerPage?.slug && <Link href={`/pages/${footerPage?.slug}`} ><p className='mb-1'>{footerPage?.title}</p></Link>}
                                         </div>
                                     ))
                                 }
@@ -43,7 +43,7 @@ const Footer = ({ categories, footerPages, socials }) => {
 
                                 {socials?.map((social) => (
                                     <div key={social?._id}>
-                                        {social?.url && <Link to={social?.url} ><p className='mb-1'>{social?.name}</p></Link>}
+                                        {social?.url && <Link href={social?.url} ><p className='mb-1'>{social?.name}</p></Link>}
                                     </div>
                                 ))}
                             </div>
@@ -74,7 +74,7 @@ const Footer = ({ categories, footerPages, socials }) => {
                                 {
                                     footerPages?.map((footerPage) => (
                                         <div key={footerPage?._id}>
-                                            {footerPage?.slug && <Link to={`/pages/${footerPage?.slug}`} ><p className='mb-1'>{footerPage?.title}</p></Link>}
+                                            {footerPage?.slug && <Link href={`/pages/${footerPage?.slug}`} ><p className='mb-1'>{footerPage?.title}</p></Link>}
                                         </div>
                                     ))
                                 }
@@ -90,7 +90,7 @@ const Footer = ({ categories, footerPages, socials }) => {
                             <div className='text-xs mt-2'>
                                 {socials?.map((social) => (
                                     <div key={social?._id}>
-                                        {social?.url && <Link to={social?.url} ><p className='mb-1'>{social?.name}</p></Link>}
+                                        {social?.url && <Link href={social?.url} ><p className='mb-1'>{social?.name}</p></Link>}
                                     </div>
                                 ))}
                             </div>
