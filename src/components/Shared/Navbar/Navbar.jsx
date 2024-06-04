@@ -8,26 +8,15 @@ import { IoCloseCircleOutline, IoSearchSharp } from 'react-icons/io5';
 import { MdDashboard } from 'react-icons/md';
 import navLogo from '../../../../public/assets/navbar/navbar_logo.png';
 
-const Navbar = () => {
+const Navbar = ({categories}) => {
 	const [isOpen, setIsOpen] = useState(false);
+
+	console.log("categories", categories);
 
 	const toggleNavbar = () => {
 		setIsOpen(!isOpen);
 	};
 
-	const navMenu = [
-		{
-			id: 1,
-			title: 'Deliveries',
-			link: '/merchant/parcel-list',
-		},
-
-		{
-			id: 2,
-			title: 'Invoices',
-			link: '/merchant/invoices',
-		},
-	];
 
 	return (
 		<div className="relative">
@@ -72,29 +61,24 @@ const Navbar = () => {
 
 									<p className="font-semibold">HOME</p>
 									<div className="group py-3">
-										<p className="font-semibold group cursor-pointer">ABOUT</p>
+										<p className="font-semibold group cursor-pointer">Menu</p>
 
-										<div className="bg-secondary text-white fixed w-[70%] mx-auto left-0 right-0 top-16 hidden group-hover:flex gap-5 p-4  min-h-72 ">
-											<div className="">
-												<ul>
-													<li>Item</li>
-													<li>Item</li>
-													<li>Item</li>
-												</ul>
-											</div>
-											<div>
-												<ul>
-													<li>Item</li>
-													<li>Item</li>
-													<li>Item</li>
-												</ul>
-											</div>
-											<div>
-												<ul>
-													<li>Item</li>
-													<li>Item</li>
-													<li>Item</li>
-												</ul>
+										<div className="bg-secondary text-white fixed w-full left-0 right-0 top-16 hidden group-hover:flex gap-5 p-4  min-h-72 ">
+											<div className=" ">
+												{
+													categories?.map((category) => (
+														<div className='flex justify-between'>
+															<p>{category?.name}</p>
+														</div>
+													))
+												}
+												{/* <Link href="/">
+                                                    <p className="font-semibold">HOME</p>
+                                                </Link> */}
+                                               
+											
+											
+											
 											</div>
 										</div>
 									</div>

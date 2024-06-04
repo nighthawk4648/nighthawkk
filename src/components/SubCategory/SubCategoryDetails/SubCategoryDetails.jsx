@@ -12,7 +12,7 @@ import 'swiper/css/thumbs';
 // import required modules
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
 
-const ModelDetails = () => {
+const SubCategoryDetails = () => {
 
     const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
@@ -159,4 +159,4 @@ const ModelDetails = () => {
     );
 };
 
-export default ModelDetails;
+export default SubCategoryDetails;

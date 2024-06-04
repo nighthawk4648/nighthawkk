@@ -11,7 +11,6 @@ import useSWR from 'swr';
 
 const SubCategory = ({ subCategoriesByCategoryId }) => {
 
-    const { slug, slugId } = useParams()
 
     const [subCategoryId, setSubCategoryId] = useState(subCategoriesByCategoryId?.data?.sub_categories?.[0]?._id)
 
