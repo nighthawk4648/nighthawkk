@@ -11,8 +11,11 @@ import 'swiper/css/thumbs';
 
 // import required modules
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
+import Image from 'next/image';
 
-const SubCategoryDetails = () => {
+const SubCategoryDetails = ({assetDetails}) => {
+
+    console.log("assetDetails", assetDetails);
 
     const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
@@ -131,9 +134,17 @@ const SubCategoryDetails = () => {
                         className="mySwiper"
                     >
                         {
-                            demos?.map((demo) => (
-                                <SwiperSlide key={demo?.id} className=''>
-                                    <img src={demo?.image} className='md:w-28 w-20 mx-auto h-auto rounded-md' />
+                            assetDetails?.images?.map((image, index) => (
+                                <SwiperSlide key={image?.id} className=''>
+                                    <Image
+                                    src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL + image?.image }
+                                    alt=''
+                                    height={150}
+                                    width={150}
+                                    className='md:w-28 w-20 mx-auto h-auto rounded-md'
+
+                                    />
+                                    
                                 </SwiperSlide>
 
                             ))
@@ -146,9 +157,9 @@ const SubCategoryDetails = () => {
 
             <div className=' bg-secondary py-5 text-white px-5 '>
                 <h1 className='md:text-2xl mb-1 font-semibold  '>ASSET DETAILS</h1>
-                <p className='text-sm'><span className='font-semibold'>Name - </span><span className='text-xs'>Lorem, ipsum dolor sit amet </span></p>
-                <p className='text-sm' > <span className='font-semibold'>Size - </span> <span className='text-xs'>Lorem, ipsum </span></p>
-                <p className='text-sm'> <span className='font-semibold'>Resolution - </span> <span className='text-xs'>Lorem, ipsum dolor</span></p>
+                <p className='text-sm'><span className='font-semibold'>Name - </span><span className='text-xs'>{assetDetails?.name}</span></p>
+                <p className='text-sm' > <span className='font-semibold'>Size - </span> <span className='text-xs'>{assetDetails?.size}</span></p>
+                <p className='text-sm'> <span className='font-semibold'>Resolution - </span> <span className='text-xs'>{assetDetails?.resolution}</span></p>
 
 
                 <div className='w-48 mx-auto p-1 bg-primary mt-10 rounded-md cursor-pointer'>

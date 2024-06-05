@@ -9,12 +9,12 @@ const Page = async ({params}) => {
     
     const assetId = assetsName?.split("-").slice(-1);
 
-    const assetDetails = await getData(`categories/${categoryId}`);
+    const assetDetails = await getData(`assets/${assetId}`);
 
    
     return (
         <div className=''>
-            <SubCategoryDetails/>
+            <SubCategoryDetails assetDetails={assetDetails?.data}   />
         </div>
     );
 };

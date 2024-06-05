@@ -5,6 +5,7 @@ import { IoLogoWhatsapp } from 'react-icons/io5';
 import { MdEmail, MdLocalPhone } from 'react-icons/md';
 
 const Footer = ({ categories, footerPages, socials }) => {
+    console.log("footerPages", footerPages);
     return (
         <div className='bg-secondary px-5 '>
             <div className='md:block hidden'>
@@ -27,7 +28,7 @@ const Footer = ({ categories, footerPages, socials }) => {
                                 {
                                     footerPages?.map((footerPage) => (
                                         <div key={footerPage?._id}>
-                                            {footerPage?.slug && <Link href={`/pages/${footerPage?.slug}`} ><p className='mb-1'>{footerPage?.title}</p></Link>}
+                                            {footerPage?.slug && <Link href={`/pages/${footerPage?.slug}-${footerPage?._id}`} ><p className='mb-1'>{footerPage?.title}</p></Link>}
                                         </div>
                                     ))
                                 }
@@ -74,7 +75,7 @@ const Footer = ({ categories, footerPages, socials }) => {
                                 {
                                     footerPages?.map((footerPage) => (
                                         <div key={footerPage?._id}>
-                                            {footerPage?.slug && <Link href={`/pages/${footerPage?.slug}`} ><p className='mb-1'>{footerPage?.title}</p></Link>}
+                                            {footerPage?.slug && <Link href={`/pages/${footerPage?.slug}-${footerPage?._id}`} ><p className='mb-1'>{footerPage?.title}</p></Link>}
                                         </div>
                                     ))
                                 }
