@@ -8,6 +8,7 @@ import { IoCloseCircleOutline, IoSearchSharp } from 'react-icons/io5';
 import { MdDashboard } from 'react-icons/md';
 import navLogo from '../../../../public/assets/navbar/navbar_logo.png';
 import slugify from '@/utils/slugify';
+import MenuBarForMobileScreen from './MenuBarForMobileScreen';
 
 const Navbar = ({ categories }) => {
 	const [isOpen, setIsOpen] = useState(false);
@@ -64,12 +65,12 @@ const Navbar = ({ categories }) => {
 									<div className="group py-3">
 										<p className="font-semibold group cursor-pointer">MENU</p>
 
-										<div className="bg-secondary text-white fixed w-full right-0 top-16 hidden group-hover:flex gap-5 p-4  min-h-72 ">
+										<div className="bg-secondary text-white fixed w-full right-0 top-[60px] hidden group-hover:flex gap-5 p-4  min-h-72 ">
 											<div className=" flex justify-between w-full">
 												{
 													categories?.map((category) => (
 														<div className='px-4'>
-															<div className=' mb-3 font-semibold text-lg'>
+															<div className=' mb-3 font-semibold uppercase'>
 																
 																<Link href={`/${slugify(category?.name)}-${category?._id}`}><p>{category?.name}</p></Link>
 															</div>
@@ -77,16 +78,16 @@ const Navbar = ({ categories }) => {
 																{
 																	category?.sub_categories?.map((subCategory) => (
 																		<div>
-																			<div className='text-sm mt-2 font-semibold'>
-																			
-																				<p>{subCategory?.name}</p>
+																			<div className=' mt-2 font-semibold'>
+																			<Link href={`/${slugify(category?.name)}-${category?._id}`}><p>{subCategory?.name}</p></Link>
 																			</div>
 
 																			<div>
 																				{
 																					subCategory?.assets?.map((asset) => (
 																						<div className='text-sm mt-1 '>
-																							<p>{asset?.name}</p>
+																							<Link href={`/${slugify(category?.name)}/${slugify(subCategory?.name)}/${slugify(asset?.name)}-${asset?._id}`}><p>{asset?.name}</p></Link>
+																							
 																						</div>
 																					))
 																				}
@@ -142,13 +143,12 @@ const Navbar = ({ categories }) => {
 							</div>
 
 							<div
-								className="flex gap-2 items-center mb-4 px-3 "
-								onClick={toggleNavbar}
+								className=" "
+								// onClick={toggleNavbar}
 							>
-								<MdDashboard className="text-xl" />
-								<div className="text-sm">
-									<Link href="/">Home</Link>
-								</div>
+
+								<MenuBarForMobileScreen/>
+								
 							</div>
 						</div>
 					</div>
