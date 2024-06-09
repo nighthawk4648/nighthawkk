@@ -7,8 +7,9 @@ import { AiOutlineMenuFold } from 'react-icons/ai';
 import { IoCloseCircleOutline, IoSearchSharp } from 'react-icons/io5';
 import { MdDashboard } from 'react-icons/md';
 import navLogo from '../../../../public/assets/navbar/navbar_logo.png';
+import slugify from '@/utils/slugify';
 
-const Navbar = ({categories}) => {
+const Navbar = ({ categories }) => {
 	const [isOpen, setIsOpen] = useState(false);
 
 	console.log("categories", categories);
@@ -61,24 +62,43 @@ const Navbar = ({categories}) => {
 
 									<p className="font-semibold">HOME</p>
 									<div className="group py-3">
-										<p className="font-semibold group cursor-pointer">Menu</p>
+										<p className="font-semibold group cursor-pointer">MENU</p>
 
-										<div className="bg-secondary text-white fixed w-full left-0 right-0 top-16 hidden group-hover:flex gap-5 p-4  min-h-72 ">
-											<div className=" ">
+										<div className="bg-secondary text-white fixed w-full right-0 top-16 hidden group-hover:flex gap-5 p-4  min-h-72 ">
+											<div className=" flex justify-between w-full">
 												{
 													categories?.map((category) => (
-														<div className='flex justify-between'>
-															<p>{category?.name}</p>
+														<div className='px-4'>
+															<div className=' mb-3 font-semibold text-lg'>
+																
+																<Link href={`/${slugify(category?.name)}-${category?._id}`}><p>{category?.name}</p></Link>
+															</div>
+															<div>
+																{
+																	category?.sub_categories?.map((subCategory) => (
+																		<div>
+																			<div className='text-sm mt-2 font-semibold'>
+																			
+																				<p>{subCategory?.name}</p>
+																			</div>
+
+																			<div>
+																				{
+																					subCategory?.assets?.map((asset) => (
+																						<div className='text-sm mt-1 '>
+																							<p>{asset?.name}</p>
+																						</div>
+																					))
+																				}
+																			</div>
+																		</div>
+																	))
+																}
+															</div>
 														</div>
 													))
 												}
-												{/* <Link href="/">
-                                                    <p className="font-semibold">HOME</p>
-                                                </Link> */}
-                                               
-											
-											
-											
+
 											</div>
 										</div>
 									</div>
@@ -99,9 +119,8 @@ const Navbar = ({categories}) => {
 				<div className={`md:hidden ${isOpen ? 'block' : 'hidden'}`}>
 					<div className="fixed inset-0 z-50 bg-gray-400 opacity-75"></div>
 					<div
-						className={`fixed inset-y-0 left-0 z-50 w-4/5 bg-white transform transition-transform ease-in-out duration-300 ${
-							isOpen ? 'translate-x-0' : '-translate-x-full'
-						}`}
+						className={`fixed inset-y-0 left-0 z-50 w-4/5 bg-white transform transition-transform ease-in-out duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'
+							}`}
 					>
 						<div className="flex items-center justify-end h-16 px-4">
 							<button onClick={toggleNavbar} className="   font-medium">

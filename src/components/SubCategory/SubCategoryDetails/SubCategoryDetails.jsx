@@ -12,8 +12,9 @@ import 'swiper/css/thumbs';
 // import required modules
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
 import Image from 'next/image';
+import Link from 'next/link';
 
-const SubCategoryDetails = ({assetDetails}) => {
+const SubCategoryDetails = ({ assetDetails }) => {
 
     console.log("assetDetails", assetDetails);
 
@@ -75,29 +76,36 @@ const SubCategoryDetails = ({assetDetails}) => {
     return (
         <div className=''>
             <div className='bg-secondary py-5'>
-            <Swiper
-                style={{
-                    '--swiper-navigation-color': '#fff',
-                    '--swiper-pagination-color': '#fff',
-                }}
-                loop={true}
-                spaceBetween={10}
-                // navigation={true}
-                thumbs={{ swiper: thumbsSwiper }}
-                modules={[FreeMode, Navigation, Thumbs]}
-                className="mySwiper2"
-            >
-                {
-                    demos?.map((demo) => (
-                        <SwiperSlide key={demo?.id}>
-                            <img src={demo?.image} className='md:w-[1147px] mx-auto md:h-[578px] w-full h-[200px] rounded-md' />
-                        </SwiperSlide>
+                <Swiper
+                    style={{
+                        '--swiper-navigation-color': '#fff',
+                        '--swiper-pagination-color': '#fff',
+                    }}
+                    loop={true}
+                    spaceBetween={10}
+                    // navigation={true}
+                    thumbs={{ swiper: thumbsSwiper }}
+                    modules={[FreeMode, Navigation, Thumbs]}
+                    className="mySwiper2"
+                >
+                    {
+                        assetDetails?.images?.map((image) => (
+                            <SwiperSlide key={image}>
+                                <Image
+                                        src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL + image}
+                                        alt=''
+                                        height={1000}
+                                        width={1000}
+                                        className='md:w-[1147px] mx-auto md:h-[578px] w-full h-[200px] rounded-md' 
 
-                    ))
-                }
+                                    />
+                            </SwiperSlide>
+
+                        ))
+                    }
 
 
-            </Swiper>
+                </Swiper>
             </div>
 
             <div className='bg-primary  py-5'>
@@ -135,16 +143,16 @@ const SubCategoryDetails = ({assetDetails}) => {
                     >
                         {
                             assetDetails?.images?.map((image, index) => (
-                                <SwiperSlide key={image?.id} className=''>
+                                <SwiperSlide key={image} className=''>
                                     <Image
-                                    src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL + image?.image }
-                                    alt=''
-                                    height={150}
-                                    width={150}
-                                    className='md:w-28 w-20 mx-auto h-auto rounded-md'
+                                        src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL + image}
+                                        alt=''
+                                        height={150}
+                                        width={150}
+                                        className='md:w-28 w-20 mx-auto h-auto rounded-md'
 
                                     />
-                                    
+
                                 </SwiperSlide>
 
                             ))
@@ -161,9 +169,8 @@ const SubCategoryDetails = ({assetDetails}) => {
                 <p className='text-sm' > <span className='font-semibold'>Size - </span> <span className='text-xs'>{assetDetails?.size}</span></p>
                 <p className='text-sm'> <span className='font-semibold'>Resolution - </span> <span className='text-xs'>{assetDetails?.resolution}</span></p>
 
-
                 <div className='w-48 mx-auto p-1 bg-primary mt-10 rounded-md cursor-pointer'>
-                    <p className='font-semibold text-center'>DOWNLOAD</p>
+                   { assetDetails?.download && <Link href={assetDetails?.download}><p className='font-semibold text-center'>DOWNLOAD</p></Link>}
                 </div>
             </div>
         </div>
