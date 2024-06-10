@@ -1,19 +1,36 @@
 import Link from 'next/link';
 import React, { useState } from 'react';
-import { MdDashboard } from 'react-icons/md';
+import { MdDashboard, MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
 import { IoIosArrowDown } from "react-icons/io";
+import slugify from '@/utils/slugify';
 
 
-const MenuBarForMobileScreen = () => {
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+const MenuBarForMobileScreen = ({ categories }) => {
+
+    const [isDropdownSectionOpen, setIsDropdownSectionOpen] = useState(null);
+
+    const toggleDropdownSection = (index) => {
+        setIsDropdownSectionOpen(isDropdownSectionOpen === index ? null : index);
+    };
+
+    const [isDropdownSubSectionOpen, setIsDropdownSubSectionOpen] = useState(null);
+
+    const toggleDropdownSubSection = (index) => {
+        setIsDropdownSubSectionOpen(
+            isDropdownSubSectionOpen === index ? null : index
+        );
+    };
 
     const options = ['Option 1', 'Option 2', 'Option 3'];
 
-    const toggleDropdown = () => {
-        setIsDropdownOpen(!isDropdownOpen);
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+    };
+    const closeMenu = () => {
+        setIsMenuOpen(false);
     };
 
- 
+
 
     return (
         <div>
@@ -24,29 +41,67 @@ const MenuBarForMobileScreen = () => {
                 </div>
             </div>
 
-            <div className="relative">
-                <button
-                    onClick={toggleDropdown}
-                    className=""
-                >
-                    {'Select an option'}
-                    <IoIosArrowDown/>
-                </button>
-
-                {isDropdownOpen && (
-                    <div className="absolute z-10 w-full mt-2 bg-white rounded-md shadow-lg">
-                        <ul>
-                            {options.map((option) => (
-                                <li
-                                    key={option}
-                                    className="py-2 px-4 hover:bg-gray-100 cursor-pointer"
+            <div className="flex-none ">
+                {categories?.length
+                    ? categories?.map((category, index) => (
+                        <div key={index}>
+                            <div className="flex  justify-between items-center w-full  py-2 px-3 text-sm   hover:text-blue-600 bg-white rounded-md  focus:outline-none">
+                                <button
+                                    onClick={() => toggleDropdownSection(index)}
+                                    className="flex justify-center items-center"
                                 >
-                                    {option}
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
+                                    <Link href={`/${slugify(category?.name)}-${category?._id}`} ><span className="select-none">{category?.name}</span></Link>
+
+                                    {isDropdownSectionOpen === index ? (
+                                        <MdKeyboardArrowUp className="text-xl" />
+                                    ) : (
+                                        <MdKeyboardArrowDown className="text-xl" />
+                                    )}
+                                </button>
+
+                            </div>
+
+                            {isDropdownSectionOpen === index && (
+                                <div
+                                    id="options"
+                                    className="w-full py-2  px-3 text-sm bg-white rounded-lg "
+                                >
+                                    {category?.sub_categories?.map((subCategory, index) => (
+                                        <div key={subCategory?._id}>
+                                            <div className="flex justify-between items-center  ml-4">
+                                                <button
+                                                    onClick={() => toggleDropdownSubSection(index)}
+                                                    className="flex items-center py-2 text-gray-700  hover:text-blue-600 bg-white rounded-md  focus:outline-none"
+                                                >
+                                                    <Link href={`/${slugify(category?.name)}-${category?._id}`} ><p className="">{subCategory?.name}</p></Link>
+                                                    {isDropdownSubSectionOpen === index ? (
+                                                        <MdKeyboardArrowUp className="text-xl" />
+                                                    ) : (
+                                                        <MdKeyboardArrowDown className="text-xl" />
+                                                    )}
+                                                </button>
+
+                                            </div>
+
+                                            {isDropdownSubSectionOpen === index && (
+                                                <div className='px-3'>
+                                                    {subCategory?.assets?.map((asset) => (
+                                                        <ul className="ml-8" key={asset?._id}>
+                                                            <li className="mb-2">
+                                                                <Link href={`/${slugify(category?.name)}/${slugify(subCategory?.name)}/${slugify(asset?.name)}-${asset?._id}`}>{asset.name}</Link>
+
+                                                            </li>
+                                                        </ul>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    ))
+                    : null}
             </div>
         </div>
     );

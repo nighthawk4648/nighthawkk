@@ -9,11 +9,10 @@ import { MdDashboard } from 'react-icons/md';
 import navLogo from '../../../../public/assets/navbar/navbar_logo.png';
 import slugify from '@/utils/slugify';
 import MenuBarForMobileScreen from './MenuBarForMobileScreen';
+import SearchForMobileScreen from './SearchForMobileScreen';
 
 const Navbar = ({ categories }) => {
 	const [isOpen, setIsOpen] = useState(false);
-
-	console.log("categories", categories);
 
 	const toggleNavbar = () => {
 		setIsOpen(!isOpen);
@@ -71,7 +70,7 @@ const Navbar = ({ categories }) => {
 													categories?.map((category) => (
 														<div className='px-4'>
 															<div className=' mb-3 font-semibold uppercase'>
-																
+
 																<Link href={`/${slugify(category?.name)}-${category?._id}`}><p>{category?.name}</p></Link>
 															</div>
 															<div>
@@ -79,7 +78,7 @@ const Navbar = ({ categories }) => {
 																	category?.sub_categories?.map((subCategory) => (
 																		<div>
 																			<div className=' mt-2 font-semibold'>
-																			<Link href={`/${slugify(category?.name)}-${category?._id}`}><p>{subCategory?.name}</p></Link>
+																				<Link href={`/${slugify(category?.name)}-${category?._id}`}><p>{subCategory?.name}</p></Link>
 																			</div>
 
 																			<div>
@@ -87,7 +86,7 @@ const Navbar = ({ categories }) => {
 																					subCategory?.assets?.map((asset) => (
 																						<div className='text-sm mt-1 '>
 																							<Link href={`/${slugify(category?.name)}/${slugify(subCategory?.name)}/${slugify(asset?.name)}-${asset?._id}`}><p>{asset?.name}</p></Link>
-																							
+
 																						</div>
 																					))
 																				}
@@ -106,9 +105,10 @@ const Navbar = ({ categories }) => {
 								</div>
 							</div>
 							<div className="md:hidden">
-								<div>
-									<button onClick={toggleNavbar} className=" font-medium">
-										<AiOutlineMenuFold className="md:text-2xl text-xl mt-2 " />
+								<div className='flex gap-3 items-center mt-2'>
+									<SearchForMobileScreen />
+									<button onClick={toggleNavbar} className=" font-medium ">
+										<AiOutlineMenuFold className="md:text-2xl text-xl  " />
 									</button>
 								</div>
 							</div>
@@ -144,11 +144,11 @@ const Navbar = ({ categories }) => {
 
 							<div
 								className=" "
-								// onClick={toggleNavbar}
+							// onClick={toggleNavbar}
 							>
 
-								<MenuBarForMobileScreen/>
-								
+								<MenuBarForMobileScreen categories={categories} />
+
 							</div>
 						</div>
 					</div>
