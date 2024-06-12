@@ -4,30 +4,41 @@
 // export default nextConfig;
 
 
-const nextConfig = {
-    reactStrictMode: true,
-    swcMinify: true,
-    images: {
-      remotePatterns: [
-        {
-          protocol: "http",
-          hostname: "localhost",
-        },
-      ],
-    },
-  };
-  
-  export default nextConfig;
 
-
-// // for local database______________________________
-// /** @type {import('next').NextConfig} */
+// // FOR LOCAL DATABASE________________
 // const nextConfig = {
-//   reactStrictMode: true,
-//   swcMinify: true,
-//   images: {
-//     domains: ['localhost:5000'],
-//   }
-// };
+//     reactStrictMode: true,
+//     swcMinify: true,
+//     images: {
+//       remotePatterns: [
+//         {
+//           protocol: "http",
+//           hostname: "localhost",
+//         },
+//       ],
+//     },
+//   };
+  
+//   export default nextConfig;
 
-// module.exports = nextConfig;
+
+
+
+/** @type {import('next').NextConfig} */
+
+const nextConfig = {
+  reactStrictMode: true,
+  swcMinify: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+    ],
+  },
+};
+
+export default nextConfig;
+
+
