@@ -20,59 +20,6 @@ const SubCategoryDetails = ({ assetDetails }) => {
 
     const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
-    const demos = [
-        {
-            id: 1,
-            image: 'https://swiperjs.com/demos/images/nature-1.jpg',
-        },
-
-        {
-            id: 2,
-            image: 'https://swiperjs.com/demos/images/nature-2.jpg',
-        },
-
-        {
-            id: 3,
-            image: 'https://swiperjs.com/demos/images/nature-3.jpg',
-        },
-
-        {
-            id: 4,
-            image: 'https://swiperjs.com/demos/images/nature-4.jpg',
-        },
-
-        {
-            id: 5,
-            image: 'https://swiperjs.com/demos/images/nature-5.jpg',
-        },
-
-        {
-            id: 6,
-            image: 'https://swiperjs.com/demos/images/nature-6.jpg',
-        },
-
-        {
-            id: 7,
-            image: 'https://swiperjs.com/demos/images/nature-7.jpg',
-        },
-
-        {
-            id: 8,
-            image: 'https://swiperjs.com/demos/images/nature-8.jpg',
-        },
-
-        {
-            id: 9,
-            image: 'https://swiperjs.com/demos/images/nature-9.jpg',
-        },
-
-        {
-            id: 10,
-            image: 'https://swiperjs.com/demos/images/nature-10.jpg',
-        },
-
-    ]
-
     return (
         <div className=''>
             <div className='bg-secondary py-5'>
@@ -90,9 +37,9 @@ const SubCategoryDetails = ({ assetDetails }) => {
                 >
                     {
                         assetDetails?.images?.map((image) => (
-                            <SwiperSlide key={image}>
+                            <SwiperSlide key={image?._id}>
                                 <Image
-                                        src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL + image}
+                                        src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL + image?.image}
                                         alt=''
                                         height={1000}
                                         width={1000}
@@ -143,9 +90,9 @@ const SubCategoryDetails = ({ assetDetails }) => {
                     >
                         {
                             assetDetails?.images?.map((image, index) => (
-                                <SwiperSlide key={image} className=''>
+                                <SwiperSlide key={image?._id} className=''>
                                     <Image
-                                        src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL + image}
+                                        src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL + image?.image}
                                         alt=''
                                         height={150}
                                         width={150}
