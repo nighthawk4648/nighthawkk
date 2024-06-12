@@ -10,6 +10,7 @@ import navLogo from '../../../../public/assets/navbar/navbar_logo.png';
 import slugify from '@/utils/slugify';
 import MenuBarForMobileScreen from './MenuBarForMobileScreen';
 import SearchForMobileScreen from './SearchForMobileScreen';
+import SearchForDesktopScreen from './SearchForDesktopScreen';
 
 const Navbar = ({ categories }) => {
 	const [isOpen, setIsOpen] = useState(false);
@@ -47,17 +48,11 @@ const Navbar = ({ categories }) => {
 							<div className="hidden md:block">
 								<div className="flex items-center  gap-5">
 									<div>
-										<div className="relative">
-											<input
-												type="text"
-												className="h-8 rounded-md outline-none px-8"
-											/>
 
-											<div className="absolute top-2 left-2">
-												<IoSearchSharp />
-											</div>
-										</div>
+										<SearchForDesktopScreen/>
+										
 									</div>
+									
 									<p className="font-semibold">SEARCH</p>
 
 									<p className="font-semibold">HOME</p>
@@ -65,7 +60,7 @@ const Navbar = ({ categories }) => {
 										<p className="font-semibold group cursor-pointer">MENU</p>
 
 										<div className="bg-secondary text-white fixed w-full right-0 top-[60px] hidden group-hover:flex gap-5 p-4  min-h-72 ">
-											<div className=" flex justify-between w-full">
+											<div className=" flex justify-between w-full ">
 												{
 													categories?.map((category) => (
 														<div className='px-4'>

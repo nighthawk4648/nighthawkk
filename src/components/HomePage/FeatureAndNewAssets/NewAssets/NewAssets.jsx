@@ -1,80 +1,42 @@
 import Image from 'next/image';
 import React from 'react';
-import image from '../../../../../public/assets/homepage/newassets/newAssets_1.webp'
+import slugify from '@/utils/slugify';
+import Link from 'next/link';
 
-const NewAssets = () => {
-    const newAssets = [
-        {
-            id: 1,
-            image: '/assets/homepage/newassets/newAssets_1.webp',
-            title: '3D Model'
-        },
+const NewAssets = ({ categories }) => {
 
-        {
-            id: 2,
-            image: '/assets/homepage/newassets/newAssets_1.webp',
-            title: 'Texture'
-        },
-
-        {
-            id: 3,
-            image: '/assets/homepage/newassets/newAssets_1.webp',
-            title: 'Scenes'
-        },
-        {
-            id: 4,
-            image: '/assets/homepage/newassets/newAssets_1.webp',
-            title: '3D Model'
-        },
-
-        {
-            id: 5,
-            image: '/assets/homepage/newassets/newAssets_1.webp',
-            title: 'Texture'
-        },
-
-        {
-            id: 6,
-            image: '/assets/homepage/newassets/newAssets_1.webp',
-            title: 'Scenes'
-        },
-        {
-            id: 7,
-            image: '/assets/homepage/newassets/newAssets_1.webp',
-            title: '3D Model'
-        },
-
-        {
-            id: 8,
-            image: '/assets/homepage/newassets/newAssets_1.webp',
-            title: 'Texture'
-        },
-
-    ]
-
+    console.log("are you here categories ? ", categories);
 
     return (
         <div className='mt-10' >
             <h1 className='text-center font-semibold text-2xl '>New Assets</h1>
 
             <div className='grid md:grid-cols-4 grid-cols-2 gap-5 mt-5'>
-            {
-                newAssets?.map((newAsset) => (
-                    <div key={newAsset?.id} className=''>
-                        <Image
-                            src={newAsset?.image}
-                            height={800}
-                            width={800}
-                            alt=''
-                            className='w-full mx-auto rounded-md'
-                        ></Image>
-                        <div className='bg-secondary text-white text-center py-2 rounded-md'>
-                            <p>{newAsset?.title}</p>
-                        </div>
+                {
+                    categories?.map((category) => (
+                        <div key={category?._id} className=''>
+                            {
+                                category?.sub_categories?.[0]?.assets?.slice(0, 4)?.map((assets) => (
+                                    <div key={assets?._id}>
+                                        <Link href={`/${slugify(category?.name)}/${slugify(category?.sub_categories?.[0]?.name)}/${slugify(assets?.name)}-${assets?._id}`}></Link>
+                                        {assets?.cover && <Image
+                                            src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
+                                                assets?.cover}
+                                            height={800}
+                                            width={800}
+                                            alt=''
+                                            className='w-full mx-auto rounded-md'
+                                        ></Image>}
+                                        <div className='bg-secondary text-white text-center py-2 rounded-md'>
+                                            <p>{assets?.name}</p>
+                                        </div>
+                                    </div>
+                                ))
+                            }
 
-                    </div>
-                ))
-            }
+                        </div>
+                    ))
+                }
 
             </div>
 

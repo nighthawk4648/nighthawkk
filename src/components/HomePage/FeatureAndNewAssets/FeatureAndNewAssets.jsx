@@ -6,7 +6,7 @@ const FeatureAndNewAssets = ({categories}) => {
     return (
         <div className='bg-primary pt-10'>
             <Features categories={categories}  />
-            <NewAssets/>
+            <NewAssets categories={categories}  />
             
         </div>
     );

@@ -6,29 +6,6 @@ import slugify from '@/utils/slugify';
 
 const Features = ({categories}) => {
 
-    const features = [
-        {
-            id: 1,
-            image: '/assets/homepage/secondSection/features.png',
-            title: '3D Model',
-            slug: '3d-model'
-        },
-
-        {
-            id: 2,
-            image: '/assets/homepage/secondSection/features.png',
-            title: 'Texture',
-            slug: 'texture-model'
-        },
-
-        {
-            id: 3,
-            image: '/assets/homepage/secondSection/features.png',
-            title: 'Interior Design',
-            slug: 'scenes-model'
-        }
-    ]
-
     return (
         <div className='mt-5 grid  md:grid-cols-3 grid-cols-1 gap-5'>
 
