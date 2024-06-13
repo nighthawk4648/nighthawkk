@@ -14,11 +14,11 @@ const NewAssets = ({ categories }) => {
             <div className='grid md:grid-cols-4 grid-cols-2 gap-5 mt-5'>
                 {
                     categories?.map((category) => (
-                        <div key={category?._id} className=''>
+                        <div key={category?.id} className=''>
                             {
                                 category?.sub_categories?.[0]?.assets?.slice(0, 4)?.map((assets) => (
-                                    <div key={assets?._id}>
-                                        <Link href={`/${slugify(category?.name)}/${slugify(category?.sub_categories?.[0]?.name)}/${slugify(assets?.name)}-${assets?._id}`}></Link>
+                                    <div key={assets?.id}>
+                                        <Link href={`/${slugify(category?.name)}/${slugify(category?.sub_categories?.[0]?.name)}/${slugify(assets?.name)}-${assets?.id}`}></Link>
                                         {assets?.cover && <Image
                                             src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
                                                 assets?.cover}

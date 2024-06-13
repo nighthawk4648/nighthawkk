@@ -15,7 +15,7 @@ const Footer = ({ categories, footerPages, socials }) => {
                             <h1 className='font-semibold'> Assets</h1>
                             <div className='text-xs mt-2'>
                                 {categories?.map((category) => (
-                                    <p className='mb-1' key={category?._id}>{category?.name}</p>
+                                    <p className='mb-1' key={category?.id}>{category?.name}</p>
                                 ))}
                             </div>
                         </div>
@@ -27,8 +27,8 @@ const Footer = ({ categories, footerPages, socials }) => {
                             <div className='text-xs mt-2'>
                                 {
                                     footerPages?.map((footerPage) => (
-                                        <div key={footerPage?._id}>
-                                            {footerPage?.slug && <Link href={`/pages/${footerPage?.slug}-${footerPage?._id}`} ><p className='mb-1'>{footerPage?.title}</p></Link>}
+                                        <div key={footerPage?.id}>
+                                            {footerPage?.slug && <Link href={`/pages/${footerPage?.slug}-${footerPage?.id}`} ><p className='mb-1'>{footerPage?.title}</p></Link>}
                                         </div>
                                     ))
                                 }
@@ -43,7 +43,7 @@ const Footer = ({ categories, footerPages, socials }) => {
                             <div className='text-xs mt-2'>
 
                                 {socials?.map((social) => (
-                                    <div key={social?._id}>
+                                    <div key={social?.id}>
                                         {social?.url && <Link href={social?.url} ><p className='mb-1'>{social?.name}</p></Link>}
                                     </div>
                                 ))}
@@ -62,7 +62,7 @@ const Footer = ({ categories, footerPages, socials }) => {
                             <h1 className='font-semibold'> Assets</h1>
                             <div className='text-xs mt-2'>
                                 {categories?.map((category) => (
-                                    <p className='mb-1' key={category?._id}>{category?.name}</p>
+                                    <p className='mb-1' key={category?.id}>{category?.name}</p>
                                 ))}
                             </div>
                         </div>
@@ -74,8 +74,8 @@ const Footer = ({ categories, footerPages, socials }) => {
                             <div className='text-xs mt-2'>
                                 {
                                     footerPages?.map((footerPage) => (
-                                        <div key={footerPage?._id}>
-                                            {footerPage?.slug && <Link href={`/pages/${footerPage?.slug}-${footerPage?._id}`} ><p className='mb-1'>{footerPage?.title}</p></Link>}
+                                        <div key={footerPage?.id}>
+                                            {footerPage?.slug && <Link href={`/pages/${footerPage?.slug}-${footerPage?.id}`} ><p className='mb-1'>{footerPage?.title}</p></Link>}
                                         </div>
                                     ))
                                 }
@@ -90,7 +90,7 @@ const Footer = ({ categories, footerPages, socials }) => {
                             <h1 className='font-semibold'> Social</h1>
                             <div className='text-xs mt-2'>
                                 {socials?.map((social) => (
-                                    <div key={social?._id}>
+                                    <div key={social?.id}>
                                         {social?.url && <Link href={social?.url} ><p className='mb-1'>{social?.name}</p></Link>}
                                     </div>
                                 ))}

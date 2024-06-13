@@ -50,7 +50,7 @@ const MenuBarForMobileScreen = ({ categories }) => {
                                     onClick={() => toggleDropdownSection(index)}
                                     className="flex justify-center items-center"
                                 >
-                                    <Link href={`/${slugify(category?.name)}-${category?._id}`} ><span className="select-none">{category?.name}</span></Link>
+                                    <Link href={`/${slugify(category?.name)}-${category?.id}`} ><span className="select-none">{category?.name}</span></Link>
 
                                     {isDropdownSectionOpen === index ? (
                                         <MdKeyboardArrowUp className="text-xl" />
@@ -67,13 +67,13 @@ const MenuBarForMobileScreen = ({ categories }) => {
                                     className="w-full py-2  px-3 text-sm bg-white rounded-lg "
                                 >
                                     {category?.sub_categories?.map((subCategory, index) => (
-                                        <div key={subCategory?._id}>
+                                        <div key={subCategory?.id}>
                                             <div className="flex justify-between items-center  ml-4">
                                                 <button
                                                     onClick={() => toggleDropdownSubSection(index)}
                                                     className="flex items-center py-2 text-gray-700  hover:text-blue-600 bg-white rounded-md  focus:outline-none"
                                                 >
-                                                    <Link href={`/${slugify(category?.name)}-${category?._id}`} ><p className="">{subCategory?.name}</p></Link>
+                                                    <Link href={`/${slugify(category?.name)}-${category?.id}`} ><p className="">{subCategory?.name}</p></Link>
                                                     {isDropdownSubSectionOpen === index ? (
                                                         <MdKeyboardArrowUp className="text-xl" />
                                                     ) : (
@@ -86,9 +86,9 @@ const MenuBarForMobileScreen = ({ categories }) => {
                                             {isDropdownSubSectionOpen === index && (
                                                 <div className='px-3'>
                                                     {subCategory?.assets?.map((asset) => (
-                                                        <ul className="ml-8" key={asset?._id}>
+                                                        <ul className="ml-8" key={asset?.id}>
                                                             <li className="mb-2">
-                                                                <Link href={`/${slugify(category?.name)}/${slugify(subCategory?.name)}/${slugify(asset?.name)}-${asset?._id}`}>{asset.name}</Link>
+                                                                <Link href={`/${slugify(category?.name)}/${slugify(subCategory?.name)}/${slugify(asset?.name)}-${asset?.id}`}>{asset.name}</Link>
 
                                                             </li>
                                                         </ul>

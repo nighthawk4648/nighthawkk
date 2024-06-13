@@ -12,7 +12,7 @@ import useSWR from 'swr';
 const SubCategory = ({ subCategoriesByCategoryId }) => {
 
 
-    const [subCategoryId, setSubCategoryId] = useState(subCategoriesByCategoryId?.data?.sub_categories?.[0]?._id)
+    const [subCategoryId, setSubCategoryId] = useState(subCategoriesByCategoryId?.data?.sub_categories?.[0]?.id)
 
 
     const { data: assetBySubCategoryId, isLoading, } = useSWR(
@@ -34,7 +34,7 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
             <div className='grid md:grid-cols-8 grid-cols-2 gap-4 bg-primary py-8'>
                 {
                     subCategoriesByCategoryId?.data?.sub_categories?.map((subCategory) => (
-                        <div className='cursor-pointer' key={subCategory?._id} onClick={() => setSubCategoryId(subCategory?._id)}>
+                        <div className='cursor-pointer' key={subCategory?.id} onClick={() => setSubCategoryId(subCategory?.id)}>
                             {subCategory?.image && <Image
                                 src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
                                     subCategory?.image}
@@ -60,8 +60,8 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
             <div className='mt-5 bg-secondary py-8 grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4 px-1'>
                 {
                     assetBySubCategoryId?.data?.assets?.map((assets) => (
-                        <div className='lg:w-[300px] md:[1-200px]  w-full  lg:h-[308px]  md:[h-200px] h-auto mx-auto mb-5' key={assets?._id}>
-                            <Link href={`/${slugify(assetBySubCategoryId?.data?.category?.name)}/${slugify(assetBySubCategoryId?.data?.name)}/${slugify(assets?.name)}-${assets?._id}`}>
+                        <div className='lg:w-[300px] md:[1-200px]  w-full  lg:h-[308px]  md:[h-200px] h-auto mx-auto mb-5' key={assets?.id}>
+                            <Link href={`/${slugify(assetBySubCategoryId?.data?.category?.name)}/${slugify(assetBySubCategoryId?.data?.name)}/${slugify(assets?.name)}-${assets?.id}`}>
                                 {assets?.cover && <Image
                                     src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
                                         assets?.cover}

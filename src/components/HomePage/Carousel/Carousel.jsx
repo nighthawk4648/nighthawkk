@@ -37,7 +37,7 @@ const Carousel = ({carousels}) => {
                 >
                     {
                         carousels?.map((carousel) => (
-                            <SwiperSlide key={carousel?._id}>
+                            <SwiperSlide key={carousel?.id}>
                                 <div className="relative">
                                     { carousel?.image &&  <Image
                                         src={ process.env.NEXT_PUBLIC_BACKEND_BASE_URL +

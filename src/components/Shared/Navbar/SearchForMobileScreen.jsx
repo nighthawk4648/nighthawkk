@@ -109,14 +109,14 @@ const SearchForMobileScreen = () => {
                                                     </p>
 
                                                     {searchData?.data?.category?.map((category) => (
-                                                        <div className="mt-3" key={category?._id}>
+                                                        <div className="mt-3" key={category?.id}>
                                                             <div className="mb-3">
                                                                 <div className="flex gap-2 items-center ">
                                                                     <CiSearch className="text-lg text-gray-600" />
                                                                     <div>
                                                                         <Link
                                                                             onClick={handleClose}
-                                                                            href={`/${slugify(category?.name)}-${category?._id}`}
+                                                                            href={`/${slugify(category?.name)}-${category?.id}`}
                                                                         >
                                                                             <p
                                                                                 className="text-xs text-gray-800 cursor-pointer  border-b hover:border-primary"
@@ -142,14 +142,14 @@ const SearchForMobileScreen = () => {
                                                     </p>
 
                                                     {searchData?.data?.subCategory?.map((subCategory) => (
-                                                        <div className="mt-3" key={subCategory?._id}>
+                                                        <div className="mt-3" key={subCategory?.id}>
                                                             <div className="mb-3">
                                                                 <div className="flex gap-2 items-center ">
                                                                     <CiSearch className="text-lg text-gray-600" />
                                                                     <div>
                                                                         <Link
                                                                             onClick={handleClose}
-                                                                            href={`/${slugify(subCategory?.category?.name)}-${subCategory?.category?._id}`}
+                                                                            href={`/${slugify(subCategory?.category?.name)}-${subCategory?.category?.id}`}
                                                                         >
                                                                             <p
                                                                                 className="text-xs text-gray-800 cursor-pointer  border-b hover:border-primary"
@@ -175,14 +175,14 @@ const SearchForMobileScreen = () => {
                                                     </p>
 
                                                     {searchData?.data?.asset?.map((asset) => (
-                                                        <div className="mt-3" key={asset?._id}>
+                                                        <div className="mt-3" key={asset?.id}>
                                                             <div className="mb-3">
                                                                 <div className="flex gap-2 items-center ">
                                                                     <CiSearch className="text-lg text-gray-600" />
                                                                     <div>
                                                                         <Link
                                                                             onClick={handleClose}
-                                                                            href={`/${slugify(asset?.subCategory?.category?.name)}/${slugify(asset?.subCategory?.name)}/${slugify(asset?.name)}-${asset?._id}`}
+                                                                            href={`/${slugify(asset?.subCategory?.category?.name)}/${slugify(asset?.subCategory?.name)}/${slugify(asset?.name)}-${asset?.id}`}
                                                                         >
                                                                             <p
                                                                                 className="text-xs text-gray-800 cursor-pointer  border-b hover:border-primary"

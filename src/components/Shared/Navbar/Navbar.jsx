@@ -55,7 +55,7 @@ const Navbar = ({ categories }) => {
 									
 									<p className="font-semibold">SEARCH</p>
 
-									<p className="font-semibold">HOME</p>
+									<p className="font-semibold"><Link href="/">HOME</Link></p>
 									<div className="group py-3">
 										<p className="font-semibold group cursor-pointer">MENU</p>
 
@@ -66,21 +66,21 @@ const Navbar = ({ categories }) => {
 														<div className='px-4'>
 															<div className=' mb-3 font-semibold uppercase'>
 
-																<Link href={`/${slugify(category?.name)}-${category?._id}`}><p>{category?.name}</p></Link>
+																<Link href={`/${slugify(category?.name)}-${category?.id}`}><p>{category?.name}</p></Link>
 															</div>
 															<div>
 																{
 																	category?.sub_categories?.map((subCategory) => (
 																		<div>
 																			<div className=' mt-2 font-semibold'>
-																				<Link href={`/${slugify(category?.name)}-${category?._id}`}><p>{subCategory?.name}</p></Link>
+																				<Link href={`/${slugify(category?.name)}-${category?.id}`}><p>{subCategory?.name}</p></Link>
 																			</div>
 
 																			<div>
 																				{
 																					subCategory?.assets?.map((asset) => (
 																						<div className='text-sm mt-1 '>
-																							<Link href={`/${slugify(category?.name)}/${slugify(subCategory?.name)}/${slugify(asset?.name)}-${asset?._id}`}><p>{asset?.name}</p></Link>
+																							<Link href={`/${slugify(category?.name)}/${slugify(subCategory?.name)}/${slugify(asset?.name)}-${asset?.id}`}><p>{asset?.name}</p></Link>
 
 																						</div>
 																					))

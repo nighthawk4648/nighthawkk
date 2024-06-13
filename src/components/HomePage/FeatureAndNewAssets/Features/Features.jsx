@@ -11,8 +11,8 @@ const Features = ({categories}) => {
 
             {
                 categories?.map((category) => (
-                    <div key={category?._id} className=' '>
-                        <Link href={`/${slugify(category?.name)}-${category?._id}`}>
+                    <div key={category?.id} className=' '>
+                        <Link href={`/${slugify(category?.name)}-${category?.id}`}>
                         { category?.image &&  <Image
                             src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
                                 category?.image}
