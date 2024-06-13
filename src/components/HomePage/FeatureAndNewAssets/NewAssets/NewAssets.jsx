@@ -20,7 +20,7 @@ const NewAssets = ({ categories }) => {
                                     <div key={assets?.id}>
                                         <Link href={`/${slugify(category?.name)}/${slugify(category?.sub_categories?.[0]?.name)}/${slugify(assets?.name)}-${assets?.id}`}></Link>
                                         {assets?.cover && <Image
-                                            src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
+                                            src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE +
                                                 assets?.cover}
                                             height={800}
                                             width={800}

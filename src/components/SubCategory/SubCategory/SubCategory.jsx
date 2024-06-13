@@ -36,7 +36,7 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                     subCategoriesByCategoryId?.data?.sub_categories?.map((subCategory) => (
                         <div className='cursor-pointer' key={subCategory?.id} onClick={() => setSubCategoryId(subCategory?.id)}>
                             {subCategory?.image && <Image
-                                src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
+                                src={ process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE +
                                     subCategory?.image}
                                 height={400}
                                 width={500}
@@ -63,7 +63,7 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                         <div className='lg:w-[300px] md:[1-200px]  w-full  lg:h-[308px]  md:[h-200px] h-auto mx-auto mb-5' key={assets?.id}>
                             <Link href={`/${slugify(assetBySubCategoryId?.data?.category?.name)}/${slugify(assetBySubCategoryId?.data?.name)}/${slugify(assets?.name)}-${assets?.id}`}>
                                 {assets?.cover && <Image
-                                    src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
+                                    src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE +
                                         assets?.cover}
                                     height={400}
                                     width={400}

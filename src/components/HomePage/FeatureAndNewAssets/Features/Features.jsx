@@ -14,7 +14,7 @@ const Features = ({categories}) => {
                     <div key={category?.id} className=' '>
                         <Link href={`/${slugify(category?.name)}-${category?.id}`}>
                         { category?.image &&  <Image
-                            src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
+                            src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE +
                                 category?.image}
                             height={500}
                             width={500}

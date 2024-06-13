@@ -39,7 +39,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
                         assetDetails?.images?.map((image) => (
                             <SwiperSlide key={image?.id}>
                                 <Image
-                                        src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL + image?.image}
+                                        src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + image?.image}
                                         alt=''
                                         height={1000}
                                         width={1000}
@@ -92,7 +92,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
                             assetDetails?.images?.map((image, index) => (
                                 <SwiperSlide key={image?.id} className=''>
                                     <Image
-                                        src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL + image?.image}
+                                        src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + image?.image}
                                         alt=''
                                         height={150}
                                         width={150}

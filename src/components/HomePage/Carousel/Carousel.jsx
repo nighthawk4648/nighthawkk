@@ -15,6 +15,8 @@ import Image from 'next/image';
 
 
 const Carousel = ({carousels}) => {
+
+    console.log("carousels", carousels);
    
 
     return (
@@ -39,20 +41,22 @@ const Carousel = ({carousels}) => {
                         carousels?.map((carousel) => (
                             <SwiperSlide key={carousel?.id}>
                                 <div className="relative">
-                                    { carousel?.image &&  <Image
-                                        src={ process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
+                                  <Image
+                                        src={ process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE +
                                             carousel?.image}
                                         height={800}
                                         width={1300}
                                         className='w-full md:h-[800px] h-[430px]'
                                         alt={carousel?.name}
-                                    ></Image>}
+                                    ></Image>
+
+                                    {console.log("carouselName", carousel?.name)}
 
                                 </div>
                                 <div className="absolute inset-0 flex items-center justify-center ">
                                     <div>
                                        { carousel?.logo && <Image
-                                            src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL +
+                                            src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE +
                                                 carousel?.logo}
                                             height={500}
                                             width={500}
