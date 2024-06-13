@@ -8,7 +8,7 @@ const NewAssets = ({ categories }) => {
     console.log("are you here categories ? ", categories);
 
     return (
-        <div className='mt-10' >
+        <div className='mt-10 container' >
             <h1 className='text-center font-semibold text-2xl '>New Assets</h1>
 
             <div className='grid md:grid-cols-4 grid-cols-2 gap-5 mt-5'>

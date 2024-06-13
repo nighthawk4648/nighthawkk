@@ -31,7 +31,7 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                 <h1 className='text-white font-semibold text-2xl text-center'>{subCategoriesByCategoryId?.data?.name}</h1>
             </div>
 
-            <div className='grid md:grid-cols-8 grid-cols-2 gap-4 bg-primary py-8'>
+            <div className='grid md:grid-cols-8 grid-cols-2 gap-4 bg-primary py-8 px-4'>
                 {
                     subCategoriesByCategoryId?.data?.sub_categories?.map((subCategory) => (
                         <div className='cursor-pointer' key={subCategory?.id} onClick={() => setSubCategoryId(subCategory?.id)}>
@@ -57,7 +57,7 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
 
 
 
-            <div className='mt-5 bg-secondary py-8 grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4 px-1'>
+            <div className='mt-5 bg-secondary py-8 grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4 px-4'>
                 {
                     assetBySubCategoryId?.data?.assets?.map((assets) => (
                         <div className='lg:w-[300px] md:[1-200px]  w-full  lg:h-[308px]  md:[h-200px] h-auto mx-auto mb-5' key={assets?.id}>
