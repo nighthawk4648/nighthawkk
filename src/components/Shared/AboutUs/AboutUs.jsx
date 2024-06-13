@@ -9,7 +9,7 @@ const AboutUs = ({ aboutUs }) => {
                 aboutUs?.short_description && <p className='text-center mt-2'>{aboutUs?.short_description}</p>
             }
 
-            <div dangerouslySetInnerHTML={{ __html: aboutUs?.content }} ></div>
+            {  aboutUs?.content && <div dangerouslySetInnerHTML={{ __html: aboutUs?.content }} ></div>}
 
         </div>
     );

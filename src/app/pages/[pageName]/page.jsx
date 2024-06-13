@@ -11,7 +11,9 @@ const Page = async ({params}) => {
     const footerPage = await getData(`pages/${pageId}`);
 
     return (
-        <div  dangerouslySetInnerHTML={{ __html: footerPage?.data?.content }}  ></div>
+        <div>
+            {  footerPage?.data?.content && <div  dangerouslySetInnerHTML={{ __html: footerPage?.data?.content }}  ></div> }
+        </div>
     );
 };
 
