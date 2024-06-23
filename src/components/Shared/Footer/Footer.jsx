@@ -1,3 +1,4 @@
+import slugify from '@/utils/slugify';
 import Link from 'next/link';
 import React from 'react';
 import { FaSquarePhone } from 'react-icons/fa6';
@@ -15,7 +16,10 @@ const Footer = ({ categories, footerPages, socials }) => {
                             <h1 className='font-semibold'> Assets</h1>
                             <div className='text-xs mt-2'>
                                 {categories?.map((category) => (
-                                    <p className='mb-1' key={category?.id}>{category?.name}</p>
+                                    <Link href={`/${slugify(category?.name)}-${category?.id}`} >
+                                        <p className='mb-1' key={category?.id}>{category?.name}</p>
+                                    </Link>
+
                                 ))}
                             </div>
                         </div>
@@ -62,7 +66,10 @@ const Footer = ({ categories, footerPages, socials }) => {
                             <h1 className='font-semibold'> Assets</h1>
                             <div className='text-xs mt-2'>
                                 {categories?.map((category) => (
-                                    <p className='mb-1' key={category?.id}>{category?.name}</p>
+                                    <Link href={`/${slugify(category?.name)}-${category?.id}`} >
+                                        <p className='mb-1' key={category?.id}>{category?.name}</p>
+                                    </Link>
+
                                 ))}
                             </div>
                         </div>

@@ -7,7 +7,7 @@ import slugify from '@/utils/slugify';
 const Features = ({categories}) => {
 
     return (
-        <div className='mt-5 grid  md:grid-cols-3 grid-cols-1 gap-5'>
+        <div className='mt-5 grid lg:grid-cols-3  md:grid-cols-2 grid-cols-1 gap-5'>
 
             {
                 categories?.map((category) => (

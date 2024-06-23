@@ -117,7 +117,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
                 <p className='text-sm'> <span className='font-semibold'>Resolution - </span> <span className='text-xs'>{assetDetails?.resolution}</span></p>
 
                 <div className='w-48 mx-auto p-1 bg-primary mt-10 rounded-md cursor-pointer'>
-                   { assetDetails?.download && <Link href={assetDetails?.download}><p className='font-semibold text-center'>DOWNLOAD</p></Link>}
+                   { assetDetails?.download_link && <Link href={assetDetails?.download_link} target="_blank" ><p className='font-semibold text-center'>DOWNLOAD</p></Link>}
                 </div>
             </div>
         </div>

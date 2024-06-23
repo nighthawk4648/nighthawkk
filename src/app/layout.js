@@ -5,6 +5,8 @@ import getData from "@/utils/getData";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
+import { GoogleAnalytics } from '@next/third-parties/google';
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -57,6 +59,8 @@ export default async function RootLayout({ children }) {
           socials={socials?.data}
         />
       </body>
+
+      {/* <GoogleAnalytics gaId="" /> */}
     </html>
   );
 }
