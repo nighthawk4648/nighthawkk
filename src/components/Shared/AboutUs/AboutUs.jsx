@@ -19,7 +19,7 @@ const AboutUs = ({ aboutUs }) => {
                 <div className='w-[50%]'>
                     <Image
                         src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE +
-                            aboutUs?.image}
+                            aboutUs?.cover}
                         height={800}
                         width={1300}
                         className='w-full mx-auto'
