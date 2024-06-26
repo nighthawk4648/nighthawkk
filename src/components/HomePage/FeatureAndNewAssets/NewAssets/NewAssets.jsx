@@ -27,7 +27,7 @@ const NewAssets = ({ categories }) => {
                                             alt=''
                                             className='w-[300px] h-[300px] mx-auto rounded-md'
                                         ></Image>}
-                                        <div className='bg-secondary text-white text-center py-2 rounded-md'>
+                                        <div className='bg-secondary text-white text-center py-2 rounded-md mt-1'>
                                             <p>{assets?.name}</p>
                                         </div>
                                         </Link>
