@@ -22,7 +22,7 @@ const AboutUs = ({ aboutUs }) => {
                             aboutUs?.cover}
                         height={800}
                         width={1300}
-                        className='w-[300px] h-[300px] mx-auto'
+                        className='w-[300px] h-[300px] mx-auto rounded-full'
                         alt={aboutUs?.title}
                     ></Image>
                 </div>
