@@ -59,7 +59,7 @@ const Navbar = ({ categories }) => {
 									<div className="group py-3">
 										<p className="font-semibold group cursor-pointer">MENU</p>
 
-										<div className="bg-secondary text-white fixed w-full right-0 top-[60px] hidden group-hover:flex gap-5 p-4  min-h-72 ">
+										<div className="bg-secondary text-white fixed w-full right-0 top-[50px] hidden group-hover:flex gap-5 p-4  min-h-72 ">
 											<div className=" flex justify-between w-full ">
 												{
 													categories?.map((category) => (
