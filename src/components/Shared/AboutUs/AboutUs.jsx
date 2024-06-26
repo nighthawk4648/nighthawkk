@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React from 'react';
 
 const AboutUs = ({ aboutUs }) => {
@@ -9,8 +10,24 @@ const AboutUs = ({ aboutUs }) => {
                 aboutUs?.short_description && <p className='text-center mt-2'>{aboutUs?.short_description}</p>
             }
 
-            {  aboutUs?.content && <div dangerouslySetInnerHTML={{ __html: aboutUs?.content }} ></div>}
+            <div className=' flex items-center gap-5  mt-5'>
 
+                <div className='w-[50%]'>
+                    {aboutUs?.content && <div dangerouslySetInnerHTML={{ __html: aboutUs?.content }} ></div>}
+                </div>
+
+                <div className='w-[50%]'>
+                    <Image
+                        src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE +
+                            aboutUs?.image}
+                        height={800}
+                        width={1300}
+                        className='w-full mx-auto'
+                        alt={aboutUs?.title}
+                    ></Image>
+                </div>
+
+            </div>
         </div>
     );
 };

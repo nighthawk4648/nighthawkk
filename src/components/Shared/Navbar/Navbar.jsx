@@ -22,7 +22,7 @@ const Navbar = ({ categories }) => {
 
 	return (
 		<div className="relative">
-			<nav className="bg-primary md:py-2 py-1  md:px-5 px-1  shadow-sm  ">
+			<nav className="bg-primary  md:px-5 px-1  shadow-sm  ">
 				<div className=" px-4">
 					<div className="flex justify-between items-center ">
 						<div className="flex  items-center gap-5">
