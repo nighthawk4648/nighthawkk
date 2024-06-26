@@ -60,7 +60,7 @@ export default async function RootLayout({ children }) {
         />
       </body>
 
-      {/* <GoogleAnalytics gaId="" /> */}
+      <GoogleAnalytics gaId="G-JCLNX11Z2V" />
     </html>
   );
 }
