@@ -11,7 +11,7 @@ const NewAssets = ({ categories }) => {
         <div className='mt-10 container p-5' >
             <h1 className='text-center font-semibold text-2xl '>New Assets</h1>
 
-            <div className='grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-5 mt-10'>
+            <div className='grid lg:grid-cols-4 md:grid-cols-3 grid-cols-1 gap-5 mt-10'>
                 {
                     categories?.map((category) => (
                         <div key={category?.id} className=''>

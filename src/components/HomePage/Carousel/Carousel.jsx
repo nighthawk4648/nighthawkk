@@ -50,8 +50,6 @@ const Carousel = ({carousels}) => {
                                         alt={carousel?.name}
                                     ></Image>
 
-                                    {console.log("carouselName", carousel?.name)}
-
                                 </div>
                                 <div className="absolute inset-0 flex items-center justify-center ">
                                     <div>
@@ -60,7 +58,7 @@ const Carousel = ({carousels}) => {
                                                 carousel?.logo}
                                             height={500}
                                             width={500}
-                                            className='md:w-48 w-20 mx-auto h-auto'
+                                            className='md:w-48 w-24 mx-auto h-auto'
                                             alt={carousel?.name}
                                         ></Image>}
                                         <p className='text-white font-bold md:text-3xl text-xl text-center mt-1'> {carousel.name}</p>

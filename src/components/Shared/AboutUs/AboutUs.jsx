@@ -10,13 +10,13 @@ const AboutUs = ({ aboutUs }) => {
                 aboutUs?.short_description && <p className='text-center mt-2'>{aboutUs?.short_description}</p>
             }
 
-            <div className=' flex items-center gap-5  mt-5'>
+            <div className=' md:flex md:items-center md:gap-5  mt-5'>
 
-                <div className='w-[50%]'>
+                <div className='md:w-[50%]'>
                     {aboutUs?.content && <div dangerouslySetInnerHTML={{ __html: aboutUs?.content }} ></div>}
                 </div>
 
-                <div className='w-[50%]'>
+                <div className='md:w-[50%] md:mt-0 mt-10'>
                     <Image
                         src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE +
                             aboutUs?.cover}
