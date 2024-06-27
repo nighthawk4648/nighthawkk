@@ -16,15 +16,22 @@ const AboutUs = ({ aboutUs }) => {
                     {aboutUs?.content && <div dangerouslySetInnerHTML={{ __html: aboutUs?.content }} ></div>}
                 </div>
 
-                <div className='md:w-[50%] md:mt-0 mt-10'>
-                    <Image
-                        src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE +
-                            aboutUs?.cover}
-                        height={800}
-                        width={1300}
-                        className='w-[300px] h-[300px] mx-auto rounded-full'
-                        alt={aboutUs?.title}
-                    ></Image>
+                <div className='md:w-[50%] mx-auto md:mt-0 mt-10 md:flex md:items-center md:justify-center gap-5'>
+                    <div>
+                        <Image
+                            src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE +
+                                aboutUs?.cover}
+                            height={800}
+                            width={1300}
+                            className='w-[300px] h-[300px] mx-auto rounded-full'
+                            alt={aboutUs?.title}
+                        ></Image>
+                    </div>
+
+                    {/* <p>{aboutUs?.name}</p> */}
+                    <div>
+                        <p className='text-center md:mt-0 mt-3'><span className='font-semibold'>Founder: </span> { aboutUs?.name  || 'Majharul Islam Asik'}</p>
+                    </div>
                 </div>
 
             </div>
