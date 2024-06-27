@@ -89,12 +89,12 @@ const SearchForMobileScreen = () => {
                                         placeholder="Search by Brand or Product"
                                         className="inline-flex justify-center w-full px-2 bg-white text-sm font-medium text-gray-700 focus:outline-none pl-7 h-[50px]"
                                     />
-                                    <button
+                                    {/* <button
                                         type="submit"
                                         className="absolute top-[7px] right-[45px] bg-primary rounded-[5px] text-white py-2 px-5 "
                                     >
                                         Search
-                                    </button>
+                                    </button> */}
                                 </div>
                                 {/* </form> */}
 
