@@ -3,8 +3,11 @@ import React from 'react';
 
 const AboutUs = ({ aboutUs }) => {
     return (
-        <div className='bg-thirdColor p-5'>
-            {aboutUs?.title && <h1 className='text-center font-semibold text-2xl'>{aboutUs?.title}</h1>}
+        <div className='bg-thirdColor py-5'>
+            {aboutUs?.title &&
+                <div className='bg-black border border-black'>
+                    <h1 className='text-center font-semibold text-2xl text-white p-2 '>{aboutUs?.title}</h1>
+                </div>}
 
             {
                 aboutUs?.short_description && <p className='text-center mt-2'>{aboutUs?.short_description}</p>
@@ -30,7 +33,7 @@ const AboutUs = ({ aboutUs }) => {
 
                     {/* <p>{aboutUs?.name}</p> */}
                     <div>
-                        <p className='text-center md:mt-0 mt-3'><span className='font-semibold'>Founder: </span> { aboutUs?.name  || 'Majharul Islam Asik'}</p>
+                        <p className='text-center md:mt-0 mt-3'><span className='font-semibold'>Founder: </span> {aboutUs?.name || 'Majharul Islam Asik'}</p>
                     </div>
                 </div>
 
