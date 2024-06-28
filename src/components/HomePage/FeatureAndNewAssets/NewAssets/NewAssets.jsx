@@ -5,7 +5,6 @@ import Link from 'next/link';
 
 const NewAssets = ({ categories }) => {
 
-    console.log("are you here categories ? ", categories);
 
     return (
         <div className='mt-10  py-5' >
