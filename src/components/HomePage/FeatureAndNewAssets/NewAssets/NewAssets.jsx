@@ -7,12 +7,12 @@ const NewAssets = ({ categories }) => {
 
 
     return (
-        <div className='mt-10  py-5' >
+        <div className='mt-10  py-5 ' >
             <div className='bg-black border border-black'>
                 <h1 className='text-center font-semibold text-2xl text-white p-2 '>New Assets</h1>
             </div>
 
-            <div className='grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-5 mt-10'>
+            <div className='grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-5 mt-10  md:w-[70%] mx-auto'>
                 {
                     categories?.map((category) => (
                         <div key={category?.id} className=''>
