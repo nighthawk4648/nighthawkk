@@ -53,7 +53,7 @@ const Carousel = ({carousels}) => {
                                 </div>
                                 <div className="absolute inset-0 flex items-center justify-center ">
                                     <div>
-                                       { carousel?.logo && <Image
+                                       { carousel?.logo && <Image 
                                             src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE +
                                                 carousel?.logo}
                                             height={500}
@@ -61,7 +61,7 @@ const Carousel = ({carousels}) => {
                                             className='md:w-48 w-24 mx-auto h-auto'
                                             alt={carousel?.name}
                                         ></Image>}
-                                        <p className='text-white font-bold md:text-3xl text-xl text-center mt-1'> {carousel.name}</p>
+                                        <h1 className='text-white font-bold md:text-3xl text-xl text-center mt-1'> {carousel.name}</h1>
                                     </div>
                                 </div>
 
