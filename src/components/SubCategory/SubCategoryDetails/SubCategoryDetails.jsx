@@ -111,10 +111,10 @@ const SubCategoryDetails = ({ assetDetails }) => {
 
 
             <div className=' bg-secondary py-5 text-white px-5 '>
-                <h1 className='md:text-2xl mb-1 font-semibold  '>ASSET DETAILS</h1>
-                <h2 className='text-sm'><span className='font-semibold'>Name - </span><span className='text-xs'>{assetDetails?.name}</span></h2>
-                <p className='text-sm' > <span className='font-semibold'>Size - </span> <span className='text-xs'>{assetDetails?.size}</span></p>
-                <p className='text-sm'> <span className='font-semibold'>Resolution - </span> <span className='text-xs'>{assetDetails?.resolution}</span></p>
+                <p className='md:text-2xl mb-1 font-semibold  '>ASSET DETAILS</p>
+                <h1 className='text-sm'><span className='font-semibold'>Name - </span><span className='text-xs'>{assetDetails?.name}</span></h1>
+                <h2 className='text-sm' > <span className='font-semibold'>Size - </span> <span className='text-xs'>{assetDetails?.size}</span></h2>
+                <h3 className='text-sm'> <span className='font-semibold'>Resolution - </span> <span className='text-xs'>{assetDetails?.resolution}</span></h3>
 
                 <div className='w-48 mx-auto p-1 bg-primary mt-10 rounded-md cursor-pointer'>
                    { assetDetails?.download_link && <Link href={assetDetails?.download_link} target="_blank" ><p className='font-semibold text-center'>DOWNLOAD</p></Link>}
