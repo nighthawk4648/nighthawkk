@@ -15,7 +15,7 @@ export const metadata = {
   title: `${applicationSettings?.data?.site_name}`,
   description: `${applicationSettings?.data?.site_description}`,
 };
-
+<link rel="icon" href="/favicon.ico" sizes="any" />
 
 
 export default async function RootLayout({ children }) {
