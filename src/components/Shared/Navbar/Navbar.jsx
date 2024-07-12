@@ -103,7 +103,7 @@ const Navbar = ({ categories }) => {
 								<div className='flex gap-3 items-center mt-2'>
 									<SearchForMobileScreen />
 									<button onClick={toggleNavbar} className=" font-medium ">
-										<AiOutlineMenuFold className="md:text-2xl text-xl  " />
+										<AiOutlineMenuFold className="md:text-2xl text-xl text-white " />
 									</button>
 								</div>
 							</div>
