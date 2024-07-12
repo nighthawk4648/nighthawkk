@@ -31,7 +31,7 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                 <h1 className='text-white font-semibold text-2xl text-center'>{subCategoriesByCategoryId?.data?.name}</h1>
             </div>
 
-            <div className='grid md:grid-cols-8 grid-cols-2 gap-4 bg-primary py-8 px-4'>
+            <div className='grid md:grid-cols-8 grid-cols-2 gap-4 bg-thirdColor py-8 px-4'>
                 {
                     subCategoriesByCategoryId?.data?.sub_categories?.map((subCategory) => (
                         <div className='cursor-pointer' key={subCategory?.id} onClick={() => setSubCategoryId(subCategory?.id)}>

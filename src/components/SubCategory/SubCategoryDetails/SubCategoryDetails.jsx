@@ -55,7 +55,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
                 </Swiper>
             </div>
 
-            <div className='bg-primary  py-5'>
+            <div className='bg-thirdColor  py-5'>
                 <div className='md:w-[60%] mx-auto '>
                     <Swiper
                         onSwiper={setThumbsSwiper}
@@ -116,7 +116,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
                 <h2 className='text-sm' > <span className='font-semibold'>Size - </span> <span className='text-xs'>{assetDetails?.size}</span></h2>
                 <h3 className='text-sm'> <span className='font-semibold'>Resolution - </span> <span className='text-xs'>{assetDetails?.resolution}</span></h3>
 
-                <div className='w-48 mx-auto p-1 bg-primary mt-10 rounded-md cursor-pointer'>
+                <div className='w-48 mx-auto p-1 bg-thirdColor mt-10 rounded-md cursor-pointer'>
                    { assetDetails?.download_link && <Link href={assetDetails?.download_link} target="_blank" ><p className='font-semibold text-center'>DOWNLOAD</p></Link>}
                 </div>
             </div>
