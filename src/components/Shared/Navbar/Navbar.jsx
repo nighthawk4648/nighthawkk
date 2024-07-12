@@ -22,7 +22,7 @@ const Navbar = ({ categories }) => {
 
 	return (
 		<div className="relative">
-			<nav className="bg-primary  md:px-5 px-1  shadow-sm  ">
+			<nav className=" bg-thirdColor  md:px-5 px-1  shadow-sm  ">
 				<div className=" px-4">
 					<div className="flex justify-between items-center ">
 						<div className="flex  items-center gap-5">
@@ -31,7 +31,7 @@ const Navbar = ({ categories }) => {
                             </Link> */}
 
 							<div>
-								{/* <p className='text-md:2xl text-xl font-semibold'>NIGHTHAWK</p> */}
+								{/* <p className='text-md:2xl text-xl font-semibold'>natty sketch</p> */}
 								<Link href="/">
 									<Image
 										src={navLogo}

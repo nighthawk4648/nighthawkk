@@ -32,13 +32,13 @@ module.exports = {
     extend: {
       colors: {
         // primary: '#614E00',
-        primary: '#8DA1AF',
+        primary: '#000000',
         'secondary-man': '#0b1d65',
         'secondary-women': '#410f57',
         'secondary-kids': '#25d55f',
         secondary: '#000000',
         red_primary: '#A11B1B',
-        thirdColor:'#8EA1AF'
+        thirdColor:'#100b12'
       }
     },
     container: {
