@@ -23,7 +23,7 @@ const Features = ({categories}) => {
                         ></Image>}
                         
 
-                        <p className='text-center font-semibold text-xl mt-2'>{category?.name}</p>
+                        <p className='text-center font-semibold text-xl mt-2 text-white'>{category?.name}</p>
                         </Link>
                     </div>
                 ))
