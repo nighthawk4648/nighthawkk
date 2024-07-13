@@ -53,11 +53,11 @@ const Navbar = ({ categories }) => {
 										
 									</div>
 									
-									<p className="font-semibold">SEARCH</p>
+									<p className="font-semibold text-white">SEARCH</p>
 
-									<p className="font-semibold"><Link href="/">HOME</Link></p>
+									<p className="font-semibold text-white"><Link href="/">HOME</Link></p>
 									<div className="group py-3">
-										<p className="font-semibold group cursor-pointer">MENU</p>
+										<p className="font-semibold group cursor-pointer text-white">MENU</p>
 
 										<div className="bg-secondary text-white fixed w-full right-0 top-[50px] hidden group-hover:flex gap-5 p-4  min-h-96 overflow-y-auto ">
 											<div className=" flex justify-between w-full ">
