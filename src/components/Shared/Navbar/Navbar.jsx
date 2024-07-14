@@ -26,22 +26,8 @@ const Navbar = ({ categories }) => {
 				<div className=" px-4">
 					<div className="flex justify-between items-center ">
 						<div className="flex  items-center gap-5">
-							{/* <Link href='/merchant'>
-                                <img src="/src/assets/images/logo/promise.png" className="md:w-48 w-24 h-auto " alt="img" />
-                            </Link> */}
-
-							<div>
-								{/* <p className='text-md:2xl text-xl font-semibold'>natty sketch</p> */}
-								<Link href="/">
-									<Image
-										src={navLogo}
-										height={200}
-										width={500}
-										className="h-auto w-28"
-										alt="nighthawk"
-									></Image>
-								</Link>
-							</div>
+							
+						<h1 className="font-bold"><Link href="/">Sketchshaper</Link></h1>			
 						</div>
 
 						<div className="flex items-center">
