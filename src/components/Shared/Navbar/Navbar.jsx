@@ -12,12 +12,18 @@ import MenuBarForMobileScreen from './MenuBarForMobileScreen';
 import SearchForMobileScreen from './SearchForMobileScreen';
 import SearchForDesktopScreen from './SearchForDesktopScreen';
 
-const Navbar = ({ categories }) => {
+const Navbar = ({ categories, footerPages }) => {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const toggleNavbar = () => {
 		setIsOpen(!isOpen);
 	};
+
+	console.log("footerPages", footerPages);
+
+	 // Find the footer page with id 5
+	 const footerPage = footerPages?.find(page => page.id === 5);
+	 console.log("footerPage", footerPage);
 
 
 	return (
@@ -53,7 +59,7 @@ const Navbar = ({ categories }) => {
 										
 									</div>
 									
-									<p className="font-semibold text-white">SEARCH</p>
+									<p className="font-semibold text-white"><Link href={`/pages/${footerPage?.slug}-${footerPage?.id}`}>{footerPage?.title}</Link></p>
 
 									<p className="font-semibold text-white"><Link href="/">HOME</Link></p>
 									<div className="group py-3">

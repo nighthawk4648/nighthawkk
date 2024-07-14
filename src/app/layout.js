@@ -51,6 +51,7 @@ export default async function RootLayout({ children }) {
             categories={categories?.data}
             subCategories={subCategories?.data}
             assets={assets?.data}
+            footerPages={footerPages?.data}
           />
         </div>
 
