@@ -31,8 +31,7 @@ const Navbar = ({ categories, footerPages }) => {
 			<nav className=" bg-thirdColor  md:px-5 px-1  shadow-sm  ">
 				<div className=" px-4">
 					<div className="flex justify-between items-center ">
-						<div className="flex  items-center gap-5">
-						<p className="font-semibold group cursor-pointer text-white">MENU</p>	
+						<div className="flex  items-center gap-5">	
 						<h1 className="font-bold"><Link href="/">Sketchshaper</Link></h1>			
 						</div>
 						
