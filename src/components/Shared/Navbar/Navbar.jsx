@@ -32,9 +32,10 @@ const Navbar = ({ categories, footerPages }) => {
 				<div className=" px-4">
 					<div className="flex justify-between items-center ">
 						<div className="flex  items-center gap-5">
-							
+						<p className="font-semibold group cursor-pointer text-white">MENU</p>	
 						<h1 className="font-bold"><Link href="/">Sketchshaper</Link></h1>			
 						</div>
+						
 
 						<div className="flex items-center">
 							<div className="hidden md:block">
@@ -46,7 +47,7 @@ const Navbar = ({ categories, footerPages }) => {
 									</div>
 									
 									<p className="font-semibold text-white"><Link href={`/pages/${footerPage?.slug}-${footerPage?.id}`}>{footerPage?.title}</Link></p>
-
+									
 									<p className="font-semibold text-white"><Link href="/">HOME</Link></p>
 									<div className="group py-3">
 										<p className="font-semibold group cursor-pointer text-white">MENU</p>
