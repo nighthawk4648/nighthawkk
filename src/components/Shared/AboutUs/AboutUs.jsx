@@ -10,12 +10,12 @@ const AboutUs = ({ aboutUs }) => {
                 </div>}
 
             {
-                aboutUs?.short_description && <p className='text-center mt-2'>{aboutUs?.short_description}</p>
+                aboutUs?.short_description && <p className='text-center mt-2 text-white'>{aboutUs?.short_description}</p>
             }
 
             <div className=' md:flex md:items-center md:gap-5  mt-5'>
 
-                <div className='md:w-[50%]'>
+                <div className='md:w-[50%] text-white'>
                     {aboutUs?.content && <div dangerouslySetInnerHTML={{ __html: aboutUs?.content }} ></div>}
                 </div>
 
@@ -33,7 +33,7 @@ const AboutUs = ({ aboutUs }) => {
 
                     {/* <p>{aboutUs?.name}</p> */}
                     <div>
-                        <p className='text-center md:mt-0 mt-3'><span className='font-semibold'>Founder: </span> {aboutUs?.name || 'Majharul Islam Asik'}</p>
+                        <p className='text-center md:mt-0 mt-3 text-white'><span className='font-semibold'>Founder: </span> {aboutUs?.name || 'Majharul Islam Asik'}</p>
                     </div>
                 </div>
 

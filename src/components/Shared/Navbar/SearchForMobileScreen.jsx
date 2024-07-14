@@ -68,7 +68,7 @@ const SearchForMobileScreen = () => {
     return (
         <>
             <div>
-                <CiSearch onClick={handleOpen} className="text-[26px]" />
+                <CiSearch onClick={handleOpen} className="text-[26px] text-white" />
             </div>
             {
                 // Search Option

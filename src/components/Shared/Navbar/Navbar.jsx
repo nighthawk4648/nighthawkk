@@ -12,12 +12,18 @@ import MenuBarForMobileScreen from './MenuBarForMobileScreen';
 import SearchForMobileScreen from './SearchForMobileScreen';
 import SearchForDesktopScreen from './SearchForDesktopScreen';
 
-const Navbar = ({ categories }) => {
+const Navbar = ({ categories, footerPages }) => {
 	const [isOpen, setIsOpen] = useState(false);
 
 	const toggleNavbar = () => {
 		setIsOpen(!isOpen);
 	};
+
+	console.log("footerPages", footerPages);
+
+	 // Find the footer page with id 5
+	 const footerPage = footerPages?.find(page => page.id === 5);
+	 console.log("footerPage", footerPage);
 
 
 	return (
@@ -39,11 +45,11 @@ const Navbar = ({ categories }) => {
 										
 									</div>
 									
-									<p className="font-semibold">SEARCH</p>
+									<p className="font-semibold text-white"><Link href={`/pages/${footerPage?.slug}-${footerPage?.id}`}>{footerPage?.title}</Link></p>
 
-									<p className="font-semibold"><Link href="/">HOME</Link></p>
+									<p className="font-semibold text-white"><Link href="/">HOME</Link></p>
 									<div className="group py-3">
-										<p className="font-semibold group cursor-pointer">MENU</p>
+										<p className="font-semibold group cursor-pointer text-white">MENU</p>
 
 										<div className="bg-secondary text-white fixed w-full right-0 top-[50px] hidden group-hover:flex gap-5 p-4  min-h-96 overflow-y-auto ">
 											<div className=" flex justify-between w-full ">
@@ -89,7 +95,7 @@ const Navbar = ({ categories }) => {
 								<div className='flex gap-3 items-center mt-2'>
 									<SearchForMobileScreen />
 									<button onClick={toggleNavbar} className=" font-medium ">
-										<AiOutlineMenuFold className="md:text-2xl text-xl  " />
+										<AiOutlineMenuFold className="md:text-2xl text-xl text-white " />
 									</button>
 								</div>
 							</div>
