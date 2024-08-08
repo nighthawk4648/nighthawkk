@@ -7,7 +7,7 @@ const NewAssets = ({ categories }) => {
     return (
         <div className='mt-10 py-5'>
             <div className='bg-thirdColor border-black'>
-                <h1 className='text-center font-semibold text-2xl text-white p-2'>New Assets</h1>
+                <h2 className='text-center font-semibold text-2xl text-white p-2'>New Assets</h2>
             </div>
 
 
