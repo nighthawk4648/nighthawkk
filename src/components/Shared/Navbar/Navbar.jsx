@@ -32,7 +32,7 @@ const Navbar = ({ categories, footerPages }) => {
 				<div className=" px-4">
 					<div className="flex justify-between items-center ">
 						<div className="flex  items-center gap-5">
-						<title className="font-bold text-white"><Link href="/">Sketchshaper</Link></title>			
+						<h1 className="font-bold text-white"><Link href="/">Sketchshaper</Link></h1>			
 						</div>
 
 						<div className="flex items-center">
