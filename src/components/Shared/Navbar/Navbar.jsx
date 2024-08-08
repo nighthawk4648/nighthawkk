@@ -32,8 +32,7 @@ const Navbar = ({ categories, footerPages }) => {
 				<div className=" px-4">
 					<div className="flex justify-between items-center ">
 						<div className="flex  items-center gap-5">
-							
-						<h1 className="font-bold text-white"><Link href="/">Sketchshaper</Link></h1>			
+						<title className="font-bold text-white"><Link href="/">Sketchshaper</Link></title>			
 						</div>
 
 						<div className="flex items-center">
@@ -117,7 +116,16 @@ const Navbar = ({ categories, footerPages }) => {
 						</div>
 						<div className=" h-full  mt-3">
 							<div className="flex gap-3 items-center mb-7 border-b border-gray-200 shadow-sm  px-3 py-3">
-								<h1 className="font-bold text-white"><Link href="/">Sketchshaper</Link></h1>
+								{/* <MdOutlineAccountCircle className="text-4xl" /> */}
+								<Link href="/">
+									<Image
+										src={navLogo}
+										height={200}
+										width={500}
+										className="h-auto w-28"
+										alt="nighthawk"
+									></Image>
+								</Link>
 							</div>
 
 							<div

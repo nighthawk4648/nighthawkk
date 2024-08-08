@@ -13,7 +13,7 @@ const Footer = ({ categories, footerPages, socials }) => {
                 <div className='grid md:grid-cols-3 grid-cols-1 text-white container py-5 md:gap-0 gap-5'>
                     <div className='flex md:justify-start justify-center'>
                         <div>
-                            <h1 className='font-semibold'> Assets</h1>
+                            <h2 className='font-semibold'> Assets</h2>
                             <div className='text-xs mt-2'>
                                 {categories?.map((category) => (
                                     <Link href={`/${slugify(category?.name)}-${category?.id}`} >
@@ -27,7 +27,7 @@ const Footer = ({ categories, footerPages, socials }) => {
 
                     <div className='flex justify-center'>
                         <div className=''>
-                            <h1 className='font-semibold'> Company</h1>
+                            <h2 className='font-semibold'> Company</h2>
                             <div className='text-xs mt-2'>
                                 {
                                     footerPages?.map((footerPage) => (
@@ -43,7 +43,7 @@ const Footer = ({ categories, footerPages, socials }) => {
 
                     <div className='flex md:justify-end justify-center'>
                         <div className=''>
-                            <h1 className='font-semibold'> Social</h1>
+                            <h2 className='font-semibold'> Social</h2>
                             <div className='text-xs mt-2'>
 
                                 {socials?.map((social) => (
@@ -63,7 +63,7 @@ const Footer = ({ categories, footerPages, socials }) => {
                     <div className='flex justify-between'>
 
                         <div>
-                            <h1 className='font-semibold'> Assets</h1>
+                            <h2 className='font-semibold'> Assets</h2>
                             <div className='text-xs mt-2'>
                                 {categories?.map((category) => (
                                     <Link href={`/${slugify(category?.name)}-${category?.id}`} >
@@ -77,7 +77,7 @@ const Footer = ({ categories, footerPages, socials }) => {
 
 
                         <div className=''>
-                            <h1 className='font-semibold'> Company</h1>
+                            <h2 className='font-semibold'> Company</h2>
                             <div className='text-xs mt-2'>
                                 {
                                     footerPages?.map((footerPage) => (
@@ -94,7 +94,7 @@ const Footer = ({ categories, footerPages, socials }) => {
 
                     <div className='flex  justify-center mt-10'>
                         <div className=''>
-                            <h1 className='font-semibold'> Social</h1>
+                            <h2 className='font-semibold'> Social</h2>
                             <div className='text-xs mt-2'>
                                 {socials?.map((social) => (
                                     <div key={social?.id}>

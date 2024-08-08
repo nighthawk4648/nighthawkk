@@ -21,7 +21,7 @@ const Features = ({ categories }) => {
                                 className='md:w-[200px] md:h-[200px] w-[150px] h-[150px] mx-auto rounded-full'
                             />
                         )}
-                        <p className='text-center font-semibold text-white text-xl mt-2'>{category.name}</p>
+                        <h2 className='text-center font-semibold text-white text-xl mt-2'>{category.name}</h2>
                     </Link>
                 </div>
             ))}
