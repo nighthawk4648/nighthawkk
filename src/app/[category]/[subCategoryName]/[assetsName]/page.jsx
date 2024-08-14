@@ -12,7 +12,7 @@ export async function generateMetadata({ params }) {
     const metaTitle = metaSettings?.data?.meta_title;
     const metaDescription = metaSettings?.data?.meta_description;
 
-    console.log("metaTitle", metaSettings?.data?.meta_title);
+    // console.log("metaTitle", metaSettings?.data?.meta_title);
 
     return {
         title: `${metaTitle}`,
