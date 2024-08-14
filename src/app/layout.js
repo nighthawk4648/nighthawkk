@@ -14,10 +14,13 @@ const applicationSettings = await getData('general/application-settings')
 export const metadata = {
   title: `${applicationSettings?.data?.site_name}`,
   description: `${applicationSettings?.data?.site_description}`,
+  icons: {
+    icon: '/favicon.ico', // /public path
+  },
 };
 
 
-<link rel="icon" href="./favicon.ico" sizes="any" />
+{/* <link rel="icon" href="./favicon.ico" sizes="any" /> */}
 
 
 export default async function RootLayout({ children }) {
