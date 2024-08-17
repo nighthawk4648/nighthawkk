@@ -5,6 +5,6 @@ export default function robots() {
         allow: '/',
         disallow: '/private/',
       },
-      sitemap: 'https://www.nighthawkk.com/sitemap.xml',
+      sitemap: 'https://www.sketchshaper.com/sitemap.xml',
     }
   }
