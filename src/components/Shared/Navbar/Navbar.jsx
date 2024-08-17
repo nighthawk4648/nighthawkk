@@ -118,13 +118,15 @@ const Navbar = ({ categories, footerPages }) => {
 							<div className="flex gap-3 items-center mb-7 border-b border-gray-200 shadow-sm  px-3 py-3">
 								{/* <MdOutlineAccountCircle className="text-4xl" /> */}
 								<Link href="/">
-									<Image
+									{/* <Image
 										src={navLogo}
 										height={200}
 										width={500}
 										className="h-auto w-28"
 										alt="nighthawk"
-									></Image>
+									></Image> */}
+
+									<p className='text-2xl font-semibold'>Sketch Shaper</p>
 								</Link>
 							</div>
 

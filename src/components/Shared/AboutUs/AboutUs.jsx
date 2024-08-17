@@ -3,7 +3,7 @@ import React from 'react';
 
 const AboutUs = ({ aboutUs }) => {
     return (
-        <div className='bg-thirdColor py-5'>
+        <div className='bg-thirdColor py-5 px-5'>
             {aboutUs?.title &&
                 <div className='bg-black border border-black'>
                     <h2 className='text-center font-semibold text-2xl text-white p-2 '>{aboutUs?.title}</h2>

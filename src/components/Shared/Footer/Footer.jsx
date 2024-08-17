@@ -6,7 +6,6 @@ import { IoLogoWhatsapp } from 'react-icons/io5';
 import { MdEmail, MdLocalPhone } from 'react-icons/md';
 
 const Footer = ({ categories, footerPages, socials }) => {
-    console.log("socials", socials);
     return (
         <div className='bg-secondary px-5 '>
             <div className='md:block hidden'>
