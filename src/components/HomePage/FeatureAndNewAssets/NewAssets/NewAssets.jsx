@@ -24,7 +24,7 @@ const NewAssets = ({ categories }) => {
                                     className='w-[300px] h-[300px] mx-auto rounded-md'
                                 />
                             )}
-                            <div className='bg-secondary text-white text-center py-2 rounded-md w-[300px] mx-auto'>
+                            <div className=' text-white text-center py-2 mx-auto'>
                                 <p>{assets?.name}</p>
                             </div>
                         </Link>
@@ -47,7 +47,7 @@ const NewAssets = ({ categories }) => {
                                     className='w-[300px] h-[300px] mx-auto rounded-md'
                                 />
                             )}
-                            <div className='bg-secondary text-white text-center py-2 rounded-md w-[300px] mx-auto'>
+                            <div className=' text-white text-center py-2 mx-auto'>
                                 <p>{assets?.name}</p>
                             </div>
                         </Link>
@@ -71,7 +71,7 @@ const NewAssets = ({ categories }) => {
                                     className='w-[300px] h-[300px] mx-auto rounded-md'
                                 />
                             )}
-                            <div className='bg-secondary text-white text-center py-2 rounded-md w-[300px] mx-auto'>
+                            <div className=' text-white text-center py-2 mx-auto'>
                                 <p>{assets?.name}</p>
                             </div>
                         </Link>
@@ -94,7 +94,7 @@ const NewAssets = ({ categories }) => {
                                     className='w-[300px] h-[300px] mx-auto rounded-md'
                                 />
                             )}
-                            <div className='bg-secondary text-white text-center py-2 rounded-md w-[300px] mx-auto'>
+                            <div className='text-white text-center py-2 mx-auto'>
                                 <p>{assets?.name}</p>
                             </div>
                         </Link>

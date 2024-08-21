@@ -46,7 +46,7 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                 }
             </div>
 
-            <div className='mt-5 bg-secondary py-8 grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4 px-4'>
+            <div className='mt-5 bg-primary py-8 grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4 px-4'>
                 {
                     sortedAssets?.map((assets) => (
                         <div className='lg:w-[300px] md:[w-200px] w-full lg:h-[308px] md:[h-200px] h-auto mx-auto mb-5' key={assets?.id}>
