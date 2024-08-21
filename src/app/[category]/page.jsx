@@ -3,11 +3,6 @@ import getData from '@/utils/getData';
 import React from 'react';
 
 
-// export const metadata = {
-//     title: `${applicationSettings?.data?.site_name}`,
-//     description: `${applicationSettings?.data?.site_description}`,
-// };
-
 export async function generateMetadata({ params }) {
     const { category } = params;
     const categoryId = category?.split("-").slice(-1);
