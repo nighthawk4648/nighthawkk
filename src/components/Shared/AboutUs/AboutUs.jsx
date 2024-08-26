@@ -32,9 +32,6 @@ const AboutUs = ({ aboutUs }) => {
                     </div>
 
                     {/* <p>{aboutUs?.name}</p> */}
-                    <div>
-                        <p className='text-center md:mt-0 mt-3 text-white'><span className='font-semibold'>Founder: </span> {aboutUs?.name || 'Majharul Islam Asik'}</p>
-                    </div>
                 </div>
 
             </div>
