@@ -19,11 +19,10 @@ const Navbar = ({ categories, footerPages }) => {
 		setIsOpen(!isOpen);
 	};
 
-	console.log("footerPages", footerPages);
 
 	 // Find the footer page with id 5
 	 const footerPage = footerPages?.find(page => page.id === 5);
-	 console.log("footerPage", footerPage);
+	
 
 
 	return (

@@ -7,8 +7,6 @@ export async function generateMetadata({ params }) {
     const { category } = params;
     const categoryId = category?.split("-").slice(-1);
 
-    console.log("looking ", categoryId);
-
     const metaSettings = await getData(`categories/${categoryId}`); // Replace with actual call to fetch site settings
     const metaTitle = metaSettings?.data?.meta_title;
     const metaDescription = metaSettings?.data?.meta_description;
