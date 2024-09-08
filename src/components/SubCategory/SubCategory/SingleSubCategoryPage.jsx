@@ -8,23 +8,6 @@ import getData from '@/utils/getData';
 import Link from 'next/link';
 
 
-export async function generateMetadata({ params }) {
-
-    const {category, subCategoryName} = params;
-
-    const subCategoryId = subCategoryName?.split("-").slice(-1);
-
-    const metaSettings = await getData(`sub-categories/${subCategoryId}`); // Replace with actual call to fetch site settings
-    const metaTitle = metaSettings?.data?.meta_title;
-    const metaDescription = metaSettings?.data?.meta_description;
-
-    return {
-        title: `${metaTitle}`,
-        description: `${metaDescription}`,
-    };
-}
-
-
 
 const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
 
