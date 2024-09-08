@@ -34,6 +34,7 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
 
             <div className='grid md:grid-cols-8 grid-cols-2 gap-4 bg-thirdColor py-8 px-4'>
                 <div className='cursor-pointer'>
+                    <Link  href={`/${slugify(subCategoriesByCategoryId?.data?.name)}-${subCategoriesByCategoryId?.data?.id}`}>
                     <Image
                         src={all_sub_cat_image}
                         height={400}
@@ -45,6 +46,7 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                     <div className='bg-secondary py-1'>
                         <p className='text-white font-semibold text-sm text-center'>All</p>
                     </div>
+                    </Link>
                 </div>
 
                 {
