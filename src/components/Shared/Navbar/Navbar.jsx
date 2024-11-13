@@ -62,8 +62,8 @@ const Navbar = ({ categories, footerPages }) => {
 																{
 																	category?.sub_categories?.map((subCategory) => (
 																		<div>
-																			<div className=' mt-2 font-semibold'>
-																				<Link href={`/${slugify(category?.name)}-${category?.id}`}><p>{subCategory?.name}</p></Link>
+																			<div className=' mt-2 font-semibold border border-red-800 text-center'>
+																				<Link href={`/${slugify(category?.name)}-${category?.id}/${subCategory?.name}-${subCategory?.id}`}><p>{subCategory?.name}</p></Link>
 																			</div>
 
 																			<div>

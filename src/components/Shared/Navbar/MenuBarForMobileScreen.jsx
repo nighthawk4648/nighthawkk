@@ -63,7 +63,7 @@ const MenuBarForMobileScreen = ({ categories }) => {
                                                     onClick={() => toggleDropdownSubSection(index)}
                                                     className="flex items-center py-2 text-gray-700  hover:text-blue-600 bg-white rounded-md  focus:outline-none"
                                                 >
-                                                    <Link href={`/${slugify(category?.name)}-${category?.id}`} ><p className="">{subCategory?.name}</p></Link>
+                                                    <Link href={`/${slugify(category?.name)}-${category?.id}/${subCategory?.name}-${subCategory?.id}`} ><p className="">{subCategory?.name}</p></Link>
                                                     {isDropdownSubSectionOpen === index ? (
                                                         <MdKeyboardArrowUp className="text-xl" />
                                                     ) : (
