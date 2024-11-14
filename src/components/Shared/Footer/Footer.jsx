@@ -13,7 +13,7 @@ const Footer = ({ categories, footerPages, socials }) => {
                     <div className='flex md:justify-start justify-center'>
                         <div>
                             <p className='font-semibold'> Assets</p>
-                            <div className='text-xl mt-2'>
+                            <div className='text-sm mt-2'>
                                 {categories?.map((category) => (
                                     <Link href={`/${slugify(category?.name)}-${category?.id}`} >
                                         <p className='mb-1' key={category?.id}>{category?.name}</p>
@@ -27,7 +27,7 @@ const Footer = ({ categories, footerPages, socials }) => {
                     <div className='flex justify-center'>
                         <div className=''>
                             <p className='font-semibold'> Company</p>
-                            <div className='text-xl mt-2'>
+                            <div className='text-sm mt-2'>
                                 {
                                     footerPages?.map((footerPage) => (
                                         <div key={footerPage?.id}>
@@ -43,7 +43,7 @@ const Footer = ({ categories, footerPages, socials }) => {
                     <div className='flex md:justify-end justify-center'>
                         <div className=''>
                             <p className='font-semibold'> Social</p>
-                            <div className='text-xl mt-2'>
+                            <div className='text-sm mt-2'>
 
                                 {socials?.map((social) => (
                                     <div key={social?.id}>
