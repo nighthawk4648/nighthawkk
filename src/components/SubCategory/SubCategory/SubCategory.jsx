@@ -28,7 +28,7 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                     ></Image>
 
                     <div className='bg-secondary py-1'>
-                        <p className='text-white font-semibold text-sm text-center'>All</p>
+                        <h2 className='text-white font-semibold text-sm text-center'>All</h2>
                     </div>
                     </Link>
                 </div>
@@ -47,7 +47,7 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                                 ></Image>}
 
                                 <div className='bg-secondary py-1'>
-                                    <p className='text-white font-semibold text-sm text-center'>{subCategory?.name}</p>
+                                    <h2 className='text-white font-semibold text-sm text-center'>{subCategory?.name}</h2>
                                 </div>
                             </Link>
                         </div>
@@ -76,7 +76,7 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                                 className=''
                             ></Image>}
 
-                            <p className='text-white text-center font-semibold mt-1'>{asset?.name}</p>
+                            <h3 className='text-white text-center font-semibold mt-1'>{asset?.name}</h3>
                         </Link>
                     </div>
                 ))

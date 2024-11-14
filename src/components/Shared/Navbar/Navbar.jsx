@@ -31,7 +31,7 @@ const Navbar = ({ categories, footerPages }) => {
 				<div className=" px-4">
 					<div className="flex justify-between items-center ">
 						<div className="flex  items-center gap-5">
-						<h1 className="font-bold text-white"><Link href="/">Sketchshaper</Link></h1>			
+						<p className="font-bold text-white"><Link href="/">Sketchshaper</Link></p>			
 						</div>
 
 						<div className="flex items-center">
@@ -62,8 +62,8 @@ const Navbar = ({ categories, footerPages }) => {
 																{
 																	category?.sub_categories?.map((subCategory) => (
 																		<div>
-																			<div className=' mt-2 font-semibold border border-red-800 text-center'>
-																				<Link href={`/${slugify(category?.name)}-${category?.id}/${subCategory?.name}-${subCategory?.id}`}><p>{subCategory?.name}</p></Link>
+																			<div className=' mt-2 font-semibold'>
+																				<Link href={`/${slugify(category?.name)}-${category?.id}`}><p>{subCategory?.name}</p></Link>
 																			</div>
 
 																			<div>

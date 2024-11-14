@@ -8,7 +8,7 @@ const Features = ({ categories }) => {
     const sortedCategories = categories.slice().sort((a, b) => a.id - b.id);
 
     return (
-        <div className='mt-5 grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-5'>
+        <div className='mt-5 grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-12'>
             {sortedCategories.map((category) => (
                 <div key={category.id} className=''>
                     <Link href={`/${slugify(category.name)}-${category.id}`}>
