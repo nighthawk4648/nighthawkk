@@ -20,9 +20,9 @@ const Navbar = ({ categories, footerPages }) => {
 	};
 
 
-	 // Find the footer page with id 5
-	 const footerPage = footerPages?.find(page => page.id === 5);
-	
+	// Find the footer page with id 5
+	const footerPage = footerPages?.find(page => page.id === 5);
+
 
 
 	return (
@@ -31,7 +31,7 @@ const Navbar = ({ categories, footerPages }) => {
 				<div className=" px-4">
 					<div className="flex justify-between items-center ">
 						<div className="flex  items-center gap-5">
-						<p className="font-bold text-white"><Link href="/">Sketchshaper</Link></p>			
+							<p className="font-bold text-white"><Link href="/">Sketchshaper</Link></p>
 						</div>
 
 						<div className="flex items-center">
@@ -39,10 +39,10 @@ const Navbar = ({ categories, footerPages }) => {
 								<div className="flex items-center  gap-5">
 									<div>
 
-										<SearchForDesktopScreen/>
-										
+										<SearchForDesktopScreen />
+
 									</div>
-									
+
 									<p className="font-semibold text-white"><Link href={`/pages/${footerPage?.slug}-${footerPage?.id}`}>{footerPage?.title}</Link></p>
 
 									<p className="font-semibold text-white"><Link href="/">HOME</Link></p>
@@ -63,7 +63,11 @@ const Navbar = ({ categories, footerPages }) => {
 																	category?.sub_categories?.map((subCategory) => (
 																		<div>
 																			<div className=' mt-2 font-semibold'>
-																				<Link href={`/${slugify(category?.name)}-${category?.id}`}><p>{subCategory?.name}</p></Link>
+																				<Link
+																					href={`/${slugify(category?.name)}-${category?.id}/${subCategory?.name}-${subCategory?.id}`}
+																				>
+																					<p>{subCategory?.name}</p>
+																				</Link>
 																			</div>
 
 																			<div>

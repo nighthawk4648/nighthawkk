@@ -1,28 +1,3 @@
-// import React from 'react';
-// import { IoSearchSharp } from 'react-icons/io5';
-
-// const SearchForDesktopScreen = () => {
-//     return (
-//         <div>
-//             <div className="relative">
-//                 <input
-//                     type="text"
-//                     className="h-8 rounded-md outline-none px-8"
-//                 />
-
-//                 <div className="absolute top-2 left-2">
-//                     <IoSearchSharp />
-//                 </div>
-//             </div>
-
-//         </div>
-//     );
-// };
-
-// export default SearchForDesktopScreen;
-
-
-
 "use client";
 import Image from "next/image";
 import Link from "next/link";
@@ -41,6 +16,8 @@ const SearchForDesktopScreen = () => {
     const router = useRouter();
 
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [categoryId, setCategoryId] = useState();
+
 
     const [searchString, setSearchString] = useState("");
     const searchInputRef = useRef(null);
@@ -52,6 +29,13 @@ const SearchForDesktopScreen = () => {
     );
 
     console.log("searchData", searchData);
+
+    const { data: categoryById, categoryIsLoading, } = useSWR(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/categories/${categoryId}`,
+        fetcher
+    );
+
+    console.log("setCategoryId", setCategoryId);
 
 
 
@@ -167,14 +151,15 @@ const SearchForDesktopScreen = () => {
                                         </p>
 
                                         {searchData?.data?.subCategory?.map((subCategory) => (
-                                            <div className="mt-3" key={subCategory?.id}>
+                                            <div onClick={() => setCategoryId(subCategory?.category_id) } className="mt-3" key={subCategory?.id}>
                                                 <div className="mb-3">
                                                     <div className="flex gap-2 items-center ">
                                                         <CiSearch className="text-lg text-gray-600" />
                                                         <div>
                                                             <Link
                                                                 onClick={handleClose}
-                                                                href={`/${slugify(subCategory?.category?.name)}-${subCategory?.category?.id}`}
+                                                                href={`/${slugify(categoryById?.data?.name)}-${categoryById?.data?.id}/${subCategory?.name}-${subCategory?.id}`}
+                                                                
                                                             >
                                                                 <p
                                                                     className="text-xs text-gray-800 cursor-pointer  border-b hover:border-primary"
