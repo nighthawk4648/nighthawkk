@@ -46,7 +46,7 @@ const Carousel = ({carousels}) => {
                                             carousel?.image}
                                         height={800}
                                         width={1300}
-                                        className='w-full md:h-[800px] h-[430px]'
+                                        className='w-full md:h-[800px] h-[300px]'
                                         alt={carousel?.name}
                                     ></Image>
 
