@@ -3,7 +3,7 @@ import React from 'react';
 
 const AboutUs = ({ aboutUs }) => {
     return (
-        <div className="bg-[url('/assets/bgImage/bgGray.jpeg')] bg-cover bg-center w-full text-white p-5">
+        <div className="bg-[url('/assets/bgImage/bgBlack.jpeg')] bg-cover bg-center w-full text-white p-5">
             {aboutUs?.title &&
                 // <div className='bg-black border border-black'>
                 //     <p className='text-center font-semibold text-2xl text-white p-2 '>{aboutUs?.title}</p>

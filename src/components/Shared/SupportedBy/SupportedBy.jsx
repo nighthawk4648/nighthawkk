@@ -25,7 +25,7 @@ import React from 'react';
 
 const SupportedBy = () => {
     return (
-        <div className="bg-[url('/assets/bgImage/bgBlack.jpeg')] bg-cover bg-center w-full text-white p-5">
+        <div className="bg-[url('/assets/bgImage/bgGray.jpeg')] bg-cover bg-center w-full text-white p-5">
             <h2 className='text-center font-semibold text-2xl '>Supported By</h2>
             <div className='grid grid-cols-2 lg:grid-cols-5 gap-5 mt-10'>
                 <Image
