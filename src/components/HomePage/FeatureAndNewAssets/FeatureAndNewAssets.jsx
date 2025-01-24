@@ -4,7 +4,7 @@ import NewAssets from './NewAssets/NewAssets';
 
 const FeatureAndNewAssets = ({categories}) => {
     return (
-        <div className='bg-primary pt-10'>
+        <div className=''>
             <Features categories={categories}  />
             <NewAssets categories={categories}  />
             

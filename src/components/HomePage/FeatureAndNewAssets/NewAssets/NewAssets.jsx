@@ -5,10 +5,11 @@ import Link from 'next/link';
 
 const NewAssets = ({ categories }) => {
     return (
-        <div className='mt-10 py-5'>
-            <div className='bg-thirdColor border-black'>
+        <div className="bg-[url('/assets/bgImage/bgBlack.jpeg')] bg-cover bg-center w-full text-white p-5">
+            {/* <div className='bg-thirdColor border-black'>
                 <h2 className='text-center font-semibold text-2xl text-white p-2'>New Assets</h2>
-            </div>
+            </div> */}
+            <h2 className='text-center font-semibold text-2xl text-white p-2'>New Assets</h2>
 
 
             <div className='grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-5 mt-10 w-full mx-auto'>
@@ -21,7 +22,7 @@ const NewAssets = ({ categories }) => {
                                     height={800}
                                     width={800}
                                     alt=''
-                                    className='w-[300px] h-[300px] mx-auto rounded-md'
+                                    className='w-[150px] h-[150px] mx-auto rounded-md'
                                 />
                             )}
                             <div className=' text-white text-center py-2 mx-auto'>
@@ -44,7 +45,7 @@ const NewAssets = ({ categories }) => {
                                     height={800}
                                     width={800}
                                     alt=''
-                                    className='w-[300px] h-[300px] mx-auto rounded-md'
+                                    className='w-[150px] h-[150px]  mx-auto rounded-md'
                                 />
                             )}
                             <div className=' text-white text-center py-2 mx-auto'>
@@ -68,7 +69,7 @@ const NewAssets = ({ categories }) => {
                                     height={800}
                                     width={800}
                                     alt=''
-                                    className='w-[300px] h-[300px] mx-auto rounded-md'
+                                    className='w-[150px] h-[150px] mx-auto rounded-md'
                                 />
                             )}
                             <div className=' text-white text-center py-2 mx-auto'>
@@ -91,7 +92,7 @@ const NewAssets = ({ categories }) => {
                                     height={800}
                                     width={800}
                                     alt=''
-                                    className='w-[300px] h-[300px] mx-auto rounded-md'
+                                    className='w-[150px] h-[150px] mx-auto rounded-md'
                                 />
                             )}
                             <div className='text-white text-center py-2 mx-auto'>

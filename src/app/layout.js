@@ -6,6 +6,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 
 import { GoogleAnalytics } from '@next/third-parties/google';
+import SupportedBy from "@/components/Shared/SupportedBy/SupportedBy";
+import Blogs from "@/components/Shared/Blogs/Blogs";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -60,6 +62,8 @@ export default async function RootLayout({ children }) {
         {children}
 
         <AboutUs aboutUs={aboutUs?.data} />
+        <SupportedBy/>
+        <Blogs/>
         <Footer
           categories={categories?.data}
           footerPages={footerPages?.data}
