@@ -6,14 +6,14 @@ const Blogs = () => {
     return (
         <div className="bg-[url('/assets/bgImage/bgBlack.jpeg')] bg-cover bg-center w-full text-white p-5">
             <h2 className=' font-semibold text-2xl '>Visit Our Blogs</h2>
-            <div className='grid grid-cols-2 gap-5 mt-10 '>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-5 mt-10 '>
                 <div>
                     <Image
                         src={'/assets/blog/blogOne.webp'}
                         alt="Prime"
                         width={500}
                         height={500}
-                        className='w-full h-[360px] mx-auto '
+                        className='w-full h-[260px] md:h-[360px] mx-auto '
                     />
 
                     <div className='flex gap-3 items-center mt-5 text-sm'>
@@ -36,18 +36,20 @@ const Blogs = () => {
                     </div>
                 </div>
 
-                <div className='max-h-[560px] overflow-y-auto'>
-                    <div className='flex mb-3 gap-4'>
-                        <Image
+                <div className='md:max-h-[560px] md:overflow-y-auto'>
+                    <div className='md:flex mb-3 gap-4'>
+                       <div>
+                       <Image
                            src='https://media.licdn.com/dms/image/D5612AQFwj-DSqSIfng/article-cover_image-shrink_720_1280/0/1704689160446?e=2147483647&v=beta&t=lAFPUjA6eKyvKM4nxWFE1-NlYwNwuVH-V8fvd6nDC4I'
                             alt="Prime"
                             width={500}
                             height={500}
-                            className='w-[320px] h-[150px] '
+                            className='w-full md:w-[320px] md:h-[150px]   h-[260px]'
                         />
+                       </div>
 
-                        <div>
-                            <p className='text-amber-700 text-sm'>May 27 2025</p>
+                        <div className='mt-3 md:mt-0'>
+                            <p className='text-amber-700 text-sm '>May 27 2025</p>
                             <h3 className='font-semibold text-lg'>Title of the Blog</h3>
                             <p className='text-xs mt-3'>
                                 {text.length > 130
@@ -62,17 +64,17 @@ const Blogs = () => {
                         </div>
                     </div>
 
-                    <div className='flex mb-3 gap-4'>
+                    <div className='md:flex mb-3 gap-4'>
                         <Image
                             src={'/assets/blog/blogOne.webp'}
                             alt="Prime"
                             width={500}
                             height={500}
-                            className='w-[320px] h-[150px] '
+                            className='w-full md:w-[320px] md:h-[150px]   h-[260px]'
                         />
 
-                        <div>
-                            <p className='text-amber-700 text-sm'>May 27 2025</p>
+                        <div className='mt-3 md:mt-0'>
+                            <p className='text-amber-700 text-sm '>May 27 2025</p>
                             <h3 className='font-semibold text-lg'>Title of the Blog</h3>
                             <p className='text-xs mt-3'>
                                 {text.length > 130
@@ -87,16 +89,16 @@ const Blogs = () => {
                         </div>
                     </div>
 
-                    <div className='flex mb-3 gap-4'>
+                    <div className='md:flex mb-3 gap-4'>
                         <Image
                             src='https://media.licdn.com/dms/image/D5612AQFwj-DSqSIfng/article-cover_image-shrink_720_1280/0/1704689160446?e=2147483647&v=beta&t=lAFPUjA6eKyvKM4nxWFE1-NlYwNwuVH-V8fvd6nDC4I'
                             alt="Prime"
                             width={500}
                             height={500}
-                            className='w-[320px] h-[150px] '
+                            className='w-full md:w-[320px] md:h-[150px]   h-[260px]'
                         />
 
-                        <div>
+                        <div className='mt-3 md:mt-0'>
                             <p className='text-amber-700 text-sm'>May 27 2025</p>
                             <h3 className='font-semibold text-lg'>Title of the Blog</h3>
                             <p className='text-xs mt-3'>
@@ -112,16 +114,16 @@ const Blogs = () => {
                         </div>
                     </div>
 
-                    <div className='flex mb-3 gap-4'>
+                    <div className='md:flex mb-3 gap-4'>
                         <Image
                             src={'/assets/blog/blogOne.webp'}
                             alt="Prime"
                             width={500}
                             height={500}
-                            className='w-[320px] h-[150px] '
+                            className='w-full md:w-[320px] md:h-[150px]   h-[260px]'
                         />
 
-                        <div>
+                        <div className='mt-3 md:mt-0'>
                             <p className='text-amber-700 text-sm'>May 27 2025</p>
                             <h3 className='font-semibold text-lg'>Title of the Blog</h3>
                             <p className='text-xs mt-3'>
@@ -137,16 +139,16 @@ const Blogs = () => {
                         </div>
                     </div>
 
-                    <div className='flex mb-3 gap-4'>
+                    <div className='md:flex mb-3 gap-4'>
                         <Image
                             src='https://media.licdn.com/dms/image/D5612AQFwj-DSqSIfng/article-cover_image-shrink_720_1280/0/1704689160446?e=2147483647&v=beta&t=lAFPUjA6eKyvKM4nxWFE1-NlYwNwuVH-V8fvd6nDC4I'
                             alt="Prime"
                             width={500}
                             height={500}
-                            className='w-[320px] h-[150px] '
+                            className='w-full md:w-[320px] md:h-[150px]   h-[260px]'
                         />
 
-                        <div>
+                        <div className='mt-3 md:mt-0'>
                             <p className='text-amber-700 text-sm'>May 27 2025</p>
                             <h3 className='font-semibold text-lg'>Title of the Blog</h3>
                             <p className='text-xs mt-3'>
