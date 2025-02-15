@@ -5,15 +5,16 @@ import Link from 'next/link';
 
 const NewAssets = ({ categories }) => {
     return (
-        <div className="bg-[url('/assets/bgImage/bgBlack.jpeg')] bg-cover bg-center w-full text-white p-5">
-            {/* <div className='bg-thirdColor border-black'>
+        // <div className="bg-[url('/assets/bgImage/bgBlack.jpeg')] bg-cover bg-center w-full text-white p-5">
+        <div className="bg-[#141414] text-white p-5">
+            <div className='bg-thirdColor border-black'>
                 <h2 className='text-center font-semibold text-2xl text-white p-2'>New Assets</h2>
-            </div> */}
-            <h2 className='text-center font-semibold text-2xl text-white p-2'>New Assets</h2>
+            </div>
+            {/* <h2 className='text-center font-semibold text-2xl text-white p-2'>New Assets</h2> */}
 
 
-            <div className='grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-5 mt-10 w-full mx-auto'>
-                {categories?.[2]?.sub_categories?.[0]?.assets?.slice(-4)?.map((assets) => ( // Adjusted slice(-3) to get last 3 items
+            <div className='grid lg:grid-cols-6 md:grid-cols-3 grid-cols-1 gap-5 mt-10 w-full mx-auto'>
+                {categories?.[2]?.sub_categories?.[0]?.assets?.slice(-6)?.map((assets) => ( // Adjusted slice(-3) to get last 3 items
                     <div key={assets?.id} className='mt-5'>
                         <Link href={`/${slugify(categories?.[2]?.name)}/${slugify(categories?.[2]?.sub_categories?.[0]?.name)}/${slugify(assets?.name)}-${assets?.id}`}>
                             {assets?.cover && (
@@ -22,7 +23,7 @@ const NewAssets = ({ categories }) => {
                                     height={800}
                                     width={800}
                                     alt=''
-                                    className='w-[150px] h-[150px] mx-auto rounded-md'
+                                    className='w-[150px] h-[150px] mx-auto rounded-md transform transition-transform duration-1000 hover:scale-150'
                                 />
                             )}
                             <div className=' text-white text-center py-2 mx-auto'>
@@ -35,7 +36,7 @@ const NewAssets = ({ categories }) => {
             </div>
 
 
-            <div className='grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-5 mt-10 w-full mx-auto'>
+            {/* <div className='grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-5 mt-10 w-full mx-auto'>
                 {categories?.[2]?.sub_categories?.[1]?.assets?.slice(-4)?.map((assets) => ( // Adjusted slice(-3) to get last 3 items
                     <div key={assets?.id} className='mt-5'>
                         <Link href={`/${slugify(categories?.[2]?.name)}/${slugify(categories?.[2]?.sub_categories?.[0]?.name)}/${slugify(assets?.name)}-${assets?.id}`}>
@@ -55,12 +56,12 @@ const NewAssets = ({ categories }) => {
                     </div>
                 ))}
 
-            </div>
+            </div> */}
 
 
 
-            <div className='grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-5 mt-10 w-full mx-auto'>
-                {categories?.[1]?.sub_categories?.[0]?.assets?.slice(-4)?.map((assets) => ( // Adjusted slice(-3) to get last 3 items
+            <div className='grid lg:grid-cols-6 md:grid-cols-3 grid-cols-1 gap-5 mt-10 w-full mx-auto'>
+                {categories?.[1]?.sub_categories?.[0]?.assets?.slice(-6)?.map((assets) => ( // Adjusted slice(-3) to get last 3 items
                     <div key={assets?.id} className='mt-5'>
                         <Link href={`/${slugify(categories?.[1]?.name)}/${slugify(categories?.[1]?.sub_categories?.[0]?.name)}/${slugify(assets?.name)}-${assets?.id}`}>
                             {assets?.cover && (
@@ -69,7 +70,7 @@ const NewAssets = ({ categories }) => {
                                     height={800}
                                     width={800}
                                     alt=''
-                                    className='w-[150px] h-[150px] mx-auto rounded-md'
+                                    className='w-[150px] h-[150px] mx-auto rounded-md transform transition-transform duration-1000 hover:scale-150'
                                 />
                             )}
                             <div className=' text-white text-center py-2 mx-auto'>
@@ -82,7 +83,7 @@ const NewAssets = ({ categories }) => {
             </div>
 
 
-            <div className='grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-5 mt-10 w-full mx-auto'>
+            {/* <div className='grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-5 mt-10 w-full mx-auto'>
                 {categories?.[1]?.sub_categories?.[1]?.assets?.slice(-4)?.map((assets) => ( // Adjusted slice(-3) to get last 3 items
                     <div key={assets?.id} className='mt-5'>
                         <Link href={`/${slugify(categories?.[1]?.name)}/${slugify(categories?.[1]?.sub_categories?.[1]?.name)}/${slugify(assets?.name)}-${assets?.id}`}>
@@ -102,7 +103,7 @@ const NewAssets = ({ categories }) => {
                     </div>
                 ))}
 
-            </div>
+            </div> */}
 
 
            

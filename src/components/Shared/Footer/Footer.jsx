@@ -91,7 +91,7 @@ const Footer = ({ categories, footerPages, socials }) => {
                     </div>
 
 
-                    <div className='flex  justify-center mt-10'>
+                    <div className='flex  justify-start '>
                         <div className=''>
                             <h4 className='font-semibold'> Social</h4>
                             <div className='text-xs mt-2'>

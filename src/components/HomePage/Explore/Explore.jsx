@@ -5,7 +5,8 @@ import React from 'react';
 
 const Explore = ({ categories }) => {
     return (
-        <div className="bg-[url('/assets/bgImage/bgGray.jpeg')] bg-cover bg-center w-full text-white p-5">
+        // <div className="bg-[url('/assets/bgImage/bgGray.jpeg')] bg-cover bg-center w-full text-white p-5">
+        <div className=" bg-[#141414] w-full text-white p-5">
             <h2 className="text-center font-semibold text-2xl">Explore Best Interior Design</h2>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-10">
@@ -19,7 +20,7 @@ const Explore = ({ categories }) => {
                             alt="Interior Design"
                             width={500}
                             height={500}
-                            className="w-full h-[300px] mx-auto"
+                            className="w-full h-[150px] md:h-[300px] mx-auto"
                         />
                         </Link>
                     ))}

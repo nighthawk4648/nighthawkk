@@ -28,7 +28,8 @@ const SupportedBy = ({ supportedby }) => {
         <div>
             {
                 supportedby?.map((support) => (
-                    <div className="bg-[url('/assets/bgImage/bgGray.jpeg')] bg-cover bg-center w-full text-white p-5">
+                    // <div className="bg-[url('/assets/bgImage/bgGray.jpeg')] bg-cover bg-center w-full text-white p-5">
+                    <div className="bg-[#141414] w-full text-white p-5">
                         <h2 className='text-center font-semibold text-2xl '>{support?.title}</h2>
                         <div className='grid grid-cols-2 lg:grid-cols-5 gap-5 mt-10'>
                             <Image

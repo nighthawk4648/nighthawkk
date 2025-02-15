@@ -8,12 +8,13 @@ const Features = ({ categories }) => {
     const sortedCategories = categories.slice().sort((a, b) => a.id - b.id);
 
     return (
-        <div className="bg-[url('/assets/bgImage/bgGray.jpeg')] bg-cover bg-center w-full text-white p-5">
+        // <div className="bg-[url('/assets/bgImage/bgGray.jpeg')] bg-cover bg-center w-full text-white p-5">
+        <div className=" text-white p-5 bg-[#141414] ">
           <div className='grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-8'>
             {sortedCategories.map((category) => (
                 <div 
                     key={category.id} 
-                    className='border-4 border-gray-600 shadow-lg rounded-xl p-6 '
+                    className='border-4 border-gray-800 shadow-lg rounded-xl p-6 '
                 >
                     <Link href={`/${slugify(category.name)}-${category.id}`}>
                         <div className='text-center'>
@@ -28,7 +29,7 @@ const Features = ({ categories }) => {
                             )}
                             <h2 className='text-center font-semibold text-white text-xl mt-4'>{category.name}</h2>
                             <h4 className='mt-2 text-center text-gray-400 text-sm leading-relaxed'>
-                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsa, harum.
+                               {category?.short_description}
                             </h4>
                         </div>
                     </Link>

@@ -34,7 +34,7 @@ export default async function RootLayout({ children }) {
   const socialsPromise = await getData('social');
   const applicationSettingsPromise = await getData('general/application-settings')
   const supportedByPromise = await getData('supportedby')
-  const blogsPromise = await getData('supportedby')
+  const blogsPromise = await getData('blogs')
 
 
 
