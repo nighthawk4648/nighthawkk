@@ -8,6 +8,7 @@ import "./globals.css";
 import { GoogleAnalytics } from '@next/third-parties/google';
 import SupportedBy from "@/components/Shared/SupportedBy/SupportedBy";
 import Blogs from "@/components/Shared/Blogs/Blogs";
+import Explore from "@/components/HomePage/Explore/Explore";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,7 +20,7 @@ export const metadata = {
 };
 
 
-{/* <link rel="icon" href="./icon.ico" sizes="any" /> */}
+{/* <link rel="icon" href="./icon.ico" sizes="any" /> */ }
 
 
 export default async function RootLayout({ children }) {
@@ -32,10 +33,12 @@ export default async function RootLayout({ children }) {
   const footerPagesPromise = await getData('pages');
   const socialsPromise = await getData('social');
   const applicationSettingsPromise = await getData('general/application-settings')
+  const supportedByPromise = await getData('supportedby')
+  const blogsPromise = await getData('supportedby')
 
 
 
-  const [data, aboutUs, categories, subCategories, assets, footerPages, socials, applicationSettings] = await Promise.all([
+  const [data, aboutUs, categories, subCategories, assets, footerPages, socials, applicationSettings, supportedby, blogs] = await Promise.all([
     dataPromise,
     aboutUsPromise,
     categoriesPromise,
@@ -43,7 +46,9 @@ export default async function RootLayout({ children }) {
     assetsPromise,
     footerPagesPromise,
     socialsPromise,
-    applicationSettingsPromise
+    applicationSettingsPromise,
+    supportedByPromise,
+    blogsPromise
   ]);
 
 
@@ -62,8 +67,9 @@ export default async function RootLayout({ children }) {
         {children}
 
         <AboutUs aboutUs={aboutUs?.data} />
-        <SupportedBy/>
-        <Blogs/>
+        <SupportedBy supportedby={supportedby?.data} />
+        <Explore categories={categories?.data} />
+        <Blogs blogs={blogs?.data} />
         <Footer
           categories={categories?.data}
           footerPages={footerPages?.data}

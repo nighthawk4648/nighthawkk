@@ -8,14 +8,14 @@ export default async function Home() {
   const carousels = await getData('sliders');
 
   const categories = await getData('categories');
+  const innovatives = await getData('innovative');
+
  
 
   return (
     <main  className='container'>
       <Carousel carousels={carousels?.data}  />
-      <FeatureAndNewAssets categories={categories?.data} />
-      <Explore  categories={categories?.data} />
-     
+      <FeatureAndNewAssets categories={categories?.data} innovatives={innovatives?.data} />
     </main>
   );
 }

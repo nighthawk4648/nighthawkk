@@ -23,51 +23,57 @@ import React from 'react';
 
 
 
-const SupportedBy = () => {
+const SupportedBy = ({ supportedby }) => {
     return (
-        <div className="bg-[url('/assets/bgImage/bgGray.jpeg')] bg-cover bg-center w-full text-white p-5">
-            <h2 className='text-center font-semibold text-2xl '>Supported By</h2>
-            <div className='grid grid-cols-2 lg:grid-cols-5 gap-5 mt-10'>
-                <Image
-                    src={'/assets/SupportedBy/prime.png'}
-                    alt="Prime"
-                    width={500}
-                    height={500}
-                    className='w-[200px] h-[200px] mx-auto'
-                />
+        <div>
+            {
+                supportedby?.map((support) => (
+                    <div className="bg-[url('/assets/bgImage/bgGray.jpeg')] bg-cover bg-center w-full text-white p-5">
+                        <h2 className='text-center font-semibold text-2xl '>{support?.title}</h2>
+                        <div className='grid grid-cols-2 lg:grid-cols-5 gap-5 mt-10'>
+                            <Image
+                                src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + support.imageOne}
+                                alt={support?.short_description}
+                                width={500}
+                                height={500}
+                                className='w-[200px] h-[200px] mx-auto'
+                            />
 
-                <Image
-                    src={'/assets/SupportedBy/Chorki_Logo.png'}
-                    alt="Prime"
-                    width={500}
-                    height={500}
-                    className='w-[200px] h-[200px] mx-auto'
-                />
+                            <Image
+                                src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + support.imageOne}
+                                alt={support?.short_description}
+                                width={500}
+                                height={500}
+                                className='w-[200px] h-[200px] mx-auto'
+                            />
 
-                <Image
-                    src={'/assets/SupportedBy/netflix.webp'}
-                    alt="Prime"
-                    width={500}
-                    height={500}
-                    className='w-[200px] h-[200px] mx-auto'
-                />
+                            <Image
+                                src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + support.imageOne}
+                                alt={support?.short_description}
+                                width={500}
+                                height={500}
+                                className='w-[200px] h-[200px] mx-auto'
+                            />
 
-                <Image
-                    src={'/assets/SupportedBy/prime.png'}
-                    alt="Prime"
-                    width={500}
-                    height={500}
-                    className='w-[200px] h-[200px] mx-auto'
-                />
+                            <Image
+                                src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + support.imageOne}
+                                alt={support?.short_description}
+                                width={500}
+                                height={500}
+                                className='w-[200px] h-[200px] mx-auto'
+                            />
 
-                <Image
-                    src={'/assets/SupportedBy/Chorki_Logo.png'}
-                    alt="Prime"
-                    width={500}
-                    height={500}
-                    className='w-[200px] h-[200px] mx-auto'
-                />
-            </div>
+                            <Image
+                                src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + support.imageOne}
+                                alt={support?.short_description}
+                                width={500}
+                                height={500}
+                                className='w-[200px] h-[200px] mx-auto'
+                            />
+                        </div>
+                    </div>
+                ))
+            }
         </div>
     );
 };
