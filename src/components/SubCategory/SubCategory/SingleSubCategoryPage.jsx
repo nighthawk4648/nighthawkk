@@ -15,7 +15,7 @@ const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
 
     const assetBySubCategoryId = await getData(`sub-categories/${subCategoryId}`);
 
-  
+
 
     // Sort the assets in descending order based on id
     const sortedAssets = assetBySubCategoryId?.data?.assets?.slice().sort((a, b) => b.id - a.id);
@@ -31,17 +31,17 @@ const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
             <div className='grid md:grid-cols-8 grid-cols-2 gap-4 bg-thirdColor py-8 px-4'>
                 <div className='cursor-pointer'>
                     <Link href={`/${slugify(subCategoriesByCategoryId?.data?.name)}-${subCategoriesByCategoryId?.data?.id}`}>
-                    <Image
-                        src={all_sub_cat_image}
-                        height={400}
-                        width={500}
-                        alt="all subcategories"
-                        className='w-full h-28'
-                    ></Image>
+                        <Image
+                            src={all_sub_cat_image}
+                            height={400}
+                            width={500}
+                            alt="all subcategories"
+                            className='w-full h-28'
+                        ></Image>
 
-                    <div className='bg-secondary py-1'>
-                        <p className='text-white font-semibold text-sm text-center'>All</p>
-                    </div></Link>
+                        <div className='bg-secondary py-1'>
+                            <p className='text-white font-semibold text-sm text-center'>All</p>
+                        </div></Link>
 
                 </div>
 
@@ -68,23 +68,27 @@ const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
 
 
 
-            <div className='mt-5 bg-primary py-8 grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4 px-4'>
+            <div className=' bg-primary py-8 grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4 px-4'>
                 {
                     sortedAssets?.map((assets) => (
-                        <div
-                            className='lg:w-[300px] md:[w-200px] w-full lg:h-[308px] md:[h-200px] h-auto mx-auto mb-5'
-                            key={assets?.id}>
-                            <Link href={`/${slugify(assetBySubCategoryId?.data?.category?.name)}/${slugify(assetBySubCategoryId?.data?.name)}/${slugify(assets?.name)}-${assets?.id}`}>
-                                {assets?.cover && <Image
-                                    src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + assets?.cover}
-                                    height={400}
-                                    width={400}
-                                    alt={assets?.name}
-                                    className=''
-                                ></Image>}
+                        <div>
+                            <div
+                                className='lg:w-[300px] md:[w-200px] w-full lg:h-[308px] md:[h-200px] h-auto mx-auto mb-5 relative overflow-hidden'
+                                key={assets?.id}>
+                                <Link href={`/${slugify(assetBySubCategoryId?.data?.category?.name)}/${slugify(assetBySubCategoryId?.data?.name)}/${slugify(assets?.name)}-${assets?.id}`}>
+                                    {assets?.cover && <Image
+                                        src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + assets?.cover}
+                                        height={400}
+                                        width={400}
+                                        alt={assets?.name}
+                                        className='transform transition-transform duration-1000 hover:scale-150'
+                                        style={{ transformOrigin: 'center' }}
+                                    ></Image>}
 
-                                <p className='text-white text-center font-semibold mt-1'>{assets?.name}</p>
-                            </Link>
+
+                                </Link>
+                            </div>
+                            <p className='text-white text-center font-semibold mt-2 z-10 relative'><Link href={`/${slugify(assetBySubCategoryId?.data?.category?.name)}/${slugify(assetBySubCategoryId?.data?.name)}/${slugify(assets?.name)}-${assets?.id}`}>{assets?.name}</Link></p>
                         </div>
                     ))
                 }
