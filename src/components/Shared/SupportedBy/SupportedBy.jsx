@@ -41,7 +41,7 @@ const SupportedBy = ({ supportedby }) => {
                             />
 
                             <Image
-                                src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + support.imageOne}
+                                src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + support.imageTwo}
                                 alt={support?.short_description}
                                 width={500}
                                 height={500}
@@ -49,7 +49,7 @@ const SupportedBy = ({ supportedby }) => {
                             />
 
                             <Image
-                                src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + support.imageOne}
+                                src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + support.imageThree}
                                 alt={support?.short_description}
                                 width={500}
                                 height={500}
@@ -57,7 +57,7 @@ const SupportedBy = ({ supportedby }) => {
                             />
 
                             <Image
-                                src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + support.imageOne}
+                                src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + support.imageFour}
                                 alt={support?.short_description}
                                 width={500}
                                 height={500}
@@ -65,7 +65,7 @@ const SupportedBy = ({ supportedby }) => {
                             />
 
                             <Image
-                                src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + support.imageOne}
+                                src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + support.imageFive}
                                 alt={support?.short_description}
                                 width={500}
                                 height={500}
