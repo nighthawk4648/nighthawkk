@@ -27,7 +27,7 @@ const Navbar = ({ categories, footerPages }) => {
 
 	return (
 		<div className="relative">
-			<nav className=" bg-thirdColor  md:px-5 px-1  shadow-sm  ">
+			<nav className=" bg-black  md:px-5 px-1  shadow-sm  ">
 				<div className=" px-4">
 					<div className="flex justify-between items-center ">
 						<div className="flex  items-center gap-5">

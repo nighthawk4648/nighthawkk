@@ -21,8 +21,8 @@ const Features = ({ categories }) => {
                             {category.image && (
                                 <Image
                                     src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + category.image}
-                                    height={500}
-                                    width={500}
+                                    height={1000}
+                                    width={1000}
                                     alt={category.name}
                                     className='w-[150px] h-[150px] mx-auto rounded-full shadow-md transform transition-transform duration-1000 hover:scale-125 hover:mb-3'
                                 />

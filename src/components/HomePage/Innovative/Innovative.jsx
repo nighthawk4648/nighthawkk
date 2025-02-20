@@ -12,8 +12,8 @@ const Innovative = ({ innovatives }) => {
                         <div className='relative'>
                             <Image
                                 src={innovative?.bgImg ? process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + innovative?.bgImg : 'https://i.ibb.co/0V8cTj0R/MF-M1.jpg'}
-                                height={500}
-                                width={500}
+                                height={1600}
+                                width={1600}
                                 alt={innovative.title}
                                 className='w-full h-[200px] md:h-[500px]'
                             />

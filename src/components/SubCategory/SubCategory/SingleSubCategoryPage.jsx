@@ -23,12 +23,12 @@ const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
 
     return (
         <div>
-            <div className='bg-secondary py-2'>
+            <div className='bg-primary py-2'>
                 <h1 className='text-white font-semibold text-2xl text-center'>{subCategoriesByCategoryId?.data?.name}</h1>
             </div>
 
 
-            <div className='grid md:grid-cols-8 grid-cols-2 gap-4 bg-thirdColor py-8 px-4'>
+            <div className='grid md:grid-cols-8 grid-cols-2 gap-4 bg-[#282828] py-8 px-4 border-b-2 border-gray-500'>
                 <div className='cursor-pointer'>
                     <Link href={`/${slugify(subCategoriesByCategoryId?.data?.name)}-${subCategoriesByCategoryId?.data?.id}`}>
                         <Image

@@ -7,7 +7,7 @@ const NewAssets = ({ categories }) => {
     return (
         // <div className="bg-[url('/assets/bgImage/bgBlack.jpeg')] bg-cover bg-center w-full text-white p-5">
         <div className="bg-[#141414] text-white p-5">
-            <div className='bg-thirdColor border-black'>
+            <div className='bg-black border-black'>
                 <h2 className='text-center font-semibold text-2xl text-white p-2'>New Assets</h2>
             </div>
             {/* <h2 className='text-center font-semibold text-2xl text-white p-2'>New Assets</h2> */}
