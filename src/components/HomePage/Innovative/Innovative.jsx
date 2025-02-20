@@ -8,7 +8,7 @@ const Innovative = ({ innovatives }) => {
         <div className='relative'>
             <div className='relative'>
                 <Image
-                    src={ innovatives?.bgImg ?  process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + category.image : 'https://i.ibb.co/0V8cTj0R/MF-M1.jpg' }
+                    src={ innovatives?.bgImg ?  process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + innovatives?.bgImg : 'https://i.ibb.co/0V8cTj0R/MF-M1.jpg' }
                     height={500}
                     width={500}
                     alt={innovatives.title}
