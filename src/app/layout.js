@@ -76,7 +76,8 @@ export default async function RootLayout({ children }) {
           socials={socials?.data}
         />
       </body>
-
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5557791257949251"
+     crossorigin="anonymous"></script>
       <GoogleAnalytics gaId="G-JCLNX11Z2V" />
     </html>
   );
