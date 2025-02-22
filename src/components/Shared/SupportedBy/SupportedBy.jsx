@@ -31,13 +31,13 @@ const SupportedBy = ({ supportedby }) => {
                     // <div className="bg-[url('/assets/bgImage/bgGray.jpeg')] bg-cover bg-center w-full text-white p-5">
                     <div className="bg-[#141414] w-full text-white p-5 border-b-2 border-gray-500">
                         <h2 className='text-center font-semibold text-2xl '>{support?.title}</h2>
-                        <div className='grid grid-cols-2 lg:grid-cols-5 gap-5 mt-10'>
+                        <div className='grid grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-5 mt-10'>
                             <Image
                                 src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + support.imageOne}
                                 alt={support?.short_description}
                                 width={500}
                                 height={500}
-                                className='w-[200px] h-[200px] mx-auto'
+                                className='md:w-[20px] md:h-[50px] lg:w-[200px] lg:h-[200px] mx-auto'
                             />
 
                             <Image
@@ -45,7 +45,7 @@ const SupportedBy = ({ supportedby }) => {
                                 alt={support?.short_description}
                                 width={500}
                                 height={500}
-                                className='w-[200px] h-[200px] mx-auto'
+                                className='md:w-[20px] md:h-[50px] lg:w-[200px] lg:h-[200px] mx-auto'
                             />
 
                             <Image
@@ -53,7 +53,7 @@ const SupportedBy = ({ supportedby }) => {
                                 alt={support?.short_description}
                                 width={500}
                                 height={500}
-                                className='w-[200px] h-[200px] mx-auto'
+                                className='md:w-[20px] md:h-[50px] lg:w-[200px] lg:h-[200px] mx-auto'
                             />
 
                             <Image
@@ -61,7 +61,7 @@ const SupportedBy = ({ supportedby }) => {
                                 alt={support?.short_description}
                                 width={500}
                                 height={500}
-                                className='w-[200px] h-[200px] mx-auto'
+                                className='md:w-[20px] md:h-[50px] lg:w-[200px] lg:h-[200px] mx-auto'
                             />
 
                             <Image
@@ -69,7 +69,7 @@ const SupportedBy = ({ supportedby }) => {
                                 alt={support?.short_description}
                                 width={500}
                                 height={500}
-                                className='w-[200px] h-[200px] mx-auto'
+                                className='md:w-[20px] md:h-[50px] lg:w-[200px] lg:h-[200px] mx-auto'
                             />
                         </div>
                     </div>
