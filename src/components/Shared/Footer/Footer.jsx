@@ -24,20 +24,37 @@ const Footer = ({ categories, footerPages, socials }) => {
                         </div>
                     </div>
 
-                    <div className='flex justify-center'>
-                        <div className=''>
-                            <p className='font-semibold'> Company</p>
-                            <div className='text-sm mt-2'>
-                                {
-                                    footerPages?.map((footerPage) => (
-                                        <div key={footerPage?.id}>
-                                            {footerPage?.slug && <Link href={`/pages/${footerPage?.slug}-${footerPage?.id}`} ><p className='mb-1'>{footerPage?.title}</p></Link>}
+                    <div className="flex justify-center">
+                        <div>
+                            <p className="font-semibold">Company</p>
+                            <div className="text-sm mt-2">
+                                {footerPages?.map((footerPage) => {
+                                    if (!footerPage?.slug) return null; // Ensure slug exists
+
+                                    // Define custom routes for specific slugs
+                                    const customRoutes = {
+                                        "about-us": "/about-us",
+                                        "license": "/license",
+                                        "privacy": "/privacy",
+                                        "terms-and-conditions": "/terms-and-conditions",
+                                        "blogs": "/blogs",
+                                    };
+
+                                    // Determine the href
+                                    const href = customRoutes[footerPage.slug]
+
+                                    return (
+                                        <div key={footerPage.id}>
+                                            <Link href={href}>
+                                                <p className="mb-1">{footerPage.title}</p>
+                                            </Link>
                                         </div>
-                                    ))
-                                }
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>
+
 
 
                     <div className='flex md:justify-end justify-center'>
@@ -75,18 +92,35 @@ const Footer = ({ categories, footerPages, socials }) => {
 
 
 
-                        <div className=''>
-                            <h4 className='font-semibold'> Company</h4>
-                            <div className='text-xs mt-2'>
-                                {
-                                    footerPages?.map((footerPage) => (
-                                        <div key={footerPage?.id}>
-                                            {footerPage?.slug && <Link href={`/pages/${footerPage?.slug}-${footerPage?.id}`} ><p className='mb-1'>{footerPage?.title}</p></Link>}
+                        <div>
+                            <h4 className="font-semibold">Company</h4>
+                            <div className="text-xs mt-2">
+                                {footerPages?.map((footerPage) => {
+                                    if (!footerPage?.slug) return null; // Ensure slug exists
+
+                                    // Define custom routes for specific slugs
+                                    const customRoutes = {
+                                        "about-us": "/about-us",
+                                        "license": "/license",
+                                        "privacy": "/privacy",
+                                        "terms-and-conditions": "/terms-and-conditions",
+                                        "blogs": "/blogs",
+                                    };
+
+                                    // Determine the href
+                                    const href = customRoutes[footerPage.slug] || `/pages/${footerPage.slug}-${footerPage.id}`;
+
+                                    return (
+                                        <div key={footerPage.id}>
+                                            <Link href={href}>
+                                                <p className="mb-1">{footerPage.title}</p>
+                                            </Link>
                                         </div>
-                                    ))
-                                }
+                                    );
+                                })}
                             </div>
                         </div>
+
 
                     </div>
 

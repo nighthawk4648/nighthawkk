@@ -8,10 +8,10 @@ const Page = async ({params}) => {
     const pageId = pageName?.split("-").slice(-1);
    
 
-    const footerPage = await getData(`pages/${pageId}`);
+    const footerPage = await getData(`pages/${1}`);
 
     return (
-        <div>
+        <div className='mx-[20px] '>
             {  footerPage?.data?.content && <div  dangerouslySetInnerHTML={{ __html: footerPage?.data?.content }}  ></div> }
         </div>
     );
