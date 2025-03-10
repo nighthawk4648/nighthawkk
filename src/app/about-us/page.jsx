@@ -1,6 +1,12 @@
 import getData from '@/utils/getData';
 import React from 'react';
 
+export const metadata = {
+    title: 'About/Connect',
+    description: '',
+  };
+  
+
 const AboutUs = async () => {
 
 

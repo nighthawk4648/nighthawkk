@@ -2,6 +2,12 @@
 import getData from '@/utils/getData';
 import React from 'react';
 
+export const metadata = {
+    title: 'Terms and Conditions',
+    description: '',
+  };
+  
+
 const TermsAndCondition = async () => {
 
 

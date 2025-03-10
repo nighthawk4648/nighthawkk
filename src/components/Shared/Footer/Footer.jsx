@@ -1,9 +1,6 @@
 import slugify from '@/utils/slugify';
 import Link from 'next/link';
 import React from 'react';
-import { FaSquarePhone } from 'react-icons/fa6';
-import { IoLogoWhatsapp } from 'react-icons/io5';
-import { MdEmail, MdLocalPhone } from 'react-icons/md';
 
 const Footer = ({ categories, footerPages, socials }) => {
     return (
