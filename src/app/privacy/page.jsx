@@ -3,6 +3,10 @@
 import getData from '@/utils/getData';
 import React from 'react';
 
+export const metadata = {
+    title: 'Privacy Policy',
+    description: 'Read out privacy policy include third party services',
+  };
 const privacy = async () => {
 
 
