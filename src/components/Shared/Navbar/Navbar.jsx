@@ -43,7 +43,7 @@ const Navbar = ({ categories, footerPages }) => {
 
 									</div>
 
-									<p className="font-semibold text-white"><Link href={`/pages/${footerPage?.slug}-${footerPage?.id}`}>{footerPage?.title}</Link></p>
+									<p className="font-semibold text-white"><Link href='https://blog.sketchshaper.com/'>BLOG</Link> </p>
 
 									<p className="font-semibold text-white"><Link href="/">HOME</Link></p>
 									<div className="group py-3">
