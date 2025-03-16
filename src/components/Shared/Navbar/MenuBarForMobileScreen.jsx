@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { MdDashboard, MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
-import { IoIosArrowDown } from "react-icons/io";
 import slugify from '@/utils/slugify';
 
 

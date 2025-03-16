@@ -22,32 +22,32 @@ const Blogs = async () => {
         {
             imageSrc: img1,
             title: "LUMION 2023\n150 WOOD FLOOR\nMATERIALS LIBRARY",
-            href: "/materials/wood-floor"
+            href: "/blog-details"
         },
         {
             imageSrc: img2,
             title: "",
-            href: "/materials/pavement"
+            href: "/blog-details"
         },
         {
             imageSrc: img3,
             title: "",
-            href: "/materials/wood-wall"
+            href: "/blog-details"
         },
         {
             imageSrc: img4,
             title: "",
-            href: "/materials/city"
+            href: "/blog-details"
         },
         {
             imageSrc: img5,
             title: "LUMION",
-            href: "/materials/terrain"
+            href: "/blog-details"
         },
         {
             imageSrc: img6,
             title: "",
-            href: "/materials/cobblestone"
+            href: "/blog-details"
         },
     ];
 
