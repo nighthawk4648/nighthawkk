@@ -14,7 +14,7 @@ const privacy = async () => {
     const footerPage = await getData(`pages/${3}`);
 
     return (
-        <div className='mx-[20px] '>
+        <div className='bg-[#141414] text-white p-4 flex flex-col items-center'>
             {footerPage?.data?.content && <div dangerouslySetInnerHTML={{ __html: footerPage?.data?.content }}  ></div>}
         </div>
     );
