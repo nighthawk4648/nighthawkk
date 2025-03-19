@@ -22,7 +22,7 @@ const Blogs = async () => {
         {
             imageSrc: img1,
             title: "LUMION 2023\n150 WOOD FLOOR\nMATERIALS LIBRARY",
-            href: "/blog-details"
+            href: "/rbzconverter"
         },
         {
             imageSrc: img2,
