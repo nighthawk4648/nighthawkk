@@ -28,7 +28,7 @@ const Navbar = ({ categories, footerPages }) => {
                             <p className="font-bold text-white text-lg"><Link href="/">Sketchshaper</Link></p>
                         </div>
                         <div className="flex items-center gap-5">
-                            <Link href="https://sketchshaper.com/ziptorbz.html">
+                            <Link href="/rbzconverter">
                                 <button className="px-4 py-2 border border-white text-white font-semibold rounded-lg hover:bg-white hover:text-black transition">
                                     ZIP 2 RBZ
                                 </button>
