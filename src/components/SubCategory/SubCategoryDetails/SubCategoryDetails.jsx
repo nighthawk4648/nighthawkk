@@ -13,6 +13,7 @@ import 'swiper/css/thumbs';
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
 // import Image from 'next/image';
 import Link from 'next/link';
+import { Image } from '@imagekit/next';
 
 const SubCategoryDetails = ({ assetDetails }) => {
 
