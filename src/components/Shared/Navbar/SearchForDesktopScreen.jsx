@@ -28,14 +28,10 @@ const SearchForDesktopScreen = () => {
         fetcher
     );
 
-    console.log("searchData", searchData);
-
     const { data: categoryById, categoryIsLoading, } = useSWR(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/categories/${categoryId}`,
         fetcher
     );
-
-    console.log("setCategoryId", setCategoryId);
 
 
 

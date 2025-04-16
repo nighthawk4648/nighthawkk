@@ -23,8 +23,6 @@ export async function generateMetadata({ params }) {
 
 const Page = ({params}) => {
 
-    console.log("params", params);
-
     const {category, subCategoryName} = params;
 
     const categoryId = category?.split("-").slice(-1);

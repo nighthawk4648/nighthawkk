@@ -7,9 +7,6 @@ import all_sub_cat_image from '../../../../public/assets/sub_category/all.png'
 const SubCategory = ({ subCategoriesByCategoryId }) => {
 
 
-    console.log("subCategoriesByCategoryId", subCategoriesByCategoryId);
-
-
     return (
         <div>
             <div className='bg-primary py-2'>

@@ -33,9 +33,6 @@ const SearchForMobileScreen = () => {
     );
 
 
-    console.log("searchData", searchData);
-
-
 
 
     // const {

@@ -16,8 +16,6 @@ import Link from 'next/link';
 
 const SubCategoryDetails = ({ assetDetails }) => {
 
-    console.log("assetDetails", assetDetails);
-
     const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
     return (
