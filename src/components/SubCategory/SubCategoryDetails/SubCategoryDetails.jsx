@@ -11,7 +11,7 @@ import 'swiper/css/thumbs';
 
 // import required modules
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
-import Image from 'next/image';
+// import Image from 'next/image';
 import Link from 'next/link';
 
 const SubCategoryDetails = ({ assetDetails }) => {
@@ -37,6 +37,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
                         assetDetails?.images?.map((image) => (
                             <SwiperSlide key={image?.id}>
                                 <Image
+                                        urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
                                         src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + image?.image}
                                         alt=''
                                         height={1600}
@@ -90,6 +91,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
                             assetDetails?.images?.map((image, index) => (
                                 <SwiperSlide key={image?.id} className=''>
                                     <Image
+                                        urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
                                         src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + image?.image}
                                         alt=''
                                         height={150}

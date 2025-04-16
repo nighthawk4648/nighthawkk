@@ -1,7 +1,8 @@
 import React from 'react';
-import Image from 'next/image';
+// import Image from 'next/image';
 import Link from 'next/link';
 import slugify from '@/utils/slugify';
+import { Image } from '@imagekit/next';
 
 const Features = ({ categories }) => {
     // Sort categories in ascending order by id
@@ -20,6 +21,7 @@ const Features = ({ categories }) => {
                         <div className='text-center'>
                             {category.image && (
                                 <Image
+                                    urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
                                     src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + category.image}
                                     height={1000}
                                     width={1000}

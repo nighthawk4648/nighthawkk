@@ -1,5 +1,6 @@
 import slugify from '@/utils/slugify';
-import Image from 'next/image';
+import { Image } from '@imagekit/next';
+// import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
@@ -15,7 +16,8 @@ const Explore = ({ categories }) => {
                     ?.map((asset, index) => (
                        <Link href={`/${slugify(categories?.[0]?.name)}/${slugify(categories?.[0]?.sub_categories?.[0]?.name)}/${slugify(asset?.name)}-${asset?.id}`}>
                         <Image
-                            key={index} 
+                            urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
+                           key={index} 
                             src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${asset?.cover}`}
                             alt="Interior Design"
                             width={500}

@@ -1,8 +1,9 @@
 import slugify from '@/utils/slugify';
-import Image from 'next/image';
+// import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 import all_sub_cat_image from '../../../../public/assets/sub_category/all.png'
+import { Image } from '@imagekit/next';
 
 const SubCategory = ({ subCategoriesByCategoryId }) => {
 
@@ -17,6 +18,7 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                 <div className='cursor-pointer'>
                     <Link href={`/${slugify(subCategoriesByCategoryId?.data?.name)}-${subCategoriesByCategoryId?.data?.id}`}>
                         <Image
+                            urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
                             src={all_sub_cat_image}
                             height={400}
                             width={500}
@@ -36,6 +38,7 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                         >
                             <Link href={`${slugify(subCategoriesByCategoryId?.data?.name)}-${subCategoriesByCategoryId?.data?.id}/${slugify(subCategory?.name)}-${subCategory?.id}`}>
                                 {subCategory?.image && <Image
+                                    urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
                                     src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + subCategory?.image}
                                     height={400}
                                     width={500}
@@ -69,6 +72,7 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                             <div className='relative'>
                                 {asset?.cover && (
                                     <Image
+                                        urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
                                         src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + asset?.cover}
                                         height={400}
                                         width={400}

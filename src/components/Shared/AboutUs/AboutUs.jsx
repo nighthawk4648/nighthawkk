@@ -1,4 +1,5 @@
-import Image from 'next/image';
+// import Image from 'next/image';
+import { Image } from '@imagekit/next';
 import React from 'react';
 
 const AboutUs = ({ aboutUs }) => {
@@ -26,6 +27,7 @@ const AboutUs = ({ aboutUs }) => {
                 <div className='md:w-[50%] mx-auto md:mt-0 mt-10 md:flex md:items-center md:justify-center gap-5'>
                     <div>
                         <Image
+                            urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
                             src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE +
                                 aboutUs?.cover}
                             height={800}

@@ -1,7 +1,8 @@
-import Image from 'next/image';
+// import Image from 'next/image';
 import React from 'react';
 import slugify from '@/utils/slugify';
 import Link from 'next/link';
+import { Image } from '@imagekit/next';
 
 const NewAssets = ({ categories }) => {
     return (
@@ -19,6 +20,7 @@ const NewAssets = ({ categories }) => {
                         <Link href={`/${slugify(categories?.[2]?.name)}/${slugify(categories?.[2]?.sub_categories?.[0]?.name)}/${slugify(assets?.name)}-${assets?.id}`}>
                             {assets?.cover && (
                                 <Image
+                                    urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
                                     src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + assets?.cover}
                                     height={800}
                                     width={800}
@@ -66,6 +68,7 @@ const NewAssets = ({ categories }) => {
                         <Link href={`/${slugify(categories?.[1]?.name)}/${slugify(categories?.[1]?.sub_categories?.[0]?.name)}/${slugify(assets?.name)}-${assets?.id}`}>
                             {assets?.cover && (
                                 <Image
+                                    urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
                                     src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + assets?.cover}
                                     height={800}
                                     width={800}

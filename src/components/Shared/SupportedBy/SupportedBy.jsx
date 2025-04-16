@@ -17,7 +17,8 @@
 // export default SupportedBy;
 
 
-import Image from 'next/image';
+// import Image from 'next/image';
+import { Image } from '@imagekit/next';
 import React from 'react';
 // import prime from '/assets/SupportedBy/prime.png';
 
@@ -33,6 +34,7 @@ const SupportedBy = ({ supportedby }) => {
                         <h2 className='text-center font-semibold text-2xl '>{support?.title}</h2>
                         <div className='grid grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-5 mt-10'>
                             <Image
+                                urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
                                 src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + support.imageOne}
                                 alt={support?.short_description}
                                 width={500}
@@ -41,6 +43,7 @@ const SupportedBy = ({ supportedby }) => {
                             />
 
                             <Image
+                                urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
                                 src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + support.imageTwo}
                                 alt={support?.short_description}
                                 width={500}
@@ -49,6 +52,7 @@ const SupportedBy = ({ supportedby }) => {
                             />
 
                             <Image
+                                urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
                                 src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + support.imageThree}
                                 alt={support?.short_description}
                                 width={500}
@@ -57,6 +61,7 @@ const SupportedBy = ({ supportedby }) => {
                             />
 
                             <Image
+                                urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
                                 src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + support.imageFour}
                                 alt={support?.short_description}
                                 width={500}
@@ -65,6 +70,7 @@ const SupportedBy = ({ supportedby }) => {
                             />
 
                             <Image
+                                urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
                                 src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + support.imageFive}
                                 alt={support?.short_description}
                                 width={500}
