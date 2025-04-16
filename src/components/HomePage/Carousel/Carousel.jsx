@@ -9,15 +9,14 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
 import { Autoplay, Pagination, Navigation } from 'swiper/modules'
+import { Image } from '@imagekit/next';
 
-import Image from 'next/image';
+
+// import Image from 'next/image';
 
 
 
 const Carousel = ({carousels}) => {
-
-    console.log("carousels", carousels);
-   
 
     return (
         <div>
@@ -42,6 +41,7 @@ const Carousel = ({carousels}) => {
                             <SwiperSlide key={carousel?.id}>
                                 <div className="relative">
                                   <Image
+                                         urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
                                         src={ process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE +
                                             carousel?.image}
                                         height={800}
@@ -54,6 +54,7 @@ const Carousel = ({carousels}) => {
                                 <div className="absolute inset-0 flex items-center justify-center ">
                                     <div>
                                        { carousel?.logo && <Image 
+                                         urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
                                             src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE +
                                                 carousel?.logo}
                                             height={500}
