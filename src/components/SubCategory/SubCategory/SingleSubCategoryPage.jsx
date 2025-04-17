@@ -3,10 +3,10 @@ import slugify from '@/utils/slugify';
 import React from 'react';
 
 import all_sub_cat_image from '../../../../public/assets/sub_category/all.png'
-// import Image from 'next/image';
+import Image from 'next/image';
 import getData from '@/utils/getData';
 import Link from 'next/link';
-import { Image } from '@imagekit/next';
+import { getOptimizedImageUrl } from '@/utils/cloudinary';
 
 
 
@@ -21,6 +21,11 @@ const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
     // Sort the assets in descending order based on id
     const sortedAssets = assetBySubCategoryId?.data?.assets?.slice().sort((a, b) => b.id - a.id);
 
+    const getOriginalImageUrl = (imagePath) => {
+        return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
+    };
+
+
 
     return (
         <div>
@@ -33,7 +38,7 @@ const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
                 <div className='cursor-pointer'>
                     <Link href={`/${slugify(subCategoriesByCategoryId?.data?.name)}-${subCategoriesByCategoryId?.data?.id}`}>
                         <Image
-                            urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
+                          
                             src={all_sub_cat_image}
                             height={400}
                             width={500}
@@ -52,8 +57,7 @@ const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
                         <div className='cursor-pointer' key={subCategory?.id} >
                             <Link href={`${slugify(subCategory?.name)}-${subCategory?.id}`}>
                                 {subCategory?.image && <Image
-                                    urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
-                                    src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + subCategory?.image}
+                                     src={getOptimizedImageUrl(getOriginalImageUrl(subCategory?.image))}
                                     height={400}
                                     width={500}
                                     alt={subCategory?.name}
@@ -80,8 +84,8 @@ const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
                                 key={assets?.id}>
                                 <Link href={`/${slugify(assetBySubCategoryId?.data?.category?.name)}/${slugify(assetBySubCategoryId?.data?.name)}/${slugify(assets?.name)}-${assets?.id}`}>
                                     {assets?.cover && <Image
-                                        urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
-                                        src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + assets?.cover}
+                                
+                                        src={getOptimizedImageUrl(getOriginalImageUrl(assets?.cover))}
                                         height={400}
                                         width={400}
                                         alt={assets?.name}

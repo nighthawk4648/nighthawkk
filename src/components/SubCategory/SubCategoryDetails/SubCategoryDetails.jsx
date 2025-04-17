@@ -11,13 +11,19 @@ import 'swiper/css/thumbs';
 
 // import required modules
 import { FreeMode, Navigation, Thumbs } from 'swiper/modules';
-// import Image from 'next/image';
+import Image from 'next/image';
 import Link from 'next/link';
-import { Image } from '@imagekit/next';
+import { getOptimizedImageUrl } from '@/utils/cloudinary';
+
 
 const SubCategoryDetails = ({ assetDetails }) => {
 
     const [thumbsSwiper, setThumbsSwiper] = useState(null);
+
+    const getOriginalImageUrl = (imagePath) => {
+        return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
+    };
+
 
     return (
         <div className=''>
@@ -38,14 +44,13 @@ const SubCategoryDetails = ({ assetDetails }) => {
                         assetDetails?.images?.map((image) => (
                             <SwiperSlide key={image?.id}>
                                 <Image
-                                        urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
-                                        src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + image?.image}
-                                        alt=''
-                                        height={1600}
-                                        width={1600}
-                                        className='md:w-[1147px] mx-auto md:h-[578px] w-full h-[200px] rounded-md' 
+                                    src={getOptimizedImageUrl(getOriginalImageUrl(image?.image))}
+                                    alt=''
+                                    height={1600}
+                                    width={1600}
+                                    className='md:w-[1147px] mx-auto md:h-[578px] w-full h-[200px] rounded-md'
 
-                                    />
+                                />
                             </SwiperSlide>
 
                         ))
@@ -92,8 +97,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
                             assetDetails?.images?.map((image, index) => (
                                 <SwiperSlide key={image?.id} className=''>
                                     <Image
-                                        urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
-                                        src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + image?.image}
+                                        src={getOptimizedImageUrl(getOriginalImageUrl(image?.image))}
                                         alt=''
                                         height={150}
                                         width={150}
@@ -118,7 +122,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
                 <h3 className='text-sm'> <span className='font-semibold'>Resolution - </span> <span className='text-xs'>{assetDetails?.resolution}</span></h3>
 
                 <div className='w-48 mx-auto p-1 bg-primary mt-10 rounded-md cursor-pointer border-b-2 border-gray-500'>
-                   { assetDetails?.download_link && <Link href={assetDetails?.download_link} target="_blank" ><p className='font-semibold text-center'>DOWNLOAD</p></Link>}
+                    {assetDetails?.download_link && <Link href={assetDetails?.download_link} target="_blank" ><p className='font-semibold text-center'>DOWNLOAD</p></Link>}
                 </div>
             </div>
         </div>

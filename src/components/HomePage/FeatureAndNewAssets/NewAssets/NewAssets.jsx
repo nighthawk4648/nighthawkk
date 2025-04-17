@@ -1,10 +1,15 @@
-// import Image from 'next/image';
+import Image from 'next/image';
 import React from 'react';
 import slugify from '@/utils/slugify';
 import Link from 'next/link';
-import { Image } from '@imagekit/next';
+import { getOptimizedImageUrl } from '@/utils/cloudinary';
 
 const NewAssets = ({ categories }) => {
+    
+    const getOriginalImageUrl = (imagePath) => {
+        return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
+    }; 
+
     return (
         // <div className="bg-[url('/assets/bgImage/bgBlack.jpeg')] bg-cover bg-center w-full text-white p-5">
         <div className="bg-[#141414] text-white p-5">
@@ -20,8 +25,7 @@ const NewAssets = ({ categories }) => {
                         <Link href={`/${slugify(categories?.[2]?.name)}/${slugify(categories?.[2]?.sub_categories?.[0]?.name)}/${slugify(assets?.name)}-${assets?.id}`}>
                             {assets?.cover && (
                                 <Image
-                                    urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
-                                    src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + assets?.cover}
+                                    src={getOptimizedImageUrl(getOriginalImageUrl(assets?.cover))}
                                     height={800}
                                     width={800}
                                     alt=''
@@ -68,8 +72,7 @@ const NewAssets = ({ categories }) => {
                         <Link href={`/${slugify(categories?.[1]?.name)}/${slugify(categories?.[1]?.sub_categories?.[0]?.name)}/${slugify(assets?.name)}-${assets?.id}`}>
                             {assets?.cover && (
                                 <Image
-                                    urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
-                                    src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + assets?.cover}
+                                    src={getOptimizedImageUrl(getOriginalImageUrl(assets?.cover))}
                                     height={800}
                                     width={800}
                                     alt=''

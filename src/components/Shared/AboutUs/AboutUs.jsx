@@ -1,8 +1,13 @@
-// import Image from 'next/image';
-import { Image } from '@imagekit/next';
+import { getOptimizedImageUrl } from '@/utils/cloudinary';
+import Image from 'next/image';
 import React from 'react';
 
 const AboutUs = ({ aboutUs }) => {
+
+    const getOriginalImageUrl = (imagePath) => {
+        return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
+    }; 
+
     return (
         // <div className="bg-[url('/assets/bgImage/bgBlack.jpeg')] bg-cover bg-center w-full text-white p-5">
         <div className="bg-black w-full text-white p-5">
@@ -27,9 +32,7 @@ const AboutUs = ({ aboutUs }) => {
                 <div className='md:w-[50%] mx-auto md:mt-0 mt-10 md:flex md:items-center md:justify-center gap-5'>
                     <div>
                         <Image
-                            urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
-                            src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE +
-                                aboutUs?.cover}
+                                src={getOptimizedImageUrl(getOriginalImageUrl(aboutUs?.cover))}
                             height={800}
                             width={1300}
                             className='w-[300px] h-[300px] mx-auto rounded-full'

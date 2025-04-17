@@ -1,10 +1,15 @@
+import { getOptimizedImageUrl } from '@/utils/cloudinary';
 import slugify from '@/utils/slugify';
-import { Image } from '@imagekit/next';
-// import Image from 'next/image';
+import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
 const Explore = ({ categories }) => {
+    
+    const getOriginalImageUrl = (imagePath) => {
+        return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
+    }; 
+
     return (
         // <div className="bg-[url('/assets/bgImage/bgGray.jpeg')] bg-cover bg-center w-full text-white p-5">
         <div className=" bg-[#141414] w-full text-white p-5">
@@ -16,9 +21,8 @@ const Explore = ({ categories }) => {
                     ?.map((asset, index) => (
                        <Link href={`/${slugify(categories?.[0]?.name)}/${slugify(categories?.[0]?.sub_categories?.[0]?.name)}/${slugify(asset?.name)}-${asset?.id}`}>
                         <Image
-                            urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
                            key={index} 
-                            src={`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${asset?.cover}`}
+                            src={getOptimizedImageUrl(getOriginalImageUrl(asset?.cover))}
                             alt="Interior Design"
                             width={500}
                             height={500}

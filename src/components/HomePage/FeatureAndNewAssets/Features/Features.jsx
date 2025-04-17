@@ -1,12 +1,16 @@
 import React from 'react';
-// import Image from 'next/image';
+import Image from 'next/image';
 import Link from 'next/link';
 import slugify from '@/utils/slugify';
-import { Image } from '@imagekit/next';
+import { getOptimizedImageUrl } from '@/utils/cloudinary';
 
 const Features = ({ categories }) => {
     // Sort categories in ascending order by id
     const sortedCategories = categories.slice().sort((a, b) => a.id - b.id);
+
+    const getOriginalImageUrl = (imagePath) => {
+        return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
+    }; 
 
     return (
         // <div className="bg-[url('/assets/bgImage/bgGray.jpeg')] bg-cover bg-center w-full text-white p-5">
@@ -21,8 +25,7 @@ const Features = ({ categories }) => {
                         <div className='text-center'>
                             {category.image && (
                                 <Image
-                                    urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
-                                    src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + category.image}
+                                     src={getOptimizedImageUrl(getOriginalImageUrl(category.image))}
                                     height={1000}
                                     width={1000}
                                     alt={category.name}

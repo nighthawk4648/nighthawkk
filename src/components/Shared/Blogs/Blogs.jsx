@@ -1,11 +1,16 @@
+import { getOptimizedImageUrl } from '@/utils/cloudinary';
 import { formatDate } from '@/utils/formateDate';
-import { Image } from '@imagekit/next';
-// import Image from 'next/image';
+import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
 const Blogs = ({ blogs }) => {
     const lastBlog = blogs[blogs.length - 1];
+   
+    const getOriginalImageUrl = (imagePath) => {
+        return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
+    }; 
+
     return (
         // <div className="bg-[url('/assets/bgImage/bgBlack.jpeg')] bg-cover bg-center w-full text-white p-5">
         <div className="bg-black text-white p-5 border-b-2 border-gray-500 ">
@@ -14,8 +19,7 @@ const Blogs = ({ blogs }) => {
                 <div>
                    <Link href={`${lastBlog?.back_link}`}>
                    <Image
-                        urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
-                        src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + lastBlog?.image}
+                        src={getOptimizedImageUrl(getOriginalImageUrl(lastBlog?.image))}
                         alt={lastBlog?.title}
                         width={500}
                         height={500}
@@ -45,8 +49,7 @@ const Blogs = ({ blogs }) => {
                             <div>
                                 <Link href={`${blog?.back_link}`}>
                                 <Image
-                                    urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
-                                    src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + blog.image}
+                                    src={getOptimizedImageUrl(getOriginalImageUrl(blog.image))}
                                     alt={blog?.title}
                                     width={500}
                                     height={500}

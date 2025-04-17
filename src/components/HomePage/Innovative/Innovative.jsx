@@ -1,10 +1,15 @@
-// import Image from 'next/image';
-import { Image } from '@imagekit/next';
+import { getOptimizedImageUrl } from '@/utils/cloudinary';
+import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 import { AiFillPlusCircle } from 'react-icons/ai';
 
 const Innovative = ({ innovatives }) => {
+   
+    const getOriginalImageUrl = (imagePath) => {
+        return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
+    }; 
+   
     return (
         <div>
             {
@@ -12,8 +17,7 @@ const Innovative = ({ innovatives }) => {
                     <div className='relative'>
                         <div className='relative'>
                             <Image
-                                urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
-                                src={innovative?.bgImg ? process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE + innovative?.bgImg : 'https://i.ibb.co/0V8cTj0R/MF-M1.jpg'}
+                                src={getOptimizedImageUrl(getOriginalImageUrl(innovative?.bgImg ))}
                                 height={1600}
                                 width={1600}
                                 alt={innovative.title}

@@ -9,15 +9,16 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
 import { Autoplay, Pagination, Navigation } from 'swiper/modules'
-import { Image } from '@imagekit/next';
 
-
-// import Image from 'next/image';
-
-
+import Image from 'next/image';
+import { getOptimizedImageUrl } from '@/utils/cloudinary';
 
 const Carousel = ({carousels}) => {
 
+    const getOriginalImageUrl = (imagePath) => {
+        return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
+    }; 
+   
     return (
         <div>
 
@@ -41,9 +42,7 @@ const Carousel = ({carousels}) => {
                             <SwiperSlide key={carousel?.id}>
                                 <div className="relative">
                                   <Image
-                                         urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
-                                        src={ process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE +
-                                            carousel?.image}
+                                        src={getOptimizedImageUrl(getOriginalImageUrl(carousel?.image))}
                                         height={800}
                                         width={1300}
                                         className='w-full md:h-[800px] h-[300px]'
@@ -54,9 +53,7 @@ const Carousel = ({carousels}) => {
                                 <div className="absolute inset-0 flex items-center justify-center ">
                                     <div>
                                        { carousel?.logo && <Image 
-                                         urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT}
-                                            src={process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE +
-                                                carousel?.logo}
+                                            src={getOptimizedImageUrl(getOriginalImageUrl(carousel?.logo))}
                                             height={500}
                                             width={500}
                                             className='md:w-48 w-24 mx-auto h-auto'
