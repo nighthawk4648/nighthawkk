@@ -3,6 +3,7 @@ import { useEffect } from "react";
 // Replace the problematic section with this
 export  const HorizontalBanner = () => {
     useEffect(() => {
+        console.log("hello")
       try {
         // Initialize ads when component mounts
         (window.adsbygoogle = window.adsbygoogle || []).push({});
