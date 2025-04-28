@@ -7,6 +7,7 @@ import Image from 'next/image';
 import getData from '@/utils/getData';
 import Link from 'next/link';
 import { getOptimizedImageUrl } from '@/utils/cloudinary';
+import { HorizontalBanner } from '@/components/Shared/GoogleAdsense/HorizontalBanner';
 
 
 
@@ -126,6 +127,8 @@ const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
 
                 </div>
 
+            
+
                 {
                     subCategoriesByCategoryId?.data?.sub_categories?.map((subCategory) => (
                         <div className='cursor-pointer' key={subCategory?.id} >
@@ -146,6 +149,8 @@ const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
                     ))
                 }
             </div>
+
+            <HorizontalBanner/>
 
 
 
