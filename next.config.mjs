@@ -61,6 +61,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
+    unoptimized: true,
     // Remove the unoptimized: true line since we want to use Cloudinary's optimization
     domains: ['res.cloudinary.com', 'https://api.nighthawkk.com/api'], // Add your hosting domain
     remotePatterns: [
