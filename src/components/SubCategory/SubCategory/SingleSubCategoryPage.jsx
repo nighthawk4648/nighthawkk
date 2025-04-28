@@ -1,6 +1,6 @@
 'use client'
 import slugify from '@/utils/slugify';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import all_sub_cat_image from '../../../../public/assets/sub_category/all.png'
 import Image from 'next/image';
@@ -28,28 +28,34 @@ const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
 
     // AdSense component to insert between cards
     const AdUnit = ({ slotId }) => {
+        const adRef = useRef(null);
+      
         useEffect(() => {
-            // Initialize ads when component mounts
+          if (typeof window !== "undefined" && window.adsbygoogle && adRef.current) {
             try {
+              if (!adRef.current.getAttribute('data-adsbygoogle-status')) {
                 (window.adsbygoogle = window.adsbygoogle || []).push({});
+              }
             } catch (error) {
-                console.error('AdSense error:', error);
+              console.error('AdSense error:', error);
             }
+          }
         }, []);
-
+      
         return (
-            <div className="border-4 border-gray-800 shadow-lg rounded-xl p-6 flex items-center justify-center">
-                <ins
-                    className="adsbygoogle"
-                    style={{ display: 'block', width: '100%', height: '100%' }}
-                    data-ad-client="ca-pub-5557791257949251" // Your publisher ID
-                    data-ad-slot={slotId} // Replace with your ad slot ID
-                    data-ad-format="auto"
-                    data-full-width-responsive="true"
-                />
-            </div>
+          <div className="border-4 border-gray-800 shadow-lg rounded-xl p-6 flex items-center justify-center">
+            <ins
+              ref={adRef}
+              className="adsbygoogle"
+              style={{ display: 'block', width: '100%', height: '100%' }}
+              data-ad-client="ca-pub-5557791257949251"
+              data-ad-slot={slotId}
+              data-ad-format="auto"
+              data-full-width-responsive="true"
+            />
+          </div>
         );
-    };
+      };
 
 
      // Create array with assets and ads

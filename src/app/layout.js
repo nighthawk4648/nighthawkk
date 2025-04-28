@@ -79,6 +79,12 @@ export default async function RootLayout({ children }) {
       <head>
       <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5557791257949251"
      crossorigin="anonymous"></script>
+
+      {/* <Script
+        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5557791257949251`}
+        strategy="lazyOnload"
+        crossOrigin="anonymous"
+      /> */}
      </head>
       <GoogleAnalytics gaId="G-JCLNX11Z2V" />
     </html>
