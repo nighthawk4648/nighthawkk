@@ -1,6 +1,6 @@
-
+'use client'
 import slugify from '@/utils/slugify';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import all_sub_cat_image from '../../../../public/assets/sub_category/all.png'
 import Image from 'next/image';
@@ -26,6 +26,80 @@ const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
     };
 
 
+    // AdSense component to insert between cards
+    const AdUnit = ({ slotId }) => {
+        const adRef = useRef(null);
+      
+        useEffect(() => {
+          if (typeof window !== "undefined" && window.adsbygoogle && adRef.current) {
+            try {
+              if (!adRef.current.getAttribute('data-adsbygoogle-status')) {
+                (window.adsbygoogle = window.adsbygoogle || []).push({});
+              }
+            } catch (error) {
+              console.error('AdSense error:', error);
+            }
+          }
+        }, []);
+      
+        return (
+          <div className="border-4 border-gray-800 shadow-lg rounded-xl p-6 flex items-center justify-center">
+            <ins
+              ref={adRef}
+              className="adsbygoogle"
+              style={{ display: 'block', width: '100%', height: '100%' }}
+              data-ad-client="ca-pub-5557791257949251"
+              data-ad-slot={slotId}
+              data-ad-format="auto"
+              data-full-width-responsive="true"
+            />
+          </div>
+        );
+      };
+
+
+     // Create array with assets and ads
+     const assetsWithAds = [];
+    
+     if (sortedAssets) {
+         sortedAssets.forEach((asset, index) => {
+             // Add the asset
+             assetsWithAds.push(
+                 <div key={`asset-${asset.id}`}>
+                     <div
+                         className='lg:w-[300px] md:[w-200px] w-full lg:h-[308px] md:[h-200px] h-auto mx-auto mb-5 relative overflow-hidden'
+                     >
+                         <Link href={`/${slugify(assetBySubCategoryId?.data?.category?.name)}/${slugify(assetBySubCategoryId?.data?.name)}/${slugify(asset?.name)}-${asset?.id}`}>
+                             {asset?.cover && <Image
+                                 src={getOptimizedImageUrl(getOriginalImageUrl(asset?.cover))}
+                                 height={400}
+                                 width={400}
+                                 alt={asset?.name}
+                                 className='transform transition-transform duration-1000 hover:scale-150'
+                                 style={{ transformOrigin: 'center' }}
+                             />}
+                         </Link>
+                     </div>
+                     <p className='text-white text-center font-semibold mt-2 z-10 relative'>
+                         <Link href={`/${slugify(assetBySubCategoryId?.data?.category?.name)}/${slugify(assetBySubCategoryId?.data?.name)}/${slugify(asset?.name)}-${asset?.id}`}>
+                             {asset?.name}
+                         </Link>
+                     </p>
+                 </div>
+             );
+             
+             // Insert an ad after every 4th asset
+             if ((index + 1) % 4 === 0 && index < sortedAssets.length - 1) {
+                 assetsWithAds.push(
+                     <AdUnit 
+                         key={`ad-${index}`} 
+                         slotId="9393509366" // Replace with your actual ad slot ID
+                     />
+                 );
+             }
+         });
+     }
+
 
     return (
         <div>
@@ -38,7 +112,7 @@ const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
                 <div className='cursor-pointer'>
                     <Link href={`/${slugify(subCategoriesByCategoryId?.data?.name)}-${subCategoriesByCategoryId?.data?.id}`}>
                         <Image
-                          
+
                             src={all_sub_cat_image}
                             height={400}
                             width={500}
@@ -57,7 +131,7 @@ const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
                         <div className='cursor-pointer' key={subCategory?.id} >
                             <Link href={`${slugify(subCategory?.name)}-${subCategory?.id}`}>
                                 {subCategory?.image && <Image
-                                     src={getOptimizedImageUrl(getOriginalImageUrl(subCategory?.image))}
+                                    src={getOptimizedImageUrl(getOriginalImageUrl(subCategory?.image))}
                                     height={400}
                                     width={500}
                                     alt={subCategory?.name}
@@ -75,31 +149,9 @@ const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
 
 
 
-            <div className=' bg-primary py-8 grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4 px-4'>
-                {
-                    sortedAssets?.map((assets) => (
-                        <div>
-                            <div
-                                className='lg:w-[300px] md:[w-200px] w-full lg:h-[308px] md:[h-200px] h-auto mx-auto mb-5 relative overflow-hidden'
-                                key={assets?.id}>
-                                <Link href={`/${slugify(assetBySubCategoryId?.data?.category?.name)}/${slugify(assetBySubCategoryId?.data?.name)}/${slugify(assets?.name)}-${assets?.id}`}>
-                                    {assets?.cover && <Image
-                                
-                                        src={getOptimizedImageUrl(getOriginalImageUrl(assets?.cover))}
-                                        height={400}
-                                        width={400}
-                                        alt={assets?.name}
-                                        className='transform transition-transform duration-1000 hover:scale-150'
-                                        style={{ transformOrigin: 'center' }}
-                                    ></Image>}
-
-
-                                </Link>
-                            </div>
-                            <p className='text-white text-center font-semibold mt-2 z-10 relative'><Link href={`/${slugify(assetBySubCategoryId?.data?.category?.name)}/${slugify(assetBySubCategoryId?.data?.name)}/${slugify(assets?.name)}-${assets?.id}`}>{assets?.name}</Link></p>
-                        </div>
-                    ))
-                }
+         {/* Grid with assets and ads */}
+         <div className='bg-primary py-8 grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4 px-4'>
+                {assetsWithAds}
             </div>
 
 
