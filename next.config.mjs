@@ -63,7 +63,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
     // Remove the unoptimized: true line since we want to use Cloudinary's optimization
-    domains: ['res.cloudinary.com', 'https://api.nighthawkk.com/api'], // Add your hosting domain
+    domains: ['res.cloudinary.com', 'https://api.sketchshaper.com/api'], // Add your hosting domain
     remotePatterns: [
       {
         protocol: "https",
