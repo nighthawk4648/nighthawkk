@@ -19,23 +19,16 @@ export const HorizontalBanner = () => {
   }, []);
 
   return (
-    <div className="my-[1px] w-full bg-primary flex justify-center items-center">
-      <div className="max-w-2xl w-full"> {/* This wrapper controls the width */}
-        <ins
-          ref={adRef}
-          className="adsbygoogle mx-auto"
-          style={{ 
-            display: "block", 
-            width: "100%", 
-            height: "150px",
-            textAlign: "center" 
-          }}
-          data-ad-client="ca-pub-5557791257949251"
-          data-ad-slot="2114378043"
-          data-ad-format="auto"
-          data-full-width-responsive="true"
-        />
-      </div>
+    <div className="my-[1px] w-full h-[150px] bg-primary flex justify-center items-center">
+      <ins
+        ref={adRef}
+        className="adsbygoogle"
+        style={{ display: "block", width: "100%", height: "150px", textAlign: "center" }}
+        data-ad-client="ca-pub-5557791257949251"
+        data-ad-slot="2114378043"
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
     </div>
   );
 };
