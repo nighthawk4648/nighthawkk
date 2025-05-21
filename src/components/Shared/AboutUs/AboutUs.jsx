@@ -25,7 +25,7 @@ const AboutUs = ({ aboutUs }) => {
 
             <div className=' md:flex md:items-center md:gap-5  mt-5'>
 
-                <div className='md:w-[50%] text-white'>
+                <div className='md:w-[50%] text-white text-justify'>
                     {aboutUs?.content && <div dangerouslySetInnerHTML={{ __html: aboutUs?.content }} ></div>}
                 </div>
 
