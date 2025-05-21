@@ -15,7 +15,7 @@ export const metadata = {
 const AboutUs = async () => {
     return (
         <div className="bg-[#141414] text-white p-4 flex flex-col items-center">
-            <p className="text-l font-light text-center max-w-4xl">
+            <p className="text-l font-light text-justify max-w-4xl">
             Sketch Shaper offers a free library of high-quality SketchUp 3D models and textures. Our collection includes diverse textures and detailed models to enhance your creative projects. Whether you're an artist, designer, or developer, you'll find the assets you need to bring your ideas to life. Explore our library and start creating today!
             </p>
 
@@ -40,11 +40,10 @@ const AboutUs = async () => {
 
             {/* Text Boxes Section */}
             <div className="mt-8 flex flex-wrap justify-center gap-6">
-                <div className="bg-gray-800 p-4 rounded-lg max-w-md text-center shadow-lg">
-                    <h3 className="text-xl font-semibold">Our Vision</h3>
-                    <p className="text-sm text-gray-300 mt-2">
-                        What We Offer
-                        <br /><br />
+                <div className="bg-gray-800 p-4 rounded-lg max-w-md shadow-lg">
+                    <h3 className="text-xl text-center font-semibold">Our Vision</h3>
+                    <p className="text-sm text-center text-gray-300 mt-2">What We Offer</p>
+                    <p className="text-sm text-justify text-gray-300 mt-2">
                         At Sketch Shaper, we pride ourselves on the quality and diversity of our asset library. Our collection includes:
                         <br /><br />
                         <strong>3D Models:</strong> Explore a rich assortment of meticulously crafted 3D models for SketchUp that span various categories, including characters, environments, props, and more. Each model is designed with precision to ensure it meets the highest standards of detail and functionality.
@@ -57,7 +56,7 @@ const AboutUs = async () => {
 
                 <div className="bg-gray-800 p-4 rounded-lg max-w-md text-center shadow-lg">
                     <h3 className="text-xl font-semibold">Contact</h3>
-                    <p className="text-sm text-gray-300 mt-2">
+                    <p className="text-sm text-gray-300 mt-9">
                         Got a question? Please read the Privacy Policy first. 
                         <br /><br />
                         The easiest way to get in touch with us is via email: <strong>sketchshaper@gmail.com</strong>.
