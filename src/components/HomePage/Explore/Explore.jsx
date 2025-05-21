@@ -1,3 +1,4 @@
+import { HorizontalBanner } from '@/components/Shared/GoogleAdsense/HorizontalBanner';
 import { getOptimizedImageUrl } from '@/utils/cloudinary';
 import slugify from '@/utils/slugify';
 import Image from 'next/image';

@@ -168,9 +168,10 @@ const SubCategoryDetails = ({ assetDetails }) => {
                         <Link href={assetDetails.download_link} target="_blank">
                             <p className="font-semibold text-center">DOWNLOAD</p>
                         </Link>
-                    </div>
+                    </div>  
                 )}
             </div>
+              <HorizontalBanner/>
         </div>
     );
 };
