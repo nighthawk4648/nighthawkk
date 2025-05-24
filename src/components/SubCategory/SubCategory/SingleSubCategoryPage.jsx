@@ -50,7 +50,7 @@ const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
               className="adsbygoogle"
               style={{ display: 'block', width: '100%', height: '100%' }}
               data-ad-client="ca-pub-5557791257949251"
-              data-ad-slot={slotId}
+              data-ad-slot={9393509366}
               data-ad-format="auto"
               data-full-width-responsive="true"
             />

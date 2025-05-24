@@ -42,7 +42,7 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
               className="adsbygoogle"
               style={{ display: 'block', width: '100%', height: '100%' }}
               data-ad-client="ca-pub-5557791257949251" // Your publisher ID
-              data-ad-slot={slotId} // Replace with your ad slot ID
+              data-ad-slot={9393509366} // Replace with your ad slot ID
               data-ad-format="auto"
               data-full-width-responsive="true"
             />

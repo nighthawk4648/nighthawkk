@@ -51,7 +51,6 @@ export default function ZipToRbzConverter() {
                 {status && <p className="mt-3 text-yellow-400">{status}</p>}
                 <p className="mt-3 text-gray-500 text-sm">Convert your .zip files to .rbz format instantly with this easy-to-use online tool. Perfect for SketchUp plugin packaging.</p>
             </div>
-            <div>HorizontalBanner </div>
         </div>
        
     );
