@@ -1,11 +1,11 @@
-import AboutUs from '@/components/Shared/AboutUs/AboutUs';
+// import AboutUs from '@/components/Shared/AboutUs/AboutUs';
 import Footer from '@/components/Shared/Footer/Footer';
 import Navbar from '@/components/Shared/Navbar/Navbar';
 import getData from '@/utils/getData';
 import { Inter } from 'next/font/google';
 import './globals.css';
 
-import Explore from '@/components/HomePage/Explore/Explore';
+// import Explore from '@/components/HomePage/Explore/Explore';
 import Blogs from '@/components/Shared/Blogs/Blogs';
 import SupportedBy from '@/components/Shared/SupportedBy/SupportedBy';
 import { GoogleAnalytics } from '@next/third-parties/google';
@@ -75,9 +75,9 @@ export default async function RootLayout({ children }) {
 
 				{children}
 
-				<AboutUs aboutUs={aboutUs?.data} />
+				{/* <AboutUs aboutUs={aboutUs?.data} /> */}
 				<SupportedBy supportedby={supportedby?.data} />
-				<Explore categories={categories?.data} />
+				{/* <Explore categories={categories?.data} /> */}
 				<Blogs blogs={blogs?.data} />
 				<Footer
 					categories={categories?.data}
