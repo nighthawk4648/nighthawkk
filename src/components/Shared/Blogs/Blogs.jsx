@@ -14,7 +14,7 @@ const Blogs = ({ blogs }) => {
 
     return (
         // <div className="bg-[url('/assets/bgImage/bgBlack.jpeg')] bg-cover bg-center w-full text-white p-5">
-        <div className="bg-black text-white p-5 border-b-2 border-gray-500 ">
+        <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black text-white p-5 border-b-2 border-gray-500 ">
             <h2 className=' font-semibold text-2xl '>Visit Our Blogs</h2>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-5 mt-10 '>
                 <div>

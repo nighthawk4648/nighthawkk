@@ -14,7 +14,7 @@ const Features = ({ categories }) => {
 
     return (
         // <div className="bg-[url('/assets/bgImage/bgGray.jpeg')] bg-cover bg-center w-full text-white p-5">
-        <div className=" text-white p-5 bg-[#141414] ">
+        <div className=" bg-gradient-to-br from-gray-900 via-gray-900 to-black p-5  ">
           <div className='grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-8'>
             {sortedCategories.map((category) => (
                 <div 

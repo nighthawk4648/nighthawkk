@@ -21,7 +21,7 @@ const Navbar = ({ categories, footerPages }) => {
 
     return (
         <div className="relative">
-            <nav className="bg-black md:px-4 px-3 shadow-sm py-1 h-12">
+            <nav className="bg-gradient-to-br from-gray-900 to-black text-white md:px-4 px-3 shadow-sm py-1 h-12">
                 <div className="px-6">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-5">

@@ -53,11 +53,11 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
 
     return (
         <div>
-            <div className='bg-primary py-2'>
+            <div className='bg-gradient-to-br from-gray-900 via-gray-900 to-black py-2'>
                 <h1 className='text-white font-semibold text-2xl text-center'>{subCategoriesByCategoryId?.data?.name}</h1>
             </div>
 
-            <div className='grid md:grid-cols-8 grid-cols-2 gap-4 bg-[#282828] py-8 px-4 border-b-2 border-gray-500'>
+            <div className='grid md:grid-cols-8 grid-cols-2 gap-4 bg-gradient-to-br from-gray-900 via-gray-900 to-black py-8 px-4 border-b-2 border-gray-500'>
                 <div className='cursor-pointer'>
                     <Link href={`/${slugify(subCategoriesByCategoryId?.data?.name)}-${subCategoriesByCategoryId?.data?.id}`}>
                         <Image
@@ -68,7 +68,7 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                             className='w-full h-28'
                         ></Image>
 
-                        <div className='bg-secondary py-1'>
+                        <div className='bg-gradient-to-br from-gray-900 via-gray-900 to-black py-1'>
                             <h2 className='text-white font-semibold text-sm text-center'>All</h2>
                         </div>
                     </Link>
@@ -87,7 +87,7 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                                     className='w-full h-28'
                                 ></Image>}
 
-                                <div className='bg-secondary py-1'>
+                                <div className='bg-gradient-to-br from-gray-900 via-gray-900 to-black py-1'>
                                     <h2 className='text-white font-semibold text-sm text-center'>{subCategory?.name}</h2>
                                 </div>
                             </Link>

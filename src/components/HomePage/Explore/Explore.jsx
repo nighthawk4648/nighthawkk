@@ -13,8 +13,8 @@ const Explore = ({ categories }) => {
 
     return (
         // <div className="bg-[url('/assets/bgImage/bgGray.jpeg')] bg-cover bg-center w-full text-white p-5">
-        <div className=" bg-[#141414] w-full text-white p-5">
-            <h2 className="text-center font-semibold text-2xl">Explore Best Interior Design</h2>
+        <div className="bg-gradient-to-br from-gray-900 to-black text-white">
+            <h2 className="text-center font-semibold text-2xl">Explore Best Plugins</h2>
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mt-10">
                 {categories?.[0]?.sub_categories?.[0]?.assets

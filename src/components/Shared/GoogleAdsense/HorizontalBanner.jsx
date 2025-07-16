@@ -19,7 +19,7 @@ export const HorizontalBanner = () => {
   }, []);
 
   return (
-    <div className="my-[1px] w-full h-[150px] bg-primary flex justify-center items-center">
+    <div className="my-[1px] w-full h-[150px] bg-gradient-to-br from-gray-900 to-black flex justify-center items-center">
       <ins
         ref={adRef}
         className="adsbygoogle"
