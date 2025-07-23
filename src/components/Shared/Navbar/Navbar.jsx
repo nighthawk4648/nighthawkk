@@ -27,20 +27,15 @@ const Navbar = ({ categories, footerPages }) => {
                         <div className="flex items-center gap-5">
                             <p className="font-bold text-white text-lg"><Link href="/">Sketchshaper</Link></p>
                         </div>
-                        <div className="flex items-center gap-5">
-                            <Link href="/rbzconverter">
-                                <button className="px-2 py-2 border border-white text-white text-sm lg:text-base font-semibold rounded-lg hover:bg-white hover:text-black transition">
-                                    ZIP 2 RBZ
-                                </button>
-                            </Link>
-                        </div>
 
 
                         <div className="flex items-center">
                             <div className="hidden md:flex items-center gap-5">
                                 <SearchForDesktopScreen />
-                                <p className="font-semibold text-white"><Link href='https://blog.sketchshaper.com/'>BLOG</Link></p>
-                                <p className="font-semibold text-white"><Link href="/">HOME</Link></p>
+                                 <p className="font-semibold cursor-pointer text-white flex items-center text-sm px-3 py-2 bg-gray-800 rounded-lg"><Link href="/rbzconverter">ZIP 2 RBZ</Link></p>
+                                <p className="font-semibold cursor-pointer text-white flex items-center text-sm px-3 py-2 bg-gray-800 rounded-lg"><Link href='https://blog.sketchshaper.com/'>BLOG</Link></p>
+                                <p className="font-semibold cursor-pointer text-white flex items-center text-sm px-3 py-2 bg-gray-800 rounded-lg"><Link href="/">HOME</Link></p>
+                                
                             </div>
 
                             <div 

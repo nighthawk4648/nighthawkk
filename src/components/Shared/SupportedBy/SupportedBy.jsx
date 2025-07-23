@@ -35,15 +35,15 @@ const SupportedBy = ({ supportedby }) => {
             {
                 supportedby?.map((support) => (
                     // <div className="bg-[url('/assets/bgImage/bgGray.jpeg')] bg-cover bg-center w-full text-white p-5">
-                    <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black text-white p-5 border-b-2 border-gray-500">
+                    <div className="bg-gradient-to-bl from-black via-gray-900 to-gray-900 text-white p-5 border-b-2 border-gray-500">
                         <h2 className='text-center font-semibold text-2xl '>{support?.title}</h2>
-                        <div className='grid grid-cols-3 md:grid-cols-3 lg:grid-cols-5 gap-5 mt-10'>
+                        <div className="grid grid-cols-5 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-2 px-2 mt-5">
                             <Image
                                  src={getOptimizedImageUrl(getOriginalImageUrl(support.imageOne))}
                                 alt={support?.short_description}
                                 width={500}
                                 height={500}
-                                className='md:w-[20px] md:h-[50px] lg:w-[200px] lg:h-[200px] mx-auto'
+                                className='sm:w-[12.5px] sm:h-[12.5px] md:w-[50px] md:h-[50px] lg:w-[150px] lg:h-[150px] mx-auto'
                             />
 
                             <Image
@@ -51,7 +51,7 @@ const SupportedBy = ({ supportedby }) => {
                                 alt={support?.short_description}
                                 width={500}
                                 height={500}
-                                className='md:w-[20px] md:h-[50px] lg:w-[200px] lg:h-[200px] mx-auto'
+                                className='sm:w-[12.5px] sm:h-[12.5px] md:w-[50px] md:h-[50px] lg:w-[150px] lg:h-[150px] mx-auto'
                             />
 
                             <Image
@@ -59,7 +59,7 @@ const SupportedBy = ({ supportedby }) => {
                                 alt={support?.short_description}
                                 width={500}
                                 height={500}
-                                className='md:w-[20px] md:h-[50px] lg:w-[200px] lg:h-[200px] mx-auto'
+                                className='sm:w-[12.5px] sm:h-[12.5px] md:w-[50px] md:h-[50px] lg:w-[150px] lg:h-[150px] mx-auto'
                             />
 
                             <Image
@@ -67,7 +67,7 @@ const SupportedBy = ({ supportedby }) => {
                                 alt={support?.short_description}
                                 width={500}
                                 height={500}
-                                className='md:w-[20px] md:h-[50px] lg:w-[200px] lg:h-[200px] mx-auto'
+                                className='sm:w-[12.5px] sm:h-[12.5px] md:w-[50px] md:h-[50px] lg:w-[150px] lg:h-[150px] mx-auto'
                             />
 
                             <Image
@@ -75,7 +75,7 @@ const SupportedBy = ({ supportedby }) => {
                                 alt={support?.short_description}
                                 width={500}
                                 height={500}
-                                className='md:w-[20px] md:h-[50px] lg:w-[200px] lg:h-[200px] mx-auto'
+                                className='sm:w-[12.5px] sm:h-[12.5px] md:w-[50px] md:h-[50px] lg:w-[150px] lg:h-[150px] mx-auto'
                             />
                         </div>
                     </div>

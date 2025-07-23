@@ -26,7 +26,7 @@ const AboutUs = async () => {
                     { img: img2, name: "Naimul Islam Shihab", designation: "3D Artist" }, 
                     { img: img3, name: "Shafia Zaman Ema", designation: "Textures Designer" }, 
                     { img: img4, name: "Md Riaz", designation: "Lead Developer" },
-                    { img: img5, name: "Shuvo", designation: "jr Developer" } // New team member
+                    { img: img5, name: "Shuvo", designation: "Frontend Developer" } // New team member
                 ].map((item, index) => (
                     <div key={index} className="flex flex-col items-center">
                         <div className="relative w-[150px] h-[150px]">

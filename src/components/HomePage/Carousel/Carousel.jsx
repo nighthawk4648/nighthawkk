@@ -5,10 +5,9 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 
 // Import Swiper styles
 import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
+import 'swiper/css/effect-fade';
 
-import { Autoplay, Pagination, Navigation } from 'swiper/modules'
+import { Autoplay, EffectFade } from 'swiper/modules'
 
 import Image from 'next/image';
 import { getOptimizedImageUrl } from '@/utils/cloudinary';
@@ -26,15 +25,13 @@ const Carousel = ({carousels}) => {
                 <Swiper
                     spaceBetween={30}
                     centeredSlides={true}
+                    effect="fade"
+                    speed={3000}
                     autoplay={{
                         delay: 5000,
                         disableOnInteraction: false,
                     }}
-                    pagination={{
-                        clickable: true,
-                    }}
-                    navigation={true}
-                    modules={[Autoplay, Pagination, Navigation]}
+                    modules={[Autoplay, EffectFade]}
                     className="mySwiper"
                 >
                     {
