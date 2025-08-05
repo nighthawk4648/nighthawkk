@@ -23,12 +23,12 @@ const SearchForDesktopScreen = () => {
     const searchInputRef = useRef(null);
 
 
-    const { data: searchData, isLoading, } = useSWR(
+    const { data: searchData, isLoading, isError:searchError } = useSWR(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/search?search=${searchString}`,
         fetcher
     );
 
-    const { data: categoryById, categoryIsLoading, } = useSWR(
+    const { data: categoryById, categoryIsLoading, isError:categoryError } = useSWR(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/categories/${categoryId}`,
         fetcher
     );
@@ -78,6 +78,11 @@ const SearchForDesktopScreen = () => {
     // if (isLoading) {
     //   return <p>Loading...</p>;
     // }
+
+    if (searchError || categoryError) {
+        return <ErrorFallback />
+    }
+       
 
     return (
         <div>
