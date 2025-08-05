@@ -40,17 +40,22 @@ const SingleSubCategoryPage = ({ categoryId, subCategoryId }) => {
         fetcher
     );
 
-    // Auto scroll to assets section after data loads
+    // Auto scroll to assets section after data loads (mobile only)
     useEffect(() => {
         if (!subCategoriesByCategoryIdLoading && !assetBySubCategoryIdLoading && assetsRef.current) {
-            const timer = setTimeout(() => {
-                assetsRef.current.scrollIntoView({ 
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }, 10); // Reduced delay for faster scrolling
+            // Check if device is mobile (screen width < 768px)
+            const isMobile = window.innerWidth < 768;
             
-            return () => clearTimeout(timer);
+            if (isMobile) {
+                const timer = setTimeout(() => {
+                    assetsRef.current.scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }, 10); // Reduced delay for faster scrolling
+                
+                return () => clearTimeout(timer);
+            }
         }
     }, [subCategoriesByCategoryIdLoading, assetBySubCategoryIdLoading]);
 

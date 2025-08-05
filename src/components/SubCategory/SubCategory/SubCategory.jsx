@@ -10,22 +10,6 @@ import { HorizontalBanner } from '@/components/Shared/GoogleAdsense/HorizontalBa
 
 
 const SubCategory = ({ subCategoriesByCategoryId }) => {
-    // Ref for assets section to scroll to
-    const assetsRef = useRef(null);
-
-    // Auto scroll to assets section after component loads
-    useEffect(() => {
-        if (subCategoriesByCategoryId?.data && assetsRef.current) {
-            const timer = setTimeout(() => {
-                assetsRef.current.scrollIntoView({ 
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }, 10); // Fast scrolling delay
-            
-            return () => clearTimeout(timer);
-        }
-    }, [subCategoriesByCategoryId]);
 
     const getOriginalImageUrl = (imagePath) => {
         return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
@@ -171,7 +155,6 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                     return (
                         <div
                             key={subCategories?.id}
-                            ref={categoryIndex === 0 ? assetsRef : null}
                             className='bg-primary py-8 grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4 px-4'>
                             {assetsWithAds}
                         </div>
