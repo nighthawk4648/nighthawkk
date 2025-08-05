@@ -10,6 +10,7 @@ import slugify from "@/utils/slugify";
 
 import useSWR from "swr";
 import { fetcher } from "@/utils/swrFetcher";
+import { ErrorFallback } from "../ErrorFallback/ErrorFallback ";
 
 
 const SearchForDesktopScreen = () => {

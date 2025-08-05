@@ -5,6 +5,7 @@ import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import Image from "next/image";
 import React from "react";
 import Script from "next/script";
+import { ErrorFallback } from "@/components/Shared/ErrorFallback/ErrorFallback ";
 
 export const metadata = {
   title: "Blogs",
@@ -19,6 +20,10 @@ const Blogs = async ({ params }) => {
   const getOriginalImageUrl = (imagePath) => {
     return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
   };
+
+  if (!blog) {
+    return <ErrorFallback />
+  }
 
   return (
     <div className="bg-black px-4 py-8 md:px-12 md:py-16">

@@ -1,3 +1,4 @@
+import { ErrorFallback } from '@/components/Shared/ErrorFallback/ErrorFallback ';
 import SubCategory from '@/components/SubCategory/SubCategory/SubCategory';
 import getData from '@/utils/getData';
 import React from 'react';
@@ -17,6 +18,7 @@ export async function generateMetadata({ params }) {
     };
 }
 
+
 const Page = async ({ params }) => {
 
     const { category } = params;
@@ -26,7 +28,9 @@ const Page = async ({ params }) => {
 
     const subCategoriesByCategoryId = await getData(`categories/${categoryId}`);
 
-
+    if (!subCategoriesByCategoryId) {
+        return <ErrorFallback />
+    }
 
     return (
         <div>

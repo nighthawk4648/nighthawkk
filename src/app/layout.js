@@ -9,6 +9,7 @@ import './globals.css';
 import Blogs from '@/components/Shared/Blogs/Blogs';
 import SupportedBy from '@/components/Shared/SupportedBy/SupportedBy';
 import { GoogleAnalytics } from '@next/third-parties/google';
+import { ErrorFallback } from '@/components/Shared/ErrorFallback/ErrorFallback ';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -61,6 +62,10 @@ export default async function RootLayout({ children }) {
 		blogsPromise,
 	]);
 
+	if (!data || !aboutUs || !categories || !subCategories || !assets || !footerPages || !socials || !applicationSettings || !supportedby || !blogs) {
+		return <ErrorFallback />
+	}
+
 	return (
 		<html lang="en">
 			<body className={inter.className}>
@@ -91,12 +96,6 @@ export default async function RootLayout({ children }) {
 					src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5557791257949251"
 					crossOrigin="anonymous"
 				></script>
-
-				{/* <Script
-        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5557791257949251`}
-        strategy="lazyOnload"
-        crossOrigin="anonymous"
-      /> */}
 			</head>
 			<GoogleAnalytics gaId="G-JCLNX11Z2V" />
 		</html>

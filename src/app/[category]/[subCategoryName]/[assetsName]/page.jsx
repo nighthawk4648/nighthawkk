@@ -1,4 +1,5 @@
 
+import { ErrorFallback } from '@/components/Shared/ErrorFallback/ErrorFallback ';
 import SubCategoryDetails from '@/components/SubCategory/SubCategoryDetails/SubCategoryDetails';
 import getData from '@/utils/getData';
 
@@ -29,6 +30,10 @@ const Page = async ({params}) => {
     const assetId = assetsName?.split("-").slice(-1);
 
     const assetDetails = await getData(`assets/${assetId}`);
+
+    if (!assetDetails) {
+        return <ErrorFallback />
+    }
 
    
     return (

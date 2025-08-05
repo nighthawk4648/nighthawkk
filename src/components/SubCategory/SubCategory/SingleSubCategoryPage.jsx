@@ -102,6 +102,10 @@ const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
      }
 
 
+     if (!subCategoriesByCategoryId || !assetBySubCategoryId) {
+        return <ErrorFallback />
+    }
+
     return (
         <div>
             <div className='bg-gradient-to-br from-gray-900 via-gray-900 to-black py-2'>

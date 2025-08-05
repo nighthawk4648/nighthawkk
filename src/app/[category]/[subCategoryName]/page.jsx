@@ -29,6 +29,8 @@ const Page = ({params}) => {
 
     const subCategoryId = subCategoryName?.split("-").slice(-1);
 
+    
+
 
     return (
         <div>
