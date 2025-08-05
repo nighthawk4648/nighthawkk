@@ -10,7 +10,22 @@ import { HorizontalBanner } from '@/components/Shared/GoogleAdsense/HorizontalBa
 
 
 const SubCategory = ({ subCategoriesByCategoryId }) => {
+    // Ref for assets section to scroll to
+    const assetsRef = useRef(null);
 
+    // Auto scroll to assets section after component loads
+    useEffect(() => {
+        if (subCategoriesByCategoryId?.data && assetsRef.current) {
+            const timer = setTimeout(() => {
+                assetsRef.current.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 10); // Fast scrolling delay
+            
+            return () => clearTimeout(timer);
+        }
+    }, [subCategoriesByCategoryId]);
 
     const getOriginalImageUrl = (imagePath) => {
         return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
@@ -53,55 +68,61 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
 
     return (
         <div>
-            <div className='bg-gradient-to-br from-gray-900 via-gray-900 to-black py-2'>
-                <h1 className='text-white font-semibold text-2xl text-center'>{subCategoriesByCategoryId?.data?.name}</h1>
-            </div>
-
-            <div className='grid md:grid-cols-8 grid-cols-2 gap-4 bg-gradient-to-br from-gray-900 via-gray-900 to-black py-8 px-4 border-b-2 border-gray-500'>
-                <div className='cursor-pointer'>
-                    <Link href={`/${slugify(subCategoriesByCategoryId?.data?.name)}-${subCategoriesByCategoryId?.data?.id}`}>
-                        <Image
-                            src={all_sub_cat_image}
-                            height={400}
-                            width={500}
-                            alt="all subcategories"
-                            className='w-full h-28'
-                        ></Image>
-
-                        <div className='bg-gradient-to-br from-gray-900 via-gray-900 to-black py-1'>
-                            <h2 className='text-white font-semibold text-sm text-center'>All</h2>
-                        </div>
-                    </Link>
+        <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black py-2">
+          <h1 className="text-white font-semibold text-2xl text-center">
+            {subCategoriesByCategoryId?.data?.name}
+          </h1>
+        </div>
+      
+        <div className="grid md:grid-cols-8 grid-cols-2 gap-4 bg-gradient-to-br from-gray-900 via-gray-900 to-black py-8 px-4 border-b-2 border-gray-500">
+          <div className="cursor-pointer transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg hover:shadow-purple-600/40 rounded-md overflow-hidden">
+            <Link href={`/${slugify(subCategoriesByCategoryId?.data?.name)}-${subCategoriesByCategoryId?.data?.id}`}>
+              <Image
+                src={all_sub_cat_image}
+                height={400}
+                width={500}
+                alt="all subcategories"
+                className="w-full h-28 object-cover"
+              />
+              <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black py-1">
+                <h2 className="text-white font-semibold text-sm text-center">All</h2>
+              </div>
+            </Link>
+          </div>
+      
+          {subCategoriesByCategoryId?.data?.sub_categories?.map((subCategory) => (
+            <div
+              className="cursor-pointer transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg hover:shadow-purple-600/40 rounded-md overflow-hidden"
+              key={subCategory?.id}
+            >
+              <Link
+                href={`${slugify(subCategoriesByCategoryId?.data?.name)}-${subCategoriesByCategoryId?.data?.id}/${slugify(subCategory?.name)}-${subCategory?.id}`}
+              >
+                {subCategory?.image && (
+                  <Image
+                    src={getOptimizedImageUrl(getOriginalImageUrl(subCategory?.image))}
+                    height={400}
+                    width={500}
+                    alt={subCategory?.name}
+                    className="w-full h-28 object-cover"
+                  />
+                )}
+                <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black py-1">
+                  <h2 className="text-white font-semibold text-sm text-center">{subCategory?.name}</h2>
                 </div>
-
-                {
-                    subCategoriesByCategoryId?.data?.sub_categories?.map((subCategory) => (
-                        <div className='cursor-pointer' key={subCategory?.id}
-                        >
-                            <Link href={`${slugify(subCategoriesByCategoryId?.data?.name)}-${subCategoriesByCategoryId?.data?.id}/${slugify(subCategory?.name)}-${subCategory?.id}`}>
-                                {subCategory?.image && <Image
-                                    src={getOptimizedImageUrl(getOriginalImageUrl(subCategory?.image))}
-                                    height={400}
-                                    width={500}
-                                    alt={subCategory?.name}
-                                    className='w-full h-28'
-                                ></Image>}
-
-                                <div className='bg-gradient-to-br from-gray-900 via-gray-900 to-black py-1'>
-                                    <h2 className='text-white font-semibold text-sm text-center'>{subCategory?.name}</h2>
-                                </div>
-                            </Link>
-                        </div>
-                    ))
-                }
+              </Link>
             </div>
+          ))}
+        </div>
+      
+      
 
 
             <HorizontalBanner/>
 
 
             {
-                subCategoriesByCategoryId?.data?.sub_categories?.map((subCategories) => {
+                subCategoriesByCategoryId?.data?.sub_categories?.map((subCategories, categoryIndex) => {
                     // Sort assets by ID in descending order (latest first)
                     const sortedAssets = subCategories?.assets?.sort((a, b) => b.id - a.id) || [];
 
@@ -150,6 +171,7 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                     return (
                         <div
                             key={subCategories?.id}
+                            ref={categoryIndex === 0 ? assetsRef : null}
                             className='bg-primary py-8 grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4 px-4'>
                             {assetsWithAds}
                         </div>

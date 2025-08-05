@@ -4,20 +4,55 @@ import React, { useEffect, useRef } from 'react';
 
 import all_sub_cat_image from '../../../../public/assets/sub_category/all.png'
 import Image from 'next/image';
-import getData from '@/utils/getData';
+// import getData from '@/utils/getData';
 import Link from 'next/link';
 import { getOptimizedImageUrl } from '@/utils/cloudinary';
 import { HorizontalBanner } from '@/components/Shared/GoogleAdsense/HorizontalBanner';
+import useSWR from 'swr';
+import { ErrorFallback } from '@/components/Shared/ErrorFallback/ErrorFallback ';
+import { fetcher } from '@/utils/swrFetcher';
+import Loader from '@/components/Shared/Loader/Loader';
 
 
 
-const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
+const SingleSubCategoryPage = ({ categoryId, subCategoryId }) => {
+    // Ref for assets section to scroll to
+    const assetsRef = useRef(null);
+  
+    const categoryNumber = parseInt(categoryId);
+    const subCategoryNumber = parseInt(subCategoryId);
 
-    const subCategoriesByCategoryId = await getData(`categories/${categoryId}`);
 
-    const assetBySubCategoryId = await getData(`sub-categories/${subCategoryId}`);
+    
+
+    // const subCategoriesByCategoryId = await getData(`categories/${categoryId}`);
+
+    // const assetBySubCategoryId = await getData(`sub-categories/${subCategoryId}`);
 
 
+    const { data: subCategoriesByCategoryId, isLoading: subCategoriesByCategoryIdLoading } = useSWR(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/categories/${categoryNumber}`,
+        fetcher
+    );
+
+    const { data: assetBySubCategoryId, isLoading: assetBySubCategoryIdLoading } = useSWR(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/sub-categories/${subCategoryNumber}`,
+        fetcher
+    );
+
+    // Auto scroll to assets section after data loads
+    useEffect(() => {
+        if (!subCategoriesByCategoryIdLoading && !assetBySubCategoryIdLoading && assetsRef.current) {
+            const timer = setTimeout(() => {
+                assetsRef.current.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }, 10); // Reduced delay for faster scrolling
+            
+            return () => clearTimeout(timer);
+        }
+    }, [subCategoriesByCategoryIdLoading, assetBySubCategoryIdLoading]);
 
     // Sort the assets in descending order based on id
     const sortedAssets = assetBySubCategoryId?.data?.assets?.slice().sort((a, b) => b.id - a.id);
@@ -94,7 +129,7 @@ const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
                  assetsWithAds.push(
                      <AdUnit 
                          key={`ad-${index}`} 
-                         slotId="9393509366" // Replace with your actual ad slot ID
+                         slotId="9393509366" 
                      />
                  );
              }
@@ -102,7 +137,13 @@ const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
      }
 
 
-     if (!subCategoriesByCategoryId || !assetBySubCategoryId) {
+
+
+    if (subCategoriesByCategoryIdLoading || assetBySubCategoryIdLoading) {
+        return <Loader/>
+    }
+
+    if (!subCategoriesByCategoryId || !assetBySubCategoryId) {
         return <ErrorFallback />
     }
 
@@ -115,43 +156,49 @@ const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
 
             <div className='grid md:grid-cols-8 grid-cols-2 gap-4 bg-gradient-to-br from-gray-900 via-gray-900 to-black py-8 px-4 border-b-2 border-gray-500'>
                 <div className='cursor-pointer'>
-                    <Link href={`/${slugify(subCategoriesByCategoryId?.data?.name)}-${subCategoriesByCategoryId?.data?.id}`}>
-                        <Image
+                <div className="cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/40 rounded-md overflow-hidden">
+                <Link href={`/${slugify(subCategoriesByCategoryId?.data?.name)}-${subCategoriesByCategoryId?.data?.id}`}>
+                    <Image
+                    src={all_sub_cat_image}
+                    height={400}
+                    width={500}
+                    alt="all subcategories"
+                    className="w-full h-28 object-cover"
+                    />
+                    <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black py-1">
+                    <p className="text-white font-semibold text-sm text-center">All</p>
+                    </div>
+                </Link>
+                </div>
 
-                            src={all_sub_cat_image}
-                            height={400}
-                            width={500}
-                            alt="all subcategories"
-                            className='w-full h-28'
-                        ></Image>
-
-                        <div className='bg-gradient-to-br from-gray-900 via-gray-900 to-black py-1'>
-                            <p className='text-white font-semibold text-sm text-center'>All</p>
-                        </div></Link>
 
                 </div>
 
             
 
-                {
-                    subCategoriesByCategoryId?.data?.sub_categories?.map((subCategory) => (
-                        <div className='cursor-pointer' key={subCategory?.id} >
-                            <Link href={`${slugify(subCategory?.name)}-${subCategory?.id}`}>
-                                {subCategory?.image && <Image
-                                    src={getOptimizedImageUrl(getOriginalImageUrl(subCategory?.image))}
-                                    height={400}
-                                    width={500}
-                                    alt={subCategory?.name}
-                                    className='w-full h-28'
-                                ></Image>}
-
-                                <div className='bg-gradient-to-br from-black  to-gray-1100 py-1'>
-                                    <p className='text-white font-semibold text-sm text-center'>{subCategory?.name}</p>
-                                </div>
-                            </Link>
+                
+                   {subCategoriesByCategoryId?.data?.sub_categories?.map((subCategory) => (
+                    <div
+                      className="cursor-pointer transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg hover:shadow-purple-600/40 rounded-md overflow-hidden"
+                      key={subCategory?.id}
+                    >
+                      <Link href={`${slugify(subCategory?.name)}-${subCategory?.id}`}>
+                        {subCategory?.image && (
+                          <Image
+                            src={getOptimizedImageUrl(getOriginalImageUrl(subCategory?.image))}
+                            height={400}
+                            width={500}
+                            alt={subCategory?.name}
+                            className="w-full h-28 object-cover"
+                          />
+                        )}
+                  
+                        <div className="bg-gradient-to-br from-black to-gray-900 py-1">
+                          <p className="text-white font-semibold text-sm text-center">{subCategory?.name}</p>
                         </div>
-                    ))
-                }
+                      </Link>
+                    </div>
+                  ))}    
             </div>
 
             <HorizontalBanner/>
@@ -159,7 +206,7 @@ const SingleSubCategoryPage = async ({ categoryId, subCategoryId }) => {
 
 
          {/* Grid with assets and ads */}
-         <div className='bg-primary py-8 grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4 px-4'>
+         <div ref={assetsRef} className='bg-primary py-8 grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4 px-4'>
                 {assetsWithAds}
             </div>
 
