@@ -1,13 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-
-const previewImages = [
-  '/assets/images/preview1.jpg',
-  '/assets/images/preview2.jpg',
-  '/assets/images/preview3.jpg',
-  '/assets/images/preview4.jpg',
-  '/assets/images/preview5.jpg'
-];
+import { previewImages } from '../assets/page'; // Adjust the path if needed
 
 const Page = () => {
   const [downloadCount, setDownloadCount] = useState(0);
@@ -34,10 +27,10 @@ const Page = () => {
       {/* Full Width Image Row */}
       <div className="relative w-full mb-10 overflow-hidden">
         <div className="flex gap-4 overflow-x-auto no-scrollbar px-4">
-          {previewImages.map((src, index) => (
+          {previewImages.slice(0, 5).map((src, index) => (
             <div
               key={index}
-              className="w-[300px] h-[300px] flex-shrink-0 overflow-hidden rounded-xl border border-gray-700 shadow-lg"
+              className="w-[300px] h-[300px] flex-shrink-0 overflow-hidden rounded-xl  shadow-md hover:scale-105 transition-transform duration-300"
             >
               <img
                 src={src}
