@@ -18,8 +18,7 @@ const Page = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white px-4 py-10 flex flex-col items-center">
-      <h1 className="text-4xl md:text-5xl font-bold text-center mb-6">SketchShaper Pro</h1>
-
+      <h1 className="text-4xl md:text-5xl font-bold text-center mb-2">SketchShaper Pro</h1>
       <p className="text-lg text-gray-300 text-center max-w-2xl mb-10">
         Supercharge your SketchUp workflow with SketchShaper Pro — a powerful extension featuring an organized library of premium 3D interior and architectural assets. Quick, sleek, and made for pros.
       </p>
@@ -52,15 +51,29 @@ const Page = () => {
         </div>
       </div>
 
+  
+
       {/* Download Button */}
       <a
-        href="https://drive.google.com/uc?export=download&id=1dlypcg676pRNTZ6DIRNyyXWG7aczAS7P"
+        href=""
         download
         onClick={handleDownloadClick}
         className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold py-3 px-8 rounded-xl shadow-lg transition"
       >
         Download
       </a>
+
+      {/* Free Version Text and Link */}
+      <div className="mt-2 text-center">
+        <span className="text-gray-300 text-sm">Free version available:&nbsp;</span>
+        <a
+          href="https://extensions.sketchup.com/extension/ac6a412b-69cf-4397-9e4c-aef489185e3d/sketchshaper"
+          download
+          className="text-green-400 underline text-sm hover:text-green-300"
+        >
+          Download Free Version
+        </a>
+      </div>
 
       {/* Download Count Display */}
       <p className="mt-4 text-gray-400 text-sm">
