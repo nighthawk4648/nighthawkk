@@ -6,7 +6,7 @@ const Page = () => {
   const [downloadCount, setDownloadCount] = useState(0);
 
   useEffect(() => {
-    const savedCount = parseInt(localStorage.getItem('downloadCount')) || 0;
+    const savedCount = parseInt(localStorage.getItem('downloadCount')) || 650;
     setDownloadCount(savedCount);
   }, []);
 
@@ -17,11 +17,54 @@ const Page = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white px-4 py-10 flex flex-col items-center">
-      <h1 className="text-4xl md:text-5xl font-bold text-center mb-2">SketchShaper Pro</h1>
-      <p className="text-lg text-gray-300 text-center max-w-2xl mb-10">
-        Supercharge your SketchUp workflow with SketchShaper Pro — a powerful extension featuring an organized library of premium 3D interior and architectural assets. Quick, sleek, and made for pros.
-      </p>
+    <div className="min-h-0 bg-gradient-to-br from-gray-900 to-black text-white px-4 py-6 flex flex-col items-center">
+      <h1 className="text-3xl md:text-4xl font-bold text-center mb-1">SketchShaper Pro</h1>
+      <div className="text-base text-gray-300 text-center max-w-2xl mb-6 space-y-4">
+        <h2 className="text-xl font-bold text-blue-400">Supercharge Your SketchUp!</h2>
+        <p className="text-sm mb-4">
+          Access high-quality, ready-to-use 3D models directly inside SketchUp with SketchShaper Pro plugins. No manual downloads needed.
+        </p>
+        
+        <div className="bg-gray-800 rounded-xl p-4 border border-gray-700 text-sm w-full">
+          <h3 className="text-xl font-bold text-center mb-3 text-white">
+            All-In-One Features — <span className="text-yellow-400">$5/month</span>
+          </h3>
+          <ul className="grid grid-cols-2 gap-x-6 gap-y-3 text-left">
+            <li className="flex items-start">
+              <span className="mr-2">•</span>
+              <span>Cloud Library (600+ Models)</span>
+            </li>
+            <li className="flex items-start">
+              <span className="mr-2">•</span>
+              <span>Patreon Login</span>
+            </li>
+            <li className="flex items-start">
+              <span className="mr-2">•</span>
+              <span>15+ Categories</span>
+            </li>
+            <li className="flex items-start">
+              <span className="mr-2">•</span>
+              <span>One-Click Import</span>
+            </li>
+            <li className="flex items-start">
+              <span className="mr-2">•</span>
+              <span>Pro Models included (Ikea, Wayfair, Crate & Barrel)</span>
+            </li>
+            <li className="flex items-start">
+              <span className="mr-2">•</span>
+              <span>SketchUp 2020-2025</span>
+            </li>
+            <li className="flex items-start">
+              <span className="mr-2">•</span>
+              <span>100+ New Models Monthly</span>
+            </li>
+            <li className="flex items-start">
+              <span className="mr-2">•</span>
+              <span>Custom Model Requests</span>
+            </li>
+          </ul>
+        </div>
+      </div>
 
       {/* Full Width Image Row */}
       <div className="relative w-full mb-10 overflow-hidden">
