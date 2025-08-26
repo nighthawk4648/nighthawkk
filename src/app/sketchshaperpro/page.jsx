@@ -3,17 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { previewImages } from '../assets/page'; // Adjust the path if needed
 
 const Page = () => {
-  const [downloadCount, setDownloadCount] = useState(0);
-
-  useEffect(() => {
-    const savedCount = parseInt(localStorage.getItem('downloadCount')) || 650;
-    setDownloadCount(savedCount);
-  }, []);
-
   const handleDownloadClick = () => {
-    const newCount = downloadCount + 1;
-    setDownloadCount(newCount);
-    localStorage.setItem('downloadCount', newCount.toString());
+    // Download handler without count tracking
   };
 
   return (
@@ -32,7 +23,7 @@ const Page = () => {
           <ul className="grid grid-cols-2 gap-x-6 gap-y-3 text-left">
             <li className="flex items-start">
               <span className="mr-2">•</span>
-              <span>Cloud Library (600+ Models)</span>
+              <span>Cloud Library (1500+ Models)</span>
             </li>
             <li className="flex items-start">
               <span className="mr-2">•</span>
@@ -83,14 +74,14 @@ const Page = () => {
           ))}
 
           {/* Arrow button */}
-          <div className="w-[300px] h-[300px] flex-shrink-0 flex items-center justify-center">
+          {/* <div className="w-[300px] h-[300px] flex-shrink-0 flex items-center justify-center">
             <button
               onClick={() => window.location.href = "/assets"}
               className="w-[80px] h-[80px]  hover:bg-blue-700 text-white rounded-full text-4xl shadow-lg transition flex items-center justify-center"
             >
               →
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -117,11 +108,6 @@ const Page = () => {
           Download Free Version
         </a>
       </div>
-
-      {/* Download Count Display */}
-      <p className="mt-4 text-gray-400 text-sm">
-        Downloaded: <span className="text-white font-semibold">{downloadCount.toString().padStart(3, '0')}</span>
-      </p>
 
       {/* Hide Scrollbars */}
       <style jsx>{`

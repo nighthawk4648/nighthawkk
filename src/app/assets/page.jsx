@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 
 export const previewImages = [
-  '/assets/images/preview1.jpg',
+  '/assets/images/preview1.png',
   '/assets/images/preview2.png',
   '/assets/images/preview3.png ',
   '/assets/images/preview4.png',
