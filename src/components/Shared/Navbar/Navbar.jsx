@@ -32,7 +32,7 @@ const Navbar = ({ categories, footerPages }) => {
                         <div className="flex items-center">
                             <div className="hidden md:flex items-center gap-5">
                                 <SearchForDesktopScreen />
-                                <p className="font-semibold cursor-pointer text-white flex items-center text-sm px-3 py-2 bg-[#0c8a88] rounded-lg"><Link href="/sketchshaperpro">Pro</Link></p>
+                                <p className="font-semibold cursor-pointer text-white flex items-center text-sm px-3 py-2 bg-[#0c8a88] rounded-lg"><Link href="/pro">Pro</Link></p>
                                 <p className="font-semibold cursor-pointer text-white flex items-center text-sm px-3 py-2 bg-gray-800 rounded-lg"><Link href="/gallery">Gallery</Link></p>
                                  <p className="font-semibold cursor-pointer text-white flex items-center text-sm px-3 py-2 bg-gray-800 rounded-lg"><Link href="/rbzconverter"> zip2rbz </Link></p>
                                 <p className="font-semibold cursor-pointer text-white flex items-center text-sm px-3 py-2 bg-gray-800 rounded-lg"><Link href='https://blog.sketchshaper.com/'>Blog</Link></p>
