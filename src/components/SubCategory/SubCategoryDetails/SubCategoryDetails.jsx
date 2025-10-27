@@ -220,20 +220,28 @@ const SubCategoryDetails = ({ assetDetails }) => {
                 {/* Centered 2/3 modal with modern look. Footer moved to fixed bottom bar. */}
                 {isModalOpen && (
                     <>
-                        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-60 p-4">
+                        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-60 p-4">
                             <div className="relative w-full max-w-[1200px] h-full sm:w-[90vw] sm:h-[80vh] md:w-[66vw] md:h-[66vh] bg-gradient-to-br from-gray-900 via-gray-900 to-black rounded-none sm:rounded-2xl shadow-2xl overflow-hidden border border-gray-200 backdrop-blur-md">
 
                                 {/* Ad area fills panel */}
-                                <div className="absolute inset-0">
+                                <div className="absolute inset-0 w-full h-full overflow-hidden">
                                     <ins
                                         ref={modalAdRef}
-                                        className="adsbygoogle w-full h-full block"
-                                        style={{ display: 'block', width: '100%', height: '100%' }}
+                                        className="adsbygoogle"
+                                        style={{ 
+                                            display: 'block', 
+                                            width: '100%', 
+                                            height: '280px',
+                                            margin: 0,
+                                            padding: 0,
+                                            position: 'relative'
+                                        }}
                                         data-ad-client="ca-pub-5557791257949251"
-                                        data-ad-slot="2114378043"
+                                        data-ad-slot="auto"
                                         data-ad-format="auto"
                                         data-full-width-responsive="true"
-                                    ></ins>
+                                        data-include-autoformat-video-ads="true"
+                                    />
                                 </div>
 
                                 {/* Top bar: title + countdown */}
@@ -250,7 +258,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
                         </div>
 
                         {/* Fixed bottom action bar so buttons are always reachable */}
-                        <div className="fixed bottom-0 sm:bottom-4 left-0 right-0 z-50 flex items-center justify-center pointer-events-none px-2 sm:px-4">
+                        <div className="fixed bottom-0 sm:bottom-4 left-0 right-0 z-[10000] flex items-center justify-center pointer-events-none px-2 sm:px-4">
                             <div className="pointer-events-auto max-w-[1200px] w-full mx-auto px-2">
                                 <div className="bg-gray-800 rounded-t-lg sm:rounded-full shadow-lg px-3 sm:px-4 py-3 flex items-center justify-end gap-3">
                                     <button
