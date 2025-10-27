@@ -14,6 +14,10 @@ import { HorizontalBanner } from '@/components/Shared/GoogleAdsense/HorizontalBa
 const SubCategoryDetails = ({ assetDetails }) => {
     const [thumbsSwiper, setThumbsSwiper] = useState(null);
     const [showAds, setShowAds] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [countdown, setCountdown] = useState(15);
+    const [isCountdownActive, setIsCountdownActive] = useState(false);
+    const modalAdRef = useRef(null);
     const leftAdRef = useRef(null);
     const rightAdRef = useRef(null);
 
@@ -33,6 +37,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
                     const width = ref.current.offsetWidth;
                     if (width > 0) {
                         try {
+                            // Avoid double-initializing the same <ins> element
                             if (ref.current.getAttribute('data-adsbygoogle-status') !== 'done') {
                                 (window.adsbygoogle = window.adsbygoogle || []).push({});
                             }
@@ -48,6 +53,35 @@ const SubCategoryDetails = ({ assetDetails }) => {
             loadAd(rightAdRef);
         }
     }, [showAds]);
+
+    // Initialize ad inside modal when it opens
+    useEffect(() => {
+        if (isModalOpen && modalAdRef.current) {
+            try {
+                if (modalAdRef.current.getAttribute('data-adsbygoogle-status') !== 'done') {
+                    (window.adsbygoogle = window.adsbygoogle || []).push({});
+                }
+            } catch (error) {
+                console.error('Modal AdSense error:', error);
+            }
+        }
+    }, [isModalOpen]);
+
+    // Countdown logic
+    useEffect(() => {
+        let timer = null;
+        if (isCountdownActive && countdown > 0) {
+            timer = setInterval(() => {
+                setCountdown(prev => prev - 1);
+            }, 1000);
+        }
+        if (countdown === 0) {
+            setIsCountdownActive(false);
+        }
+        return () => {
+            if (timer) clearInterval(timer);
+        };
+    }, [isCountdownActive, countdown]);
 
     const getOriginalImageUrl = (imagePath) => {
         return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
@@ -165,13 +199,89 @@ const SubCategoryDetails = ({ assetDetails }) => {
 
                 {assetDetails?.download_link && (
                     <div className="w-48 mx-auto p-1 bg-primary mt-10 rounded-md cursor-pointer border-b-2 border-gray-500">
-                        <Link href={assetDetails.download_link} target="_blank">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                // open modal interstitial
+                                setCountdown(15); // reset
+                                setIsModalOpen(true);
+                                setIsCountdownActive(true);
+                            }}
+                            className="w-full"
+                        >
                             <p className="font-semibold text-center">DOWNLOAD</p>
-                        </Link>
-                    </div>  
+                        </button>
+                    </div>
                 )}
             </div>
               <HorizontalBanner/>
+
+            {/* Full screen modal for ad + countdown */}
+                {/* Centered 2/3 modal with modern look. Footer moved to fixed bottom bar. */}
+                {isModalOpen && (
+                    <>
+                        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black bg-opacity-60 p-4">
+                            <div className="relative w-full max-w-[1200px] h-full sm:w-[90vw] sm:h-[80vh] md:w-[66vw] md:h-[66vh] bg-gradient-to-br from-gray-900 via-gray-900 to-black rounded-none sm:rounded-2xl shadow-2xl overflow-hidden border border-gray-200 backdrop-blur-md">
+
+                                {/* Ad area fills panel */}
+                                <div className="absolute inset-0">
+                                    <ins
+                                        ref={modalAdRef}
+                                        className="adsbygoogle w-full h-full block"
+                                        style={{ display: 'block', width: '100%', height: '100%' }}
+                                        data-ad-client="ca-pub-5557791257949251"
+                                        data-ad-slot="2114378043"
+                                        data-ad-format="auto"
+                                        data-full-width-responsive="true"
+                                    ></ins>
+                                </div>
+
+                                {/* Top bar: title + countdown */}
+                                <div className="relative z-10 flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-gray-800 text-white">
+                                    <div className="flex items-center gap-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3" />
+                                        </svg>
+                                        <h3 className="text-lg font-semibold">Preparing your download</h3>
+                                    </div>
+                                    <div className="text-sm font-medium">{countdown > 0 ? `Please wait ${countdown}s` : 'Ready'}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Fixed bottom action bar so buttons are always reachable */}
+                        <div className="fixed bottom-0 sm:bottom-4 left-0 right-0 z-50 flex items-center justify-center pointer-events-none px-2 sm:px-4">
+                            <div className="pointer-events-auto max-w-[1200px] w-full mx-auto px-2">
+                                <div className="bg-gray-800 rounded-t-lg sm:rounded-full shadow-lg px-3 sm:px-4 py-3 flex items-center justify-end gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setIsModalOpen(false);
+                                            setIsCountdownActive(false);
+                                        }}
+                                        className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
+                                    >
+                                        Close
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            if (countdown === 0) {
+                                                window.open(assetDetails.download_link, '_blank');
+                                                setIsModalOpen(false);
+                                            }
+                                        }}
+                                        className={`px-4 py-2 rounded-md font-semibold ${countdown === 0 ? 'bg-primary text-white' : 'bg-gray-600 text-gray-500 cursor-not-allowed'}`}
+                                        disabled={countdown !== 0}
+                                    >
+                                        {countdown === 0 ? 'Proceed to Download' : `Please wait ${countdown}s`}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </>
+                )}
         </div>
     );
 };
