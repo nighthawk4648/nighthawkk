@@ -224,24 +224,17 @@ const SubCategoryDetails = ({ assetDetails }) => {
                             <div className="relative w-full max-w-[1200px] h-full sm:w-[90vw] sm:h-[80vh] md:w-[66vw] md:h-[66vh] bg-gradient-to-br from-gray-900 via-gray-900 to-black rounded-none sm:rounded-2xl shadow-2xl overflow-hidden border border-gray-200 backdrop-blur-md">
 
                                 {/* Ad area fills panel */}
-                                <div className="absolute inset-0 w-full h-full overflow-hidden">
+                                <div className="absolute inset-0 w-full h-full">
                                     <ins
                                         ref={modalAdRef}
                                         className="adsbygoogle"
-                                        style={{ 
-                                            display: 'block', 
-                                            width: '100%', 
-                                            height: '280px',
-                                            margin: 0,
-                                            padding: 0,
-                                            position: 'relative'
-                                        }}
+                                        style={{ display: 'block', width: '100%', height: '100%', margin: 0, padding: 0 }}
                                         data-ad-client="ca-pub-5557791257949251"
-                                        data-ad-slot="auto"
-                                        data-ad-format="auto"
-                                        data-full-width-responsive="true"
-                                        data-include-autoformat-video-ads="true"
-                                    />
+                                         data-ad-slot="2114378043"
+                                         data-ad-format="auto"
+                                         data-full-width-responsive="true"
+                                        data-vignette-ad="true"
+                                    ></ins>
                                 </div>
 
                                 {/* Top bar: title + countdown */}
