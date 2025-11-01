@@ -10,6 +10,7 @@ import Blogs from '@/components/Shared/Blogs/Blogs';
 import SupportedBy from '@/components/Shared/SupportedBy/SupportedBy';
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { ErrorFallback } from '@/components/Shared/ErrorFallback/ErrorFallback ';
+import Providers from '@/components/Providers';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -69,26 +70,28 @@ export default async function RootLayout({ children }) {
 	return (
 		<html lang="en">
 			<body className={inter.className}>
-				<div className="sticky top-0 z-50">
-					<Navbar
+				<Providers>
+					<div className="sticky top-0 z-50">
+						<Navbar
+							categories={categories?.data}
+							subCategories={subCategories?.data}
+							assets={assets?.data}
+							footerPages={footerPages?.data}
+						/>
+					</div>
+
+					{children}
+
+					<AboutUs aboutUs={aboutUs?.data} />
+					<SupportedBy supportedby={supportedby?.data} />
+					{/* <Explore categories={categories?.data} /> */}
+					<Blogs blogs={blogs?.data} />
+					<Footer
 						categories={categories?.data}
-						subCategories={subCategories?.data}
-						assets={assets?.data}
 						footerPages={footerPages?.data}
+						socials={socials?.data}
 					/>
-				</div>
-
-				{children}
-
-				<AboutUs aboutUs={aboutUs?.data} />
-				<SupportedBy supportedby={supportedby?.data} />
-				{/* <Explore categories={categories?.data} /> */}
-				<Blogs blogs={blogs?.data} />
-				<Footer
-					categories={categories?.data}
-					footerPages={footerPages?.data}
-					socials={socials?.data}
-				/>
+				</Providers>
 			</body>
 			<head>
 				<script
