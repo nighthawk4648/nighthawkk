@@ -12,7 +12,12 @@ import { GoogleAnalytics } from '@next/third-parties/google';
 import { ErrorFallback } from '@/components/Shared/ErrorFallback/ErrorFallback ';
 import Providers from '@/components/Providers';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ 
+	subsets: ['latin'],
+	display: 'swap', // Prevents invisible text during font load
+	preload: true,
+	variable: '--font-inter'
+});
 
 const applicationSettings = await getData('general/application-settings');
 
@@ -74,8 +79,17 @@ export default async function RootLayout({ children }) {
 	}
 
 	return (
-		<html lang="en">
+		<html lang="en" className={inter.variable}>
 			<head>
+				{/* Preconnect to external domains */}
+				<link rel="preconnect" href="https://fonts.googleapis.com" />
+				<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+				<link rel="preconnect" href="https://api.sketchshaper.com" />
+				<link rel="preconnect" href="https://ik.imagekit.io" />
+				
+				{/* DNS prefetch for third-party resources */}
+				<link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+				
 				<script
 					async
 					src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5557791257949251"

@@ -1,8 +1,7 @@
 const getData = async (path) => {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/${path}`, {
-      cache: 'no-cache',
-      next: { revalidate: 60 }, // Cache for 60 seconds
+      next: { revalidate: 60 }, // Cache for 60 seconds, then revalidate
       signal: AbortSignal.timeout(10000) // 10 second timeout
     });
     

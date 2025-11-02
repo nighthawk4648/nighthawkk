@@ -60,10 +60,13 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  
+  // Optimize fonts to reduce CLS
+  optimizeFonts: true,
+  
   images: {
     unoptimized: true,
-    // Remove the unoptimized: true line since we want to use Cloudinary's optimization
-    domains: ['res.cloudinary.com', 'https://api.sketchshaper.com/api'], // Add your hosting domain
+    domains: ['res.cloudinary.com', 'api.sketchshaper.com', 'ik.imagekit.io'],
     remotePatterns: [
       {
         protocol: "https",
@@ -71,9 +74,22 @@ const nextConfig = {
       },
       {
         protocol: "https",
+        hostname: "api.sketchshaper.com",
+      },
+      {
+        protocol: "https",
+        hostname: "ik.imagekit.io",
+      },
+      {
+        protocol: "https",
         hostname: "**",
       },
     ],
+  },
+  
+  // Reduce layout shift
+  experimental: {
+    optimizeCss: true, // Enable CSS optimization
   },
 };
 
