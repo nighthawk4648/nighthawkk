@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { usePatreonAuth } from '@/contexts/PatreonAuthContext';
 
-export default function PatreonCallbackPage() {
+function PatreonCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { handleCallback } = usePatreonAuth();
@@ -72,5 +72,25 @@ export default function PatreonCallbackPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PatreonCallbackPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-black">
+        <div className="text-center">
+          <div className="mb-6">
+            <div className="inline-block relative">
+              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#FF424D]"></div>
+            </div>
+          </div>
+          <h2 className="text-2xl font-bold mb-4 text-white">Loading...</h2>
+          <p className="text-gray-400">Please wait</p>
+        </div>
+      </div>
+    }>
+      <PatreonCallbackContent />
+    </Suspense>
   );
 }
