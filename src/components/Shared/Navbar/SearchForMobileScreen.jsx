@@ -23,12 +23,12 @@ const SearchForMobileScreen = () => {
 
 
     const { data: searchData, isLoading, } = useSWR(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/search?search=${searchString}`,
+        searchString ? `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/search?search=${searchString}` : null,
         fetcher
     );
 
     const { data: categoryById, categoryIsLoading, } = useSWR(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/categories/${categoryId}`,
+        categoryId ? `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/categories/${categoryId}` : null,
         fetcher
     );
 

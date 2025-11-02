@@ -64,11 +64,24 @@ export default async function RootLayout({ children }) {
 	]);
 
 	if (!data || !aboutUs || !categories || !subCategories || !assets || !footerPages || !socials || !applicationSettings || !supportedby || !blogs) {
-		return <ErrorFallback />
+		return (
+			<html lang="en">
+				<body className={inter.className}>
+					<ErrorFallback />
+				</body>
+			</html>
+		);
 	}
 
 	return (
 		<html lang="en">
+			<head>
+				<script
+					async
+					src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5557791257949251"
+					crossOrigin="anonymous"
+				></script>
+			</head>
 			<body className={inter.className}>
 				<Providers>
 					<div className="sticky top-0 z-50">
@@ -92,15 +105,8 @@ export default async function RootLayout({ children }) {
 						socials={socials?.data}
 					/>
 				</Providers>
+				<GoogleAnalytics gaId="G-JCLNX11Z2V" />
 			</body>
-			<head>
-				<script
-					async
-					src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5557791257949251"
-					crossOrigin="anonymous"
-				></script>
-			</head>
-			<GoogleAnalytics gaId="G-JCLNX11Z2V" />
 		</html>
 	);
 }
