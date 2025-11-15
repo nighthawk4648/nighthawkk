@@ -1,32 +1,35 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 const Page = () => {
-
   const router = useRouter();
 
-  const models = [
-    {
-      "image": "https://placehold.co/300x200?text=Mountain",
-      "name": "Misty Mountain"
-    },
-    {
-      "image": "https://placehold.co/300x200?text=Forest",
-      "name": "Emerald Forest"
-    },
-    {
-      "image": "https://placehold.co/300x200?text=Beach",
-      "name": "Golden Beach"
-    },
-    {
-      "image": "https://placehold.co/300x200?text=Cityscape",
-      "name": "Night City"
+  // Fetch categories with pagination
+  const fetchCategories = async (page, limit) => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/sketchshaper-pro-categories/pages?page=${page}&limit=${limit}&order=desc`
+      );
+      
+      if (!response.ok) throw new Error('Failed to fetch categories');
+      
+      const data = await response.json();
+      return {
+        result: data.data?.result || [],
+        pagination: data.data?.pagination || { total: 0, totalPage: 1, currentPage: page }
+      };
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      throw error;
     }
-  ]
+  };
 
-
+  const { data: categories, isLoading, hasMore, error, observerTarget } = useInfiniteScroll(fetchCategories, 12);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white px-4 py-6 flex flex-col items-center">
@@ -77,36 +80,82 @@ const Page = () => {
           </ul>
         </div>
       </div>
-      <div className='mt-10 text-center'>
+
+      {error && (
+        <div className="mt-6 p-4 bg-red-900/20 border border-red-500 rounded-lg text-red-300 max-w-2xl">
+          Error loading categories: {error}
+        </div>
+      )}
+
+      <div className='mt-10 text-center w-full'>
         <div className='w-full mb-8'>
-          <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-            {models?.map((model, index) => (
+          <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4'>
+            {categories?.map((category) => (
               <div
-                key={index}
-                className='flex flex-col items-center bg-white/10 p-4 rounded-xl backdrop-blur-md shadow-lg'
+                key={category.id}
+                className='flex flex-col items-center bg-white/10 p-4 rounded-xl backdrop-blur-md shadow-lg hover:bg-white/20 transition-all duration-300 cursor-pointer group'
               >
                 <div className='relative w-full h-48 rounded-lg overflow-hidden'>
                   <Image
-                    src={model?.image}
-                    alt={`Preview ${index + 1}`}
+                    src={category?.preview_image ? `${API_BASE_URL}/${category.preview_image}` : 'https://placehold.co/300x200?text=Category'}
+                    alt={category?.name}
                     fill
-                    className='object-cover'
+                    className='object-cover group-hover:scale-105 transition-transform duration-300'
                   />
                 </div>
 
-                <p className='mt-3 text-center text-white font-medium'>
-                  {model?.name}
+                <p className='mt-3 text-center text-white font-medium line-clamp-2'>
+                  {category?.name}
                 </p>
 
+                {category?.description && (
+                  <p className='mt-2 text-center text-gray-400 text-xs line-clamp-2'>
+                    {category.description}
+                  </p>
+                )}
+
                 <button
-                  onClick={() => router.push(`/pro/${model?.name}`)}
-                  className='mt-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-5 rounded-lg shadow-md transition cursor-pointer disabled:opacity-50 flex items-center justify-center'
+                  onClick={() => router.push(`/pro/${category?.id}`)}
+                  className='mt-4 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2 px-5 rounded-lg shadow-md transition cursor-pointer disabled:opacity-50 flex items-center justify-center w-full'
                 >
-                  Browse Model
+                  Browse Models
                 </button>
               </div>
             ))}
           </div>
+
+          {/* Loading indicator */}
+          {isLoading && categories.length > 0 && (
+            <div className='flex justify-center mt-8'>
+              <div className='animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500'></div>
+            </div>
+          )}
+
+          {/* Infinite scroll trigger */}
+          {hasMore && (
+            <div
+              ref={observerTarget}
+              className='h-10 mt-8 flex items-center justify-center'
+            >
+              {isLoading && categories.length > 0 && (
+                <span className='text-gray-400'>Loading more categories...</span>
+              )}
+            </div>
+          )}
+
+          {/* No more data message */}
+          {!hasMore && categories.length > 0 && (
+            <div className='text-center mt-8 text-gray-400'>
+              No more categories to load
+            </div>
+          )}
+
+          {/* Empty state */}
+          {!isLoading && categories.length === 0 && !error && (
+            <div className='text-center mt-8 text-gray-400'>
+              No categories available
+            </div>
+          )}
         </div>
       </div>
     </div>
