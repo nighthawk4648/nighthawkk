@@ -25,8 +25,8 @@ function PatreonCallbackContent() {
 
       if (errorParam === 'not_patron') {
         errorMessage = 'Patron Subscription Required';
-        details = message ? decodeURIComponent(message) : 'You must be an active patron to access this service. Please subscribe on Patreon first.';
-        redirectDelay = 10000; // 10 seconds for patron subscription error
+        details = message ? decodeURIComponent(message) : 'You must be an active patron to access this service.\n\nPlease subscribe on Patreon:\nhttps://www.patreon.com/sketchshaper\n\nThen come back and login again.';
+        redirectDelay = 12000; // 12 seconds for patron subscription error
       } else if (errorParam === 'oauth_failed') {
         errorMessage = 'Patreon Authentication Failed';
         details = message ? decodeURIComponent(message) : 'Failed to authenticate with Patreon. Please try again.';
@@ -67,11 +67,21 @@ function PatreonCallbackContent() {
         router.push('/pro');
       }, 1500);
     } else {
-      setError('Invalid authentication response');
-      setErrorDetails('No token received from authentication server. Please try again.');
-      setTimeout(() => {
-        router.push('/pro');
-      }, 3000);
+      setError('Authentication Error');
+      setErrorDetails('Something went wrong during authentication. This could mean:\n\n• You are not an active patron\n• Your Patreon subscription expired\n• There was a connection issue\n\nPlease try logging in again or subscribe on Patreon first.');
+      setCountdown(12);
+      
+      // Countdown timer
+      const countdownInterval = setInterval(() => {
+        setCountdown(prev => {
+          if (prev <= 1) {
+            clearInterval(countdownInterval);
+            router.push('/pro');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
     }
   }, [searchParams, handleCallback, router]);
 
@@ -82,19 +92,31 @@ function PatreonCallbackContent() {
           <div className="text-red-400 text-5xl mb-4">⚠️</div>
           <h2 className="text-2xl font-bold mb-4 text-white">{error}</h2>
           {errorDetails && (
-            <p className="text-gray-300 mb-6 leading-relaxed">{errorDetails}</p>
+            <p className="text-gray-300 mb-6 leading-relaxed whitespace-pre-wrap text-left">{errorDetails}</p>
           )}
-          <div className="mt-6 p-4 bg-red-500/10 rounded border border-red-500/30">
-            <p className="text-sm text-gray-400">
-              Redirecting you back in <span className="font-bold text-red-400">{countdown}</span> seconds...
-            </p>
+          <div className="mt-6 space-y-3">
+            {error.includes('Patron') && (
+              <a
+                href="https://www.patreon.com/sketchshaper"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-4 py-2 bg-[#FF424D] hover:bg-[#E63A42] text-white rounded font-semibold transition"
+              >
+                🔗 Subscribe on Patreon
+              </a>
+            )}
+            <div className="p-4 bg-red-500/10 rounded border border-red-500/30">
+              <p className="text-sm text-gray-400">
+                Redirecting you back in <span className="font-bold text-red-400">{countdown}</span> seconds...
+              </p>
+            </div>
+            <button
+              onClick={() => router.push('/pro')}
+              className="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition"
+            >
+              Go Back Now
+            </button>
           </div>
-          <button
-            onClick={() => router.push('/pro')}
-            className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition"
-          >
-            Go Back Now
-          </button>
         </div>
       </div>
     );
