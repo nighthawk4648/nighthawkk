@@ -1,12 +1,18 @@
 'use client';
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import { getOptimizedImageUrl } from '@/utils/cloudinary';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 const Page = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const closeModal = () => setSelectedImage(null);
+
+  const getOriginalImageUrl = (imagePath) => {
+    return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
+  };
 
   // Fetch gallery images with pagination
   const fetchGalleryImages = async (page, limit) => {
@@ -42,24 +48,33 @@ const Page = () => {
 
       {/* Full-width large thumbnail grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
-        {images.map((image) => (
-          <div
-            key={image.id}
-            className="overflow-hidden rounded-xl border border-gray-700 shadow-md cursor-pointer hover:scale-105 transition-transform duration-300 group"
-            onClick={() => setSelectedImage(image.image_url || image.url)}
-          >
-            <img
-              src={image.image_url || image.url}
-              alt={image.title || `Gallery image ${image.id}`}
-              className="w-full h-64 object-cover group-hover:brightness-110 transition-all duration-300"
-            />
-            {image.title && (
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <p className="text-sm font-semibold truncate">{image.title}</p>
-              </div>
-            )}
-          </div>
-        ))}
+        {images.map((image) => {
+          const imageUrl = image.image_url || image.url;
+          const optimizedUrl = getOptimizedImageUrl(getOriginalImageUrl(imageUrl));
+          
+          return (
+            <div
+              key={image.id}
+              className="overflow-hidden rounded-xl border border-gray-700 shadow-md cursor-pointer hover:scale-105 transition-transform duration-300 group relative"
+              onClick={() => setSelectedImage(optimizedUrl)}
+            >
+              {imageUrl && (
+                <Image
+                  src={optimizedUrl}
+                  alt={image.title || `Gallery image ${image.id}`}
+                  width={400}
+                  height={300}
+                  className="w-full h-64 object-cover group-hover:brightness-110 transition-all duration-300"
+                />
+              )}
+              {image.title && (
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <p className="text-sm font-semibold truncate">{image.title}</p>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* Loading indicator */}
@@ -107,9 +122,11 @@ const Page = () => {
           >
             &times;
           </button>
-          <img
+          <Image
             src={selectedImage}
             alt="Full Preview"
+            width={1200}
+            height={800}
             className="max-w-full max-h-full rounded-xl shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           />

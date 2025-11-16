@@ -3,11 +3,16 @@ import React from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import { getOptimizedImageUrl } from '@/utils/cloudinary';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 const Page = () => {
   const router = useRouter();
+
+  const getOriginalImageUrl = (imagePath) => {
+    return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
+  };
 
   // Fetch categories with pagination
   const fetchCategories = async (page, limit) => {
@@ -90,18 +95,23 @@ const Page = () => {
       <div className='mt-10 text-center w-full'>
         <div className='w-full mb-8'>
           <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4'>
-            {categories?.map((category) => (
+            {categories?.map((category) => {
+              const imageUrl = category?.preview_image ? getOptimizedImageUrl(getOriginalImageUrl(category.preview_image)) : 'https://placehold.co/300x200?text=Category';
+              
+              return (
               <div
                 key={category.id}
                 className='flex flex-col items-center bg-white/10 p-4 rounded-xl backdrop-blur-md shadow-lg hover:bg-white/20 transition-all duration-300 cursor-pointer group'
               >
                 <div className='relative w-full h-48 rounded-lg overflow-hidden'>
-                  <Image
-                    src={category?.preview_image ? `${API_BASE_URL}/${category.preview_image}` : 'https://placehold.co/300x200?text=Category'}
-                    alt={category?.name}
-                    fill
-                    className='object-cover group-hover:scale-105 transition-transform duration-300'
-                  />
+                  {category?.preview_image && (
+                    <Image
+                      src={imageUrl}
+                      alt={category?.name}
+                      fill
+                      className='object-cover group-hover:scale-105 transition-transform duration-300'
+                    />
+                  )}
                 </div>
 
                 <p className='mt-3 text-center text-white font-medium line-clamp-2'>
@@ -121,7 +131,8 @@ const Page = () => {
                   Browse Models
                 </button>
               </div>
-            ))}
+            );
+            })}
           </div>
 
           {/* Loading indicator */}

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { usePatreonAuth } from '@/contexts/PatreonAuthContext';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import { getOptimizedImageUrl } from '@/utils/cloudinary';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
@@ -11,6 +12,10 @@ const Page = ({ params }) => {
 
     const router = useRouter();
     const { assetName: categoryId } = params;
+
+    const getOriginalImageUrl = (imagePath) => {
+        return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
+    };
     const [showModal, setShowModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [downloadingId, setDownloadingId] = useState(null);
@@ -184,18 +189,23 @@ const Page = ({ params }) => {
             )}
             
             <div className='mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4'>
-                {files.map((file) => (
+                {files.map((file) => {
+                    const imageUrl = file.preview_image ? getOptimizedImageUrl(getOriginalImageUrl(file.preview_image)) : 'https://placehold.co/300x200?text=File';
+                    
+                    return (
                     <div
                         key={file.id}
                         className='bg-white/10 backdrop-blur-md rounded-2xl shadow-lg overflow-hidden flex flex-col items-center p-4 border border-white/20 hover:bg-white/20 transition-all duration-300 group'
                     >
                         <div className='relative w-full h-48 rounded-lg overflow-hidden'>
-                            <Image
-                                src={file.preview_image ? `${API_BASE_URL}/${file.preview_image}` : 'https://placehold.co/300x200?text=File'}
-                                alt={file.name}
-                                fill
-                                className='object-cover group-hover:scale-105 transition-transform duration-300'
-                            />
+                            {file.preview_image && (
+                                <Image
+                                    src={imageUrl}
+                                    alt={file.name}
+                                    fill
+                                    className='object-cover group-hover:scale-105 transition-transform duration-300'
+                                />
+                            )}
                         </div>
 
                         <div className='mt-3 text-center w-full'>
@@ -244,7 +254,8 @@ const Page = ({ params }) => {
                             )}
                         </button>
                     </div>
-                ))}
+                    );
+                })}
             </div>
 
             {/* Loading indicator */}
