@@ -9,17 +9,54 @@ function PatreonCallbackContent() {
   const searchParams = useSearchParams();
   const { handleCallback } = usePatreonAuth();
   const [error, setError] = useState(null);
+  const [errorDetails, setErrorDetails] = useState(null);
+  const [countdown, setCountdown] = useState(0);
 
   useEffect(() => {
     const token = searchParams.get('token');
     const success = searchParams.get('success');
     const errorParam = searchParams.get('error');
+    const message = searchParams.get('message');
 
     if (errorParam) {
-      setError('Authentication failed. Please try again.');
-      setTimeout(() => {
-        router.push('/pro');
-      }, 3000);
+      let errorMessage = 'Authentication failed. Please try again.';
+      let details = null;
+      let redirectDelay = 8000; // Default 8 seconds
+
+      if (errorParam === 'not_patron') {
+        errorMessage = 'Patron Subscription Required';
+        details = message ? decodeURIComponent(message) : 'You must be an active patron to access this service. Please subscribe on Patreon first.';
+        redirectDelay = 10000; // 10 seconds for patron subscription error
+      } else if (errorParam === 'oauth_failed') {
+        errorMessage = 'Patreon Authentication Failed';
+        details = message ? decodeURIComponent(message) : 'Failed to authenticate with Patreon. Please try again.';
+        redirectDelay = 8000;
+      } else if (errorParam === 'user_fetch_failed') {
+        errorMessage = 'Failed to Fetch User Data';
+        details = message ? decodeURIComponent(message) : 'Could not retrieve your Patreon information. Please try again.';
+        redirectDelay = 8000;
+      } else if (message) {
+        errorMessage = 'Authentication Error';
+        details = decodeURIComponent(message);
+        redirectDelay = 8000;
+      }
+
+      setError(errorMessage);
+      setErrorDetails(details);
+      setCountdown(Math.ceil(redirectDelay / 1000));
+      
+      // Countdown timer
+      const countdownInterval = setInterval(() => {
+        setCountdown(prev => {
+          if (prev <= 1) {
+            clearInterval(countdownInterval);
+            router.push('/pro');
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      
       return;
     }
 
@@ -31,6 +68,7 @@ function PatreonCallbackContent() {
       }, 1500);
     } else {
       setError('Invalid authentication response');
+      setErrorDetails('No token received from authentication server. Please try again.');
       setTimeout(() => {
         router.push('/pro');
       }, 3000);
@@ -42,9 +80,21 @@ function PatreonCallbackContent() {
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-black">
         <div className="text-center bg-red-900/20 border border-red-500 rounded-lg p-8 max-w-md">
           <div className="text-red-400 text-5xl mb-4">⚠️</div>
-          <h2 className="text-2xl font-bold mb-4 text-white">Authentication Error</h2>
-          <p className="text-gray-300 mb-4">{error}</p>
-          <p className="text-sm text-gray-400">Redirecting you back...</p>
+          <h2 className="text-2xl font-bold mb-4 text-white">{error}</h2>
+          {errorDetails && (
+            <p className="text-gray-300 mb-6 leading-relaxed">{errorDetails}</p>
+          )}
+          <div className="mt-6 p-4 bg-red-500/10 rounded border border-red-500/30">
+            <p className="text-sm text-gray-400">
+              Redirecting you back in <span className="font-bold text-red-400">{countdown}</span> seconds...
+            </p>
+          </div>
+          <button
+            onClick={() => router.push('/pro')}
+            className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition"
+          >
+            Go Back Now
+          </button>
         </div>
       </div>
     );

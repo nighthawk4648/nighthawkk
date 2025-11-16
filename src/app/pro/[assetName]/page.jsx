@@ -115,7 +115,7 @@ const Page = ({ params }) => {
     const handleDownload = (file) => {
         // Create download link
         const link = document.createElement('a');
-        link.href = `${API_BASE_URL}/api/sketchshaper-pro-files/download/${file.id}`;
+        link.href = `${API_BASE_URL}/sketchshaper-pro-files/download/${file.id}`;
         link.download = file.name || `download`;
         document.body.appendChild(link);
         link.click();

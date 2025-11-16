@@ -4,7 +4,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 
 const PatreonAuthContext = createContext();
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
 export function PatreonAuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -24,7 +24,7 @@ export function PatreonAuthProvider({ children }) {
 
   const fetchUserData = async (authToken) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/patreon/me`, {
+      const response = await fetch(`${API_BASE_URL}/patreon/me`, {
         headers: {
           'Authorization': `Bearer ${authToken}`
         }
@@ -48,7 +48,7 @@ export function PatreonAuthProvider({ children }) {
   const login = async () => {
     try {
       // Fetch the OAuth URL from backend
-      const response = await fetch(`${API_BASE_URL}/api/patreon/auth?intent=login`);
+      const response = await fetch(`${API_BASE_URL}/patreon/auth?intent=login`);
       const data = await response.json();
       
       if (data.data?.authUrl) {
@@ -81,7 +81,7 @@ export function PatreonAuthProvider({ children }) {
     
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/patreon/check-download/${assetId}`,
+        `${API_BASE_URL}/patreon/check-download/${assetId}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`
@@ -102,7 +102,7 @@ export function PatreonAuthProvider({ children }) {
     
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/patreon/verify`,
+        `${API_BASE_URL}/patreon/verify`,
         {
           headers: {
             'Authorization': `Bearer ${token}`
