@@ -6,7 +6,7 @@ import { usePatreonAuth } from '@/contexts/PatreonAuthContext';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { getOptimizedImageUrl } from '@/utils/cloudinary';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
 const Page = ({ params }) => {
 
@@ -28,7 +28,7 @@ const Page = ({ params }) => {
     const fetchFiles = async (page, limit) => {
         try {
             const response = await fetch(
-                `${API_BASE_URL}/api/sketchshaper-pro-files/pages?page=${page}&limit=${limit}&categoryId=${categoryId}&order=desc`
+                `${API_BASE_URL}/sketchshaper-pro-files/pages?page=${page}&limit=${limit}&categoryId=${categoryId}&order=desc`
             );
             
             if (!response.ok) throw new Error('Failed to fetch files');
@@ -50,7 +50,7 @@ const Page = ({ params }) => {
     useEffect(() => {
         const fetchCategoryInfo = async () => {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/sketchshaper-pro-categories/${categoryId}`);
+                const response = await fetch(`${API_BASE_URL}/sketchshaper-pro-categories/${categoryId}`);
                 if (response.ok) {
                     const data = await response.json();
                     setCategoryInfo(data.data);
@@ -136,7 +136,7 @@ const Page = ({ params }) => {
 
 
     return (
-        <div className='mx-[20px] min-h-screen bg-gradient-to-br from-gray-900 to-black text-white py-8'>
+        <div className='px-5 md:px-10 lg:px-20 min-h-screen bg-gradient-to-br from-gray-900 to-black text-white py-8'>
             {/* Back button */}
             <button
                 onClick={() => router.back()}

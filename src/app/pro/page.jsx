@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { getOptimizedImageUrl } from '@/utils/cloudinary';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
 const Page = () => {
   const router = useRouter();
@@ -18,7 +18,7 @@ const Page = () => {
   const fetchCategories = async (page, limit) => {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/sketchshaper-pro-categories/pages?page=${page}&limit=${limit}&order=desc`
+        `${API_BASE_URL}/sketchshaper-pro-categories/pages?page=${page}&limit=${limit}&order=desc`
       );
       
       if (!response.ok) throw new Error('Failed to fetch categories');

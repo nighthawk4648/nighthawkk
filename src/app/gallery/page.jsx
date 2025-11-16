@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { getOptimizedImageUrl } from '@/utils/cloudinary';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
 const Page = () => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -18,7 +18,7 @@ const Page = () => {
   const fetchGalleryImages = async (page, limit) => {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/gallery/pages?page=${page}&limit=${limit}&order=desc`
+        `${API_BASE_URL}/gallery/pages?page=${page}&limit=${limit}&order=desc`
       );
       
       if (!response.ok) throw new Error('Failed to fetch gallery images');
@@ -49,7 +49,7 @@ const Page = () => {
       {/* Full-width large thumbnail grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
         {images.map((image) => {
-          const imageUrl = image.image_url || image.url;
+          const imageUrl = image.image || image.image_url || image.url;
           const optimizedUrl = getOptimizedImageUrl(getOriginalImageUrl(imageUrl));
           
           return (

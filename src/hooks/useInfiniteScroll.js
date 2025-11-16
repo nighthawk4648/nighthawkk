@@ -12,11 +12,10 @@ export const useInfiniteScroll = (fetchFunction, limit = 10) => {
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState(null);
   const observerTarget = useRef(null);
+  const initialFetchDone = useRef(false);
 
   // Fetch data for current page
   const fetchData = useCallback(async (pageNum) => {
-    if (isLoading || !hasMore) return;
-
     setIsLoading(true);
     setError(null);
 
@@ -37,11 +36,14 @@ export const useInfiniteScroll = (fetchFunction, limit = 10) => {
     } finally {
       setIsLoading(false);
     }
-  }, [fetchFunction, limit, isLoading, hasMore]);
+  }, [fetchFunction, limit]);
 
   // Initial fetch
   useEffect(() => {
-    fetchData(1);
+    if (!initialFetchDone.current) {
+      initialFetchDone.current = true;
+      fetchData(1);
+    }
   }, []);
 
   // Intersection Observer for infinite scroll
