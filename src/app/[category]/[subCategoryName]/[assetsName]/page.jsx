@@ -9,7 +9,7 @@ export async function generateMetadata({ params }) {
     const { assetsName } = params;
     const assetId = assetsName?.split("-").slice(-1);
 
-    const metaSettings = await getData(`assets/${assetId}`); // Replace with actual call to fetch site settings
+    const metaSettings = await getData(`assets/${assetId}`);
     const metaTitle = metaSettings?.data?.meta_title;
     const metaDescription = metaSettings?.data?.meta_description;
 

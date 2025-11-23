@@ -77,6 +77,13 @@ const Blogs = ({ blogs }) => {
                 </div>
 
             </div>
+            <div className='flex justify-center mt-8'>
+                <Link href="/blog">
+                    <button className='px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition duration-200'>
+                        See All Blogs
+                    </button>
+                </Link>
+            </div>
         </div>
     );
 };

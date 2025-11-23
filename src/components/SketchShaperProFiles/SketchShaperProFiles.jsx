@@ -21,7 +21,7 @@ export const SketchShaperProFiles = ({ categoryId }) => {
     const [isPatron, setIsPatron] = useState(false);
     const [checkingPatron, setCheckingPatron] = useState(false);
 
-    // Fetch files for the category with pagination
+
     const fetchFiles = async (page, limit) => {
         try {
             const response = await fetch(
@@ -43,7 +43,7 @@ export const SketchShaperProFiles = ({ categoryId }) => {
 
     const { data: files, isLoading: filesLoading, hasMore, error: filesError, observerTarget } = useInfiniteScroll(fetchFiles, 12);
 
-    // Fetch category info
+
     useEffect(() => {
         const fetchCategoryInfo = async () => {
             try {
@@ -63,7 +63,6 @@ export const SketchShaperProFiles = ({ categoryId }) => {
     }, [categoryId]);
 
     useEffect(() => {
-        // Check patron status when user is authenticated
         if (isAuthenticated && user) {
             checkPatronStatus();
         }
@@ -83,22 +82,21 @@ export const SketchShaperProFiles = ({ categoryId }) => {
     };
 
     const handleAccessClick = async (file) => {
-        // If not authenticated, show login modal
         if (!isAuthenticated) {
             setShowModal(true);
             return;
         }
 
-        // If authenticated, verify patron status and download
+       
         setDownloadingId(file.id);
         try {
             const patronStatus = await verifyPatronStatus();
 
             if (patronStatus) {
-                // User is an active patron, proceed with download
+          
                 handleDownload(file);
             } else {
-                // User is not an active patron, show subscription modal
+   
                 setShowModal(true);
             }
         } catch (error) {
@@ -110,7 +108,7 @@ export const SketchShaperProFiles = ({ categoryId }) => {
     };
 
     const handleDownload = (file) => {
-        // Create download link
+     
         const link = document.createElement('a');
         link.href = `${API_BASE_URL}/sketchshaper-pro-files/download/${file.id}`;
         link.download = file.name || `download`;
@@ -134,7 +132,7 @@ export const SketchShaperProFiles = ({ categoryId }) => {
 
     return (
         <div className='px-5 md:px-10 lg:px-20 min-h-screen bg-gradient-to-br from-gray-900 to-black text-white py-8'>
-            {/* Back button */}
+           
             <button
                 onClick={() => router.back()}
                 className='mb-6 text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-2'
@@ -142,7 +140,7 @@ export const SketchShaperProFiles = ({ categoryId }) => {
                 ← Back to Categories
             </button>
 
-            {/* Patron Status Banner */}
+           
             {isAuthenticated && (
                 <div className={`mb-6 p-4 rounded-lg border ${isPatron ? 'bg-green-900/20 border-green-500' : 'bg-yellow-900/20 border-yellow-500'}`}>
                     <div className='flex items-center justify-between'>
@@ -185,7 +183,7 @@ export const SketchShaperProFiles = ({ categoryId }) => {
                 </div>
             )}
 
-            <div className='mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4'>
+            <div className='mt-10 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4'>
                 {files.map((file) => {
                     const imageUrl = file.preview_image ? getOptimizedImageUrl(getOriginalImageUrl(file.preview_image)) : 'https://placehold.co/300x200?text=File';
 
@@ -255,14 +253,14 @@ export const SketchShaperProFiles = ({ categoryId }) => {
                 })}
             </div>
 
-            {/* Loading indicator */}
+           
             {filesLoading && files.length > 0 && (
                 <div className='flex justify-center mt-8'>
                     <div className='animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500'></div>
                 </div>
             )}
 
-            {/* Infinite scroll trigger */}
+           
             {hasMore && (
                 <div
                     ref={observerTarget}
@@ -274,14 +272,14 @@ export const SketchShaperProFiles = ({ categoryId }) => {
                 </div>
             )}
 
-            {/* No more data message */}
+           
             {!hasMore && files.length > 0 && (
                 <div className='text-center mt-8 text-gray-400'>
                     No more files to load
                 </div>
             )}
 
-            {/* Empty state */}
+          
             {!filesLoading && files.length === 0 && !filesError && (
                 <div className='text-center mt-8 text-gray-400'>
                     No files available in this category

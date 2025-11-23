@@ -197,13 +197,13 @@ const SubCategoryDetails = ({ assetDetails }) => {
                     <span className="text-xs">{assetDetails?.resolution}</span>
                 </h3>
 
-                {assetDetails?.download_link && (
+                {assetDetails?.id && (
                     <div className="w-48 mx-auto p-1 bg-primary mt-10 rounded-md cursor-pointer border-b-2 border-gray-500">
                         <button
                             type="button"
                             onClick={() => {
                                 // open modal interstitial
-                                setCountdown(15); // reset
+                                setCountdown(10); // reset to 10 seconds
                                 setIsModalOpen(true);
                                 setIsCountdownActive(true);
                             }}
@@ -269,7 +269,39 @@ const SubCategoryDetails = ({ assetDetails }) => {
                                         type="button"
                                         onClick={() => {
                                             if (countdown === 0) {
-                                                window.open(assetDetails.download_link, '_blank');
+                                                const downloadAsset = async () => {
+                                                    try {
+                                                        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/assets/${assetDetails.id}/download`);
+                                                        
+                                                        if (!response.ok) {
+                                                            throw new Error(`Download failed with status ${response.status}`);
+                                                        }
+                                                        
+                                                        const blob = await response.blob();
+                                                        
+                                                        // Get filename from Content-Disposition header
+                                                        const contentDisposition = response.headers.get('content-disposition');
+                                                        let filename = `asset-${assetDetails.id}`;
+                                                        
+                                                        if (contentDisposition) {
+                                                            const filenameMatch = contentDisposition.match(/filename[^;=\n]*=(["\']?)([^"\';]*)\1/);
+                                                            if (filenameMatch && filenameMatch[2]) {
+                                                                filename = filenameMatch[2];
+                                                            }
+                                                        }
+                                                        
+                                                        const url = window.URL.createObjectURL(blob);
+                                                        const a = document.createElement('a');
+                                                        a.href = url;
+                                                        a.download = filename;
+                                                        a.click();
+                                                        window.URL.revokeObjectURL(url);
+                                                    } catch (error) {
+                                                        console.error('Download failed:', error);
+                                                        alert('Download failed. Please try again.');
+                                                    }
+                                                };
+                                                downloadAsset();
                                                 setIsModalOpen(false);
                                             }
                                         }}
