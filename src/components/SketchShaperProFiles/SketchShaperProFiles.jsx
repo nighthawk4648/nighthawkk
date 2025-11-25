@@ -153,6 +153,10 @@ export const SketchShaperProFiles = ({ categoryId }) => {
                 
                 if (filenameMatch && filenameMatch[1]) {
                     filename = decodeURIComponent(filenameMatch[1]);
+                    // Remove timestamp prefix if it exists (format: 1234567890-filename)
+                    if (filename.match(/^\d+-/)) {
+                        filename = filename.replace(/^\d+-/, '');
+                    }
                     console.log('✅ Filename extracted:', filename);
                 } else {
                     console.log('❌ No filename match found, using default:', filename);
