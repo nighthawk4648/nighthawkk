@@ -278,17 +278,43 @@ const SubCategoryDetails = ({ assetDetails }) => {
                                                         }
                                                         
                                                         const blob = await response.blob();
+                                                      
                                                         
                                                         // Get filename from Content-Disposition header
                                                         const contentDisposition = response.headers.get('content-disposition');
+                                              
+                                                        
                                                         let filename = `asset-${assetDetails.id}`;
                                                         
                                                         if (contentDisposition) {
-                                                            const filenameMatch = contentDisposition.match(/filename[^;=\n]*=(["\']?)([^"\';]*)\1/);
-                                                            if (filenameMatch && filenameMatch[2]) {
-                                                                filename = filenameMatch[2];
+                                                            
+                                                            // Pattern 1: filename="value" or filename='value'
+                                                            let filenameMatch = contentDisposition.match(/filename\s*=\s*"([^"]+)"/);
+                                                            
+                                                            if (!filenameMatch) {
+                                                                // Pattern 2: filename=value (without quotes)
+                                                                filenameMatch = contentDisposition.match(/filename\s*=\s*([^;\s]+)/);
                                                             }
+                                                            if (!filenameMatch) {
+                                                                // Pattern 3: filename*=UTF-8''value (RFC 5987)
+                                                                filenameMatch = contentDisposition.match(/filename\*\s*=\s*(?:UTF-8'')?([^;\s]+)/);
+                                                            }
+                                                            
+                                                            if (filenameMatch && filenameMatch[1]) {
+                                                                filename = decodeURIComponent(filenameMatch[1]);
+                                                                // Remove timestamp prefix if it exists (format: 1234567890-filename)
+                                                                if (filename.match(/^\d+-/)) {
+                                                                    filename = filename.replace(/^\d+-/, '');
+                                                                }
+                                                                console.log('✅ Filename extracted:', filename);
+                                                            } else {
+                                                                console.log('❌ No filename match found, using default:', filename);
+                                                            }
+                                                        } else {
+                                                            console.log('❌ No Content-Disposition header found');
                                                         }
+                                                        
+                                                       
                                                         
                                                         const url = window.URL.createObjectURL(blob);
                                                         const a = document.createElement('a');
@@ -296,8 +322,9 @@ const SubCategoryDetails = ({ assetDetails }) => {
                                                         a.download = filename;
                                                         a.click();
                                                         window.URL.revokeObjectURL(url);
+                                                       
                                                     } catch (error) {
-                                                        console.error('Download failed:', error);
+                                                        
                                                         alert('Download failed. Please try again.');
                                                     }
                                                 };

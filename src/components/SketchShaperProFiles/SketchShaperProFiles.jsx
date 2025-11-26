@@ -108,16 +108,77 @@ export const SketchShaperProFiles = ({ categoryId }) => {
         }
     };
 
-    const handleDownload = (file) => {
-     
-        const link = document.createElement('a');
-        link.href = `${API_BASE_URL}/sketchshaper-pro-files/download/${file.id}`;
-        link.download = file.name || `download`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        console.log('Download started for:', file.name);
+    const handleDownload = async (file) => {
+        try {
+            console.log('🔍 Starting download for file ID:', file.id);
+            const response = await fetch(`${API_BASE_URL}/sketchshaper-pro-files/download/${file.id}`);
+            
+            console.log('📡 Response status:', response.status);
+            console.log('📡 Response headers:', {
+                contentType: response.headers.get('content-type'),
+                contentDisposition: response.headers.get('content-disposition'),
+                contentLength: response.headers.get('content-length'),
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Download failed with status ${response.status}`);
+            }
+            
+            const blob = await response.blob();
+            console.log('📦 Blob size:', blob.size, 'bytes');
+            console.log('📦 Blob type:', blob.type);
+            
+            // Get filename from Content-Disposition header
+            const contentDisposition = response.headers.get('content-disposition');
+            console.log('🔎 Raw Content-Disposition header:', contentDisposition);
+            
+            let filename = file.name || `file-${file.id}`;
+            
+            if (contentDisposition) {
+                console.log('🔍 Attempting to extract filename...');
+                
+                // Pattern 1: filename="value" or filename='value'
+                let filenameMatch = contentDisposition.match(/filename\s*=\s*"([^"]+)"/);
+                console.log('Pattern 1 (quoted):', filenameMatch);
+                
+                if (!filenameMatch) {
+                    // Pattern 2: filename=value (without quotes)
+                    filenameMatch = contentDisposition.match(/filename\s*=\s*([^;\s]+)/);
+                    console.log('Pattern 2 (unquoted):', filenameMatch);
+                }
+                if (!filenameMatch) {
+                    // Pattern 3: filename*=UTF-8''value (RFC 5987)
+                    filenameMatch = contentDisposition.match(/filename\*\s*=\s*(?:UTF-8'')?([^;\s]+)/);
+                    console.log('Pattern 3 (RFC 5987):', filenameMatch);
+                }
+                
+                if (filenameMatch && filenameMatch[1]) {
+                    filename = decodeURIComponent(filenameMatch[1]);
+                    // Remove timestamp prefix if it exists (format: 1234567890-filename)
+                    if (filename.match(/^\d+-/)) {
+                        filename = filename.replace(/^\d+-/, '');
+                    }
+                    console.log('✅ Filename extracted:', filename);
+                } else {
+                    console.log('❌ No filename match found, using default:', filename);
+                }
+            } else {
+                console.log('❌ No Content-Disposition header found');
+            }
+            
+            console.log('📥 Final filename to download:', filename);
+            
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            console.log('✅ Download triggered successfully');
+        } catch (error) {
+            console.error('❌ Download failed:', error);
+            alert('Download failed. Please try again.');
+        }
     };
 
     const handlePatreonLogin = async () => {
