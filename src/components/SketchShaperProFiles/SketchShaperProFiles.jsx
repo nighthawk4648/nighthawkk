@@ -17,6 +17,7 @@ export const SketchShaperProFiles = ({ categoryId }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [downloadingId, setDownloadingId] = useState(null);
     const [categoryInfo, setCategoryInfo] = useState(null);
+    const [hoverOrigin, setHoverOrigin] = useState({ id: null, x: '50%', y: '50%' });
     const { user, isAuthenticated, login, loading: authLoading, verifyPatronStatus, token } = usePatreonAuth();
     const [isPatron, setIsPatron] = useState(false);
     const [checkingPatron, setCheckingPatron] = useState(false);
@@ -214,13 +215,25 @@ export const SketchShaperProFiles = ({ categoryId }) => {
                             key={file.id}
                             className='bg-white/10 backdrop-blur-md rounded-2xl shadow-lg overflow-hidden flex flex-col items-center p-4 border border-white/20 hover:bg-white/20 transition-all duration-300 group'
                         >
-                            <div className='relative w-full h-48 rounded-lg overflow-hidden'>
+                            <div
+                                className='relative w-full aspect-square rounded-lg overflow-hidden cursor-zoom-in'
+                                onMouseMove={(e) => {
+                                    const rect = e.currentTarget.getBoundingClientRect();
+                                    const px = ((e.clientX - rect.left) / rect.width) * 100;
+                                    const py = ((e.clientY - rect.top) / rect.height) * 100;
+                                    setHoverOrigin({ id: file.id, x: `${px}%`, y: `${py}%` });
+                                }}
+                                onMouseLeave={() => setHoverOrigin({ id: null, x: '50%', y: '50%' })}
+                            >
                                 {file.preview_image && (
                                     <Image
                                         src={imageUrl}
                                         alt={file.name}
                                         fill
-                                        className='object-cover group-hover:scale-105 transition-transform duration-300'
+                                        className='object-cover group-hover:scale-150 transition-transform duration-300'
+                                        style={{
+                                            transformOrigin: hoverOrigin.id === file.id ? `${hoverOrigin.x} ${hoverOrigin.y}` : '50% 50%'
+                                        }}
                                     />
                                 )}
                             </div>

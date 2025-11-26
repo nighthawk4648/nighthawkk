@@ -22,10 +22,10 @@ const MenuBarForMobileScreen = ({ categories }) => {
 
 
     return (
-        <div>
-            <div className='flex gap-2 items-center mb-4 px-3'>
-                <MdDashboard className="text-xl" />
-                <div className="text-sm">
+        <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 text-slate-100 p-3 rounded-lg">
+            <div className='flex gap-2 items-center mb-4 px-1'>
+                <MdDashboard className="text-xl text-cyan-300" />
+                <div className="text-sm text-slate-100">
                     <Link href="/">Home</Link>
                 </div>
             </div>
@@ -34,7 +34,7 @@ const MenuBarForMobileScreen = ({ categories }) => {
                 {categories?.length
                     ? categories?.map((category, index) => (
                         <div key={index}>
-                            <div className="flex  justify-between items-center w-full  py-2 px-3 text-sm   hover:text-blue-600 bg-white rounded-md  focus:outline-none">
+                            <div className="flex justify-between items-center w-full py-2 px-3 text-sm hover:text-cyan-300 bg-slate-800/20 rounded-md focus:outline-none">
                                 <button
                                     onClick={() => toggleDropdownSection(index)}
                                     className="flex justify-center items-center"
@@ -50,17 +50,17 @@ const MenuBarForMobileScreen = ({ categories }) => {
 
                             </div>
 
-                            {isDropdownSectionOpen === index && (
+                                {isDropdownSectionOpen === index && (
                                 <div
                                     id="options"
-                                    className="w-full py-2  px-3 text-sm bg-white rounded-lg "
+                                    className="w-full py-2 px-3 text-sm bg-slate-800/20 rounded-lg"
                                 >
                                     {category?.sub_categories?.map((subCategory, index) => (
                                         <div key={subCategory?.id}>
                                             <div className="flex justify-between items-center  ml-4">
                                                 <button
                                                     onClick={() => toggleDropdownSubSection(index)}
-                                                    className="flex items-center py-2 text-gray-700  hover:text-blue-600 bg-white rounded-md  focus:outline-none"
+                                                    className="flex items-center py-2 text-slate-200 hover:text-cyan-300 bg-transparent rounded-md focus:outline-none"
                                                 >
                                                     <Link href={`/${slugify(category?.name)}-${category?.id}/${subCategory?.name}-${subCategory?.id}`} ><p className="">{subCategory?.name}</p></Link>
                                                     {isDropdownSubSectionOpen === index ? (

@@ -56,6 +56,9 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
           <h1 className="text-white font-semibold text-2xl text-center">
             {subCategoriesByCategoryId?.data?.name}
           </h1>
+          <h2 className="text-white text-center mt-2 px-4 py-2 text-sm sm:text-xs md:text-xs lg:text-sm font-medium">
+            {subCategoriesByCategoryId?.data?.short_description}
+          </h2>
         </div>
       
         <div className="grid md:grid-cols-8 grid-cols-2 gap-4 bg-gradient-to-br from-gray-900 via-gray-900 to-black py-8 px-4 border-b-2 border-gray-500">
