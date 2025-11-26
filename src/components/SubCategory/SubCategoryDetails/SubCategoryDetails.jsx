@@ -269,66 +269,22 @@ const SubCategoryDetails = ({ assetDetails }) => {
                                         type="button"
                                         onClick={() => {
                                             if (countdown === 0) {
-                                                const downloadAsset = async () => {
-                                                    try {
-                                                        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/assets/${assetDetails.id}/download`);
-                                                        
-                                                        if (!response.ok) {
-                                                            throw new Error(`Download failed with status ${response.status}`);
-                                                        }
-                                                        
-                                                        const blob = await response.blob();
-                                                      
-                                                        
-                                                        // Get filename from Content-Disposition header
-                                                        const contentDisposition = response.headers.get('content-disposition');
-                                              
-                                                        
-                                                        let filename = `asset-${assetDetails.id}`;
-                                                        
-                                                        if (contentDisposition) {
-                                                            
-                                                            // Pattern 1: filename="value" or filename='value'
-                                                            let filenameMatch = contentDisposition.match(/filename\s*=\s*"([^"]+)"/);
-                                                            
-                                                            if (!filenameMatch) {
-                                                                // Pattern 2: filename=value (without quotes)
-                                                                filenameMatch = contentDisposition.match(/filename\s*=\s*([^;\s]+)/);
-                                                            }
-                                                            if (!filenameMatch) {
-                                                                // Pattern 3: filename*=UTF-8''value (RFC 5987)
-                                                                filenameMatch = contentDisposition.match(/filename\*\s*=\s*(?:UTF-8'')?([^;\s]+)/);
-                                                            }
-                                                            
-                                                            if (filenameMatch && filenameMatch[1]) {
-                                                                filename = decodeURIComponent(filenameMatch[1]);
-                                                                // Remove timestamp prefix if it exists (format: 1234567890-filename)
-                                                                if (filename.match(/^\d+-/)) {
-                                                                    filename = filename.replace(/^\d+-/, '');
-                                                                }
-                                                                console.log('✅ Filename extracted:', filename);
-                                                            } else {
-                                                                console.log('❌ No filename match found, using default:', filename);
-                                                            }
-                                                        } else {
-                                                            console.log('❌ No Content-Disposition header found');
-                                                        }
-                                                        
-                                                       
-                                                        
-                                                        const url = window.URL.createObjectURL(blob);
-                                                        const a = document.createElement('a');
-                                                        a.href = url;
-                                                        a.download = filename;
-                                                        a.click();
-                                                        window.URL.revokeObjectURL(url);
-                                                       
-                                                    } catch (error) {
-                                                        
-                                                        alert('Download failed. Please try again.');
-                                                    }
-                                                };
-                                                downloadAsset();
+                                                // Create a direct download link - this will show immediately in browser downloads
+                                                const downloadUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/assets/${assetDetails.id}/download`;
+                                                
+                                                const a = document.createElement('a');
+                                                a.style.display = 'none';
+                                                a.href = downloadUrl;
+                                                // The filename will be determined by the Content-Disposition header from the server
+                                                a.download = ''; // Empty string lets browser use server's filename
+                                                
+                                                document.body.appendChild(a);
+                                                a.click();
+                                                
+                                                setTimeout(() => {
+                                                    document.body.removeChild(a);
+                                                }, 100);
+                                                
                                                 setIsModalOpen(false);
                                             }
                                         }}

@@ -25,7 +25,7 @@ function PatreonCallbackContent() {
 
       if (errorParam === 'not_patron') {
         errorMessage = 'Patron Subscription Required';
-        details = message ? decodeURIComponent(message) : 'You must be an active patron to access this service.\n\nPlease subscribe on Patreon:\nhttps://www.patreon.com/sketchshaper\n\nThen come back and login again.';
+        details = message ? decodeURIComponent(message) : 'You must be an active patron to access premium content.\n\n📌 Steps to subscribe:\n1. Click "Subscribe on Patreon" below\n2. Choose a tier and complete payment\n3. Come back and login again\n\nYour subscription will give you access to all exclusive files and content!';
         redirectDelay = 12000; // 12 seconds for patron subscription error
       } else if (errorParam === 'oauth_failed') {
         errorMessage = 'Patreon Authentication Failed';
@@ -56,6 +56,8 @@ function PatreonCallbackContent() {
           return prev - 1;
         });
       }, 1000);
+      
+      return () => clearInterval(countdownInterval);
       
       return;
     }

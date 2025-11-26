@@ -17,7 +17,7 @@ export const SketchShaperProFiles = ({ categoryId }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [downloadingId, setDownloadingId] = useState(null);
     const [categoryInfo, setCategoryInfo] = useState(null);
-    const { user, isAuthenticated, login, loading: authLoading, verifyPatronStatus } = usePatreonAuth();
+    const { user, isAuthenticated, login, loading: authLoading, verifyPatronStatus, token } = usePatreonAuth();
     const [isPatron, setIsPatron] = useState(false);
     const [checkingPatron, setCheckingPatron] = useState(false);
 
@@ -87,16 +87,13 @@ export const SketchShaperProFiles = ({ categoryId }) => {
             return;
         }
 
-       
         setDownloadingId(file.id);
         try {
             const patronStatus = await verifyPatronStatus();
 
             if (patronStatus) {
-          
-                handleDownload(file);
+                await handleDownload(file);
             } else {
-   
                 setShowModal(true);
             }
         } catch (error) {
@@ -110,73 +107,37 @@ export const SketchShaperProFiles = ({ categoryId }) => {
     const handleDownload = async (file) => {
         try {
             console.log('🔍 Starting download for file ID:', file.id);
-            const response = await fetch(`${API_BASE_URL}/sketchshaper-pro-files/download/${file.id}`);
             
-            console.log('📡 Response status:', response.status);
-            console.log('📡 Response headers:', {
-                contentType: response.headers.get('content-type'),
-                contentDisposition: response.headers.get('content-disposition'),
-                contentLength: response.headers.get('content-length'),
-            });
+            // Direct download approach - shows immediately in browser downloads
+            // Note: We append token as URL param because <a> tags can't send custom headers
+            let downloadUrl = `${API_BASE_URL}/sketchshaper-pro-files/download/${file.id}`;
             
-            if (!response.ok) {
-                throw new Error(`Download failed with status ${response.status}`);
-            }
-            
-            const blob = await response.blob();
-            console.log('📦 Blob size:', blob.size, 'bytes');
-            console.log('📦 Blob type:', blob.type);
-            
-            // Get filename from Content-Disposition header
-            const contentDisposition = response.headers.get('content-disposition');
-            console.log('🔎 Raw Content-Disposition header:', contentDisposition);
-            
-            let filename = file.name || `file-${file.id}`;
-            
-            if (contentDisposition) {
-                console.log('🔍 Attempting to extract filename...');
-                
-                // Pattern 1: filename="value" or filename='value'
-                let filenameMatch = contentDisposition.match(/filename\s*=\s*"([^"]+)"/);
-                console.log('Pattern 1 (quoted):', filenameMatch);
-                
-                if (!filenameMatch) {
-                    // Pattern 2: filename=value (without quotes)
-                    filenameMatch = contentDisposition.match(/filename\s*=\s*([^;\s]+)/);
-                    console.log('Pattern 2 (unquoted):', filenameMatch);
-                }
-                if (!filenameMatch) {
-                    // Pattern 3: filename*=UTF-8''value (RFC 5987)
-                    filenameMatch = contentDisposition.match(/filename\*\s*=\s*(?:UTF-8'')?([^;\s]+)/);
-                    console.log('Pattern 3 (RFC 5987):', filenameMatch);
-                }
-                
-                if (filenameMatch && filenameMatch[1]) {
-                    filename = decodeURIComponent(filenameMatch[1]);
-                    // Remove timestamp prefix if it exists (format: 1234567890-filename)
-                    if (filename.match(/^\d+-/)) {
-                        filename = filename.replace(/^\d+-/, '');
-                    }
-                    console.log('✅ Filename extracted:', filename);
-                } else {
-                    console.log('❌ No filename match found, using default:', filename);
-                }
+            // If token exists, append it as a query parameter
+            if (token) {
+                downloadUrl += `?token=${encodeURIComponent(token)}`;
+                console.log('🔑 Token added to download URL');
             } else {
-                console.log('❌ No Content-Disposition header found');
+                console.warn('⚠️ No token available - download may fail if backend requires auth');
             }
             
-            console.log('📥 Final filename to download:', filename);
-            
-            const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
+            a.style.display = 'none';
+            a.href = downloadUrl;
+            // The filename will be determined by the Content-Disposition header from the server
+            a.download = ''; // Empty string lets browser use server's filename
+            
+            document.body.appendChild(a);
             a.click();
-            window.URL.revokeObjectURL(url);
+            
+            setTimeout(() => {
+                document.body.removeChild(a);
+            }, 100);
+            
             console.log('✅ Download triggered successfully');
         } catch (error) {
             console.error('❌ Download failed:', error);
             alert('Download failed. Please try again.');
+            throw error;
         }
     };
 
