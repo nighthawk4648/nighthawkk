@@ -124,8 +124,9 @@ export const SketchShaperProFiles = ({ categoryId }) => {
             const a = document.createElement('a');
             a.style.display = 'none';
             a.href = downloadUrl;
-            // The filename will be determined by the Content-Disposition header from the server
-            a.download = ''; // Empty string lets browser use server's filename
+            // Remove timestamp prefix from filename (e.g., "1763308048643-Vicco Bari Coffee Table.skp" -> "Vicco Bari Coffee Table.skp")
+            const cleanFilename = file.file_name?.replace(/^\d+-/, '') || '';
+            a.download = cleanFilename;
             
             document.body.appendChild(a);
             a.click();

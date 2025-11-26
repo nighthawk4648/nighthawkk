@@ -10,9 +10,11 @@ export function PatreonAuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    // Check if user is already logged in
+    setIsClient(true);
+    // Check if user is already logged in (only on client side)
     const storedToken = localStorage.getItem('patreon_token');
     if (storedToken) {
       setToken(storedToken);
@@ -123,8 +125,8 @@ export function PatreonAuthProvider({ children }) {
       value={{
         user,
         token,
-        loading,
-        isAuthenticated: !!user,
+        loading: isClient ? loading : true,
+        isAuthenticated: isClient ? !!user : false,
         login,
         logout,
         handleCallback,
@@ -132,7 +134,7 @@ export function PatreonAuthProvider({ children }) {
         verifyPatronStatus
       }}
     >
-      {children}
+      {isClient ? children : null}
     </PatreonAuthContext.Provider>
   );
 }
