@@ -186,7 +186,7 @@ export const Pro = () => {
                   key={category.id}
                   className="flex flex-col items-center bg-white/10 p-4 rounded-xl backdrop-blur-md shadow-lg hover:bg-white/20 transition-all duration-300 cursor-pointer group"
                 >
-                  <div className="relative w-full h-48 rounded-lg overflow-hidden">
+                  <div className="relative w-full h-60 rounded-lg overflow-hidden">
                     {category?.preview_image && (
                       <Image
                         src={imageUrl}
