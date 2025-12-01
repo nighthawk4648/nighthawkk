@@ -6,6 +6,7 @@ import React from 'react';
 import all_sub_cat_image from '../../../../public/assets/sub_category/all.png'
 import { getOptimizedImageUrl } from '@/utils/cloudinary';
 import { HorizontalBanner } from '@/components/Shared/GoogleAdsense/HorizontalBanner';
+import { CategoryAds } from '@/components/Shared/GoogleAdsense/categoryads';
 
 const SubCategory = ({ subCategoriesByCategoryId }) => {
 
@@ -87,7 +88,7 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
             </div>
 
             {/* Banner Ad */}
-            <HorizontalBanner />
+            <CategoryAds />
 
             {/* All Subcategory Assets + Horizontal Banner after every slice */}
             {subCategoriesByCategoryId?.data?.sub_categories?.map((subCategories, index) => {

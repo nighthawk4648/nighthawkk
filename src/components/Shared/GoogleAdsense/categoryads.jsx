@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-export const HorizontalBanner = () => {
+export const CategoryAds = () => {
   const adRef = useRef(null);
 
   useEffect(() => {
@@ -19,7 +19,7 @@ export const HorizontalBanner = () => {
   }, []);
 
   return (
-   <div className="w-full flex justify-center items-center bg-primary py-2">
+   <div className="w-[970px] h-[150px] flex justify-center items-center bg-gradient-to-br from-gray-900 to-black py-2 border-b-2 border-t-2 border-gray-500 ">
       <ins
         ref={adRef}
         className="adsbygoogle"

@@ -6,7 +6,8 @@ import all_sub_cat_image from '../../../../public/assets/sub_category/all.png'
 import Image from 'next/image';
 import Link from 'next/link';
 import { getOptimizedImageUrl } from '@/utils/cloudinary';
-import { HorizontalBanner } from '@/components/Shared/GoogleAdsense/HorizontalBanner';
+import { CategoryAds } from '@/components/Shared/GoogleAdsense/categoryads';
+
 import useSWR from 'swr';
 import { ErrorFallback } from '@/components/Shared/ErrorFallback/ErrorFallback ';
 import { fetcher } from '@/utils/swrFetcher';
@@ -136,7 +137,7 @@ const SingleSubCategoryPage = ({ categoryId, subCategoryId }) => {
             </div>
 
             {/* Google AdSense banner */}
-            <HorizontalBanner />
+            <CategoryAds />
 
             {/* Assets Grid (NO ADS) */}
             <div 
