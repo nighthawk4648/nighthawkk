@@ -4,18 +4,34 @@ import getData from "@/utils/getData";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import Image from "next/image";
 import React from "react";
-import Script from "next/script";
 import { ErrorFallback } from "@/components/Shared/ErrorFallback/ErrorFallback ";
 
-export const metadata = {
-  title: "Blogs",
-  description: "Read our blog",
-};
+// Dynamic metadata generation
+export async function generateMetadata({ params }) {
+  const id = params?.blog?.split("-").pop();
+  const blog = await getData(`blogs/${id}`);
+
+  if (!blog?.data) {
+    return {
+      title: "Blog Not Found",
+      description: "The requested blog post could not be found.",
+    };
+  }
+
+  return {
+    title: blog.data.title,
+    description: blog.data.short_description?.replace(/<[^>]*>/g, '').substring(0, 160) || "Read our blog",
+    openGraph: {
+      title: blog.data.title,
+      description: blog.data.short_description?.replace(/<[^>]*>/g, '').substring(0, 160),
+      images: blog.data.image ? [`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${blog.data.image}`] : [],
+    },
+  };
+}
 
 const Blogs = async ({ params }) => {
   const id = params?.blog?.split("-").pop();
   const blog = await getData(`blogs/${id}`);
-  console.log(blog);
 
   const getOriginalImageUrl = (imagePath) => {
     return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
@@ -27,25 +43,6 @@ const Blogs = async ({ params }) => {
 
   return (
     <div className="bg-black px-4 py-8 md:px-12 md:py-16">
-      {/* Side advertisement - Left */}
-      <div className="hidden lg:block fixed left-0 top-1/4 z-10 p-2">
-        <div dangerouslySetInnerHTML={{
-          __html: `
-            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5557791257949251" crossorigin="anonymous"></script>
-            <!-- vertical for blog -->
-            <ins class="adsbygoogle"
-                style="display:block"
-                data-ad-client="ca-pub-5557791257949251"
-                data-ad-slot="9215525322"
-                data-ad-format="auto"
-                data-full-width-responsive="true"></ins>
-            <script>
-                (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-          `
-        }} />
-      </div>
-
       {/* Main content */}
       <div className="max-w-5xl mx-auto">
         {/* Heading */}
@@ -67,7 +64,7 @@ const Blogs = async ({ params }) => {
         <div className="mb-8">
           <Image
             src={getOptimizedImageUrl(getOriginalImageUrl(blog?.data?.image))}
-            alt={blog?.title}
+            alt={blog?.data?.title || "Blog cover image"}
             width={1000}
             height={500}
             className="w-full max-w-4xl mx-auto rounded-md"
@@ -91,24 +88,6 @@ const Blogs = async ({ params }) => {
             }}
           />
           
-          {/* Google AdSense Script - In-article */}
-          <div className="my-6">
-            <div dangerouslySetInnerHTML={{
-              __html: `
-                <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5557791257949251" crossorigin="anonymous"></script>
-                <ins class="adsbygoogle"
-                    style="display:block; text-align:center;"
-                    data-ad-layout="in-article"
-                    data-ad-format="fluid"
-                    data-ad-client="ca-pub-5557791257949251"
-                    data-ad-slot="9153921937"></ins>
-                <script>
-                    (adsbygoogle = window.adsbygoogle || []).push({});
-                </script>
-              `
-            }} />
-          </div>
-          
           <div
             dangerouslySetInnerHTML={{
               __html: sanitizeHtml(blog?.data?.paragraph_two),
@@ -117,33 +96,17 @@ const Blogs = async ({ params }) => {
         </div>
         
         {/* Middle Blog Image */}
-        <div className="mb-8">
-          <Image
-            src={getOptimizedImageUrl(getOriginalImageUrl(blog?.data?.bgImage))}
-            alt={blog?.title}
-            width={600}
-            height={300}
-            className="w-full max-w-4xl mx-auto rounded-md"
-          />
-        </div>
-        
-        {/* Google AdSense Script - In-article */}
-        <div className="my-6">
-          <div dangerouslySetInnerHTML={{
-            __html: `
-              <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5557791257949251" crossorigin="anonymous"></script>
-              <ins class="adsbygoogle"
-                  style="display:block; text-align:center;"
-                  data-ad-layout="in-article"
-                  data-ad-format="fluid"
-                  data-ad-client="ca-pub-5557791257949251"
-                  data-ad-slot="9153921937"></ins>
-              <script>
-                  (adsbygoogle = window.adsbygoogle || []).push({});
-              </script>
-            `
-          }} />
-        </div>
+        {blog?.data?.bgImage && (
+          <div className="mb-8 mt-8">
+            <Image
+              src={getOptimizedImageUrl(getOriginalImageUrl(blog?.data?.bgImage))}
+              alt={blog?.data?.title || "Blog image"}
+              width={600}
+              height={300}
+              className="w-full max-w-4xl mx-auto rounded-md"
+            />
+          </div>
+        )}
 
         {/* Blog Paragraph Part After Image */}
         <div className="text-white max-w-4xl mx-auto space-y-6 text-justify text-sm md:text-base px-2 md:px-0">
@@ -152,45 +115,7 @@ const Blogs = async ({ params }) => {
               __html: sanitizeHtml(blog?.data?.paragraph_three),
             }}
           />
-          <div>
-            {/* Google AdSense Script - In-article */}
-            <div className="my-6">
-              <div dangerouslySetInnerHTML={{
-                __html: `
-                  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5557791257949251" crossorigin="anonymous"></script>
-                  <ins class="adsbygoogle"
-                      style="display:block; text-align:center;"
-                      data-ad-layout="in-article"
-                      data-ad-format="fluid"
-                      data-ad-client="ca-pub-5557791257949251"
-                      data-ad-slot="9153921937"></ins>
-                  <script>
-                      (adsbygoogle = window.adsbygoogle || []).push({});
-                  </script>
-                `
-              }} />
-            </div>
-          </div>
         </div>
-      </div>
-      
-      {/* Side advertisement - Right */}
-      <div className="hidden lg:block fixed right-0 top-1/4 z-10 p-2">
-        <div dangerouslySetInnerHTML={{
-          __html: `
-            <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5557791257949251" crossorigin="anonymous"></script>
-            <!-- vertical for blog -->
-            <ins class="adsbygoogle"
-                style="display:block"
-                data-ad-client="ca-pub-5557791257949251"
-                data-ad-slot="9215525322"
-                data-ad-format="auto"
-                data-full-width-responsive="true"></ins>
-            <script>
-                (adsbygoogle = window.adsbygoogle || []).push({});
-            </script>
-          `
-        }} />
       </div>
     </div>
   );
