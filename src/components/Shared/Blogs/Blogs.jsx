@@ -45,7 +45,8 @@ const Blogs = ({ blogs }) => {
                 </div>
 
                 <div className='md:max-h-[560px] md:overflow-y-auto'>
-                    {blogs?.map((blog) => (
+                     {blogs?.slice(-4, -1).reverse().map((blog) => (
+
                         <div className='md:flex mb-3 gap-4'>
                             <div>
                                 <Link href={`/blog/${slugify(blog?.title)}-${blog?.id}`}>

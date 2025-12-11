@@ -5,6 +5,7 @@ import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import Image from "next/image";
 import React from "react";
 import { ErrorFallback } from "@/components/Shared/ErrorFallback/ErrorFallback ";
+import { HorizontalBanner } from "@/components/Shared/GoogleAdsense/HorizontalBanner";
 
 // Dynamic metadata generation
 export async function generateMetadata({ params }) {
@@ -42,7 +43,7 @@ const Blogs = async ({ params }) => {
   }
 
   return (
-    <div className="bg-black px-4 py-8 md:px-12 md:py-16">
+    <div className="bg-primary px-4 py-8 md:px-12 md:py-16">
       {/* Main content */}
       <div className="max-w-5xl mx-auto">
         {/* Heading */}
@@ -70,6 +71,7 @@ const Blogs = async ({ params }) => {
             className="w-full max-w-4xl mx-auto rounded-md"
           />
         </div>
+       <HorizontalBanner />
 
         {/* Blog Description */}
         <div className="text-white max-w-4xl mx-auto text-justify text-sm md:text-base px-2 md:px-0 mb-8">
@@ -87,13 +89,14 @@ const Blogs = async ({ params }) => {
               __html: sanitizeHtml(blog?.data?.paragraph_one),
             }}
           />
-          
+           <HorizontalBanner />
           <div
             dangerouslySetInnerHTML={{
               __html: sanitizeHtml(blog?.data?.paragraph_two),
             }}
           />
         </div>
+        <HorizontalBanner />
         
         {/* Middle Blog Image */}
         {blog?.data?.bgImage && (
@@ -107,6 +110,7 @@ const Blogs = async ({ params }) => {
             />
           </div>
         )}
+         <HorizontalBanner />
 
         {/* Blog Paragraph Part After Image */}
         <div className="text-white max-w-4xl mx-auto space-y-6 text-justify text-sm md:text-base px-2 md:px-0">
@@ -116,6 +120,8 @@ const Blogs = async ({ params }) => {
             }}
           />
         </div>
+         <HorizontalBanner />
+          <HorizontalBanner />
       </div>
     </div>
   );
