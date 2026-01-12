@@ -31,9 +31,9 @@ const AboutUs = ({ aboutUs }) => {
                     {/* Title & Short Description */}
                     {aboutUs?.title && (
                         <div>
-                            <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-300 drop-shadow-xl">
+                            <h6 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-300 drop-shadow-xl">
                                 {aboutUs.title}
-                            </h1>
+                            </h6>
                             <div className="mx-auto w-20 h-1 bg-gradient-to-r from-blue-400 to-purple-500 mt-3 rounded-full"></div>
                         </div>
                     )}

@@ -10,6 +10,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { getOptimizedImageUrl } from '@/utils/cloudinary';
 import { HorizontalBanner } from '@/components/Shared/GoogleAdsense/HorizontalBanner';
+import { CategoryAds } from '@/components/Shared/GoogleAdsense/categoryads';
 
 const SubCategoryDetails = ({ assetDetails }) => {
     const [thumbsSwiper, setThumbsSwiper] = useState(null);
@@ -180,7 +181,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
                 </div>
             </div>
 
-            <HorizontalBanner/>
+             <CategoryAds />
 
             <div className="bg-secondary py-5 text-white px-5">
                 <p className="md:text-2xl mb-1 font-semibold">ASSET DETAILS</p>
@@ -214,56 +215,53 @@ const SubCategoryDetails = ({ assetDetails }) => {
                     </div>
                 )}
             </div>
-              <HorizontalBanner/>
+               <CategoryAds />
 
-            {/* Full screen modal for ad + countdown */}
-                {/* Centered 2/3 modal with modern look. Footer moved to fixed bottom bar. */}
-                {isModalOpen && (
-                    <>
-                        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-60 p-4">
-                            <div className="relative w-full max-w-[1200px] h-full sm:w-[90vw] sm:h-[80vh] md:w-[66vw] md:h-[66vh] bg-gradient-to-br from-gray-900 via-gray-900 to-black rounded-none sm:rounded-2xl shadow-2xl overflow-hidden border border-gray-200 backdrop-blur-md">
+           {/* Full screen modal for ad + countdown */}
+{/* Centered modal with square ad format */}
+{isModalOpen && (
+    <>
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-60 p-4">
+            <div className="relative w-full max-w-[min(90vw,600px)] bg-gradient-to-br from-gray-900 via-gray-900 to-black rounded-none sm:rounded-2xl shadow-2xl overflow-hidden border border-gray-200 backdrop-blur-md">
 
-                                {/* Ad area fills panel */}
-                                <div className="absolute inset-0 w-full h-full">
-                                    <ins
-                                        ref={modalAdRef}
-                                        className="adsbygoogle"
-                                        style={{ display: 'block', width: '100%', height: '100%', margin: 0, padding: 0 }}
-                                        data-ad-client="ca-pub-5557791257949251"
-                                         data-ad-slot="2114378043"
-                                         data-ad-format="auto"
-                                         data-full-width-responsive="true"
-                                        data-vignette-ad="true"
-                                    ></ins>
-                                </div>
+                {/* Top bar: title + countdown */}
+                <div className="relative z-10 flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-gray-800 text-white rounded-t-none sm:rounded-t-2xl">
+                    <div className="flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3" />
+                        </svg>
+                        <h3 className="text-lg font-semibold">Preparing your download</h3>
+                    </div>
+                    <div className="text-sm font-medium">{countdown > 0 ? `Please wait ${countdown}s` : 'Ready'}</div>
+                </div>
 
-                                {/* Top bar: title + countdown */}
-                                <div className="relative z-10 flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-gray-800 text-white">
-                                    <div className="flex items-center gap-3">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3" />
-                                        </svg>
-                                        <h3 className="text-lg font-semibold">Preparing your download</h3>
-                                    </div>
-                                    <div className="text-sm font-medium">{countdown > 0 ? `Please wait ${countdown}s` : 'Ready'}</div>
-                                </div>
-                            </div>
-                        </div>
+                {/* Square ad area - aspect ratio 1:1 */}
+                <div className="relative w-full" style={{ paddingBottom: '100%' }}>
+                    <div className="absolute inset-0 w-full h-full bg-gray-800/50 flex items-center justify-center">
+                        <ins
+                            ref={modalAdRef}
+                            className="adsbygoogle"
+                            style={{ display: 'block', width: '100%', height: '100%' }}
+                            data-ad-client="ca-pub-5557791257949251"
+                            data-ad-slot="2114378043"
+                            data-ad-format="auto"
+                            data-full-width-responsive="true"
+                        ></ins>
+                    </div>
+                </div>
 
-                        {/* Fixed bottom action bar so buttons are always reachable */}
-                        <div className="fixed bottom-0 sm:bottom-4 left-0 right-0 z-[10000] flex items-center justify-center pointer-events-none px-2 sm:px-4">
-                            <div className="pointer-events-auto max-w-[1200px] w-full mx-auto px-2">
-                                <div className="bg-gray-800 rounded-t-lg sm:rounded-full shadow-lg px-3 sm:px-4 py-3 flex items-center justify-end gap-3">
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setIsModalOpen(false);
-                                            setIsCountdownActive(false);
-                                        }}
-                                        className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700"
-                                    >
-                                        Close
-                                    </button>
+                {/* Bottom action bar */}
+                <div className="relative z-10 bg-gray-800 px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-end gap-3 rounded-b-none sm:rounded-b-2xl border-t border-gray-700">
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setIsModalOpen(false);
+                            setIsCountdownActive(false);
+                        }}
+                        className="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700 transition-colors"
+                    >
+                        Close
+                    </button>
 
                                     <button
                                         type="button"
