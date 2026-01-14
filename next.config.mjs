@@ -43,18 +43,6 @@ const nextConfig = {
   // Headers for SEO
   async redirects() {
     return [
-      // Fix inconsistent URL patterns
-      {
-        source: '/sketchup-3d-model-3/:path*',
-        destination: '/gallery',
-        permanent: true,
-      },
-      {
-        source: '/sketchup-3d-models-3',
-        destination: '/gallery',
-        permanent: true,
-      },
-      // Block api.php
       {
         source: '/api.php',
         destination: '/404',
