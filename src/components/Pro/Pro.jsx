@@ -74,8 +74,8 @@ export const Pro = () => {
       await mutateDownloadData();
 
       const link = document.createElement("a");
-      link.href = "/assets/rbz/sketchshaperpro.rbz";
-      link.download = "sketchshaperpro.rbz";
+      link.href = "/assets/rbz/sketchshaper(version 1.1.0)rbz";
+      link.download = "sketchshaper(version 1.1.0)rbz";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
