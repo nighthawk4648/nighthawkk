@@ -74,8 +74,8 @@ export const Pro = () => {
       await mutateDownloadData();
 
       const link = document.createElement("a");
-      link.href = "/assets/rbz/sketchshaper(version 1.1.0)rbz";
-      link.download = "sketchshaper(version 1.1.0)rbz";
+      link.href = "/assets/rbz/sketchshaper(version 1.1.0).rbz";
+      link.download = "sketchshaper(version 1.1.0).rbz";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -102,7 +102,7 @@ export const Pro = () => {
         <div className="bg-gray-800 rounded-xl p-4 border border-gray-700 text-sm w-full">
           <h3 className="text-xl font-bold text-center mb-3 text-white">
             All-In-One Features —{" "}
-            <span className="text-yellow-400">$5/month</span>
+            <span className="text-yellow-400">$10/month</span>
           </h3>
           <div className="grid md:grid-cols-3 gap-x-6 gap-y-6">
             <ul className="text-left space-y-4">
