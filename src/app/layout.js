@@ -1,6 +1,7 @@
 import AboutUs from '@/components/Shared/AboutUs/AboutUs';
 import Footer from '@/components/Shared/Footer/Footer';
 import Navbar from '@/components/Shared/Navbar/Navbar';
+import Chatbot from '@/components/Shared/Chatbot/Chatbot';
 import getData from '@/utils/getData';
 import { Inter } from 'next/font/google';
 import './globals.css';
@@ -118,6 +119,7 @@ export default async function RootLayout({ children }) {
 						footerPages={footerPages?.data}
 						socials={socials?.data}
 					/>
+					<Chatbot />
 				</Providers>
 				<GoogleAnalytics gaId="G-JCLNX11Z2V" />
 			</body>

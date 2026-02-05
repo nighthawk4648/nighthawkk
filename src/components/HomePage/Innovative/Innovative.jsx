@@ -33,9 +33,7 @@ const Innovative = ({ innovatives }) => {
               SketchShaper Pro
             </h2>
             <p className="text-sm md:text-lg max-w-2xl mb-6">
-              A next-gen SketchUp extension designed to speed up your workflow,
-              visualize ideas faster, and shape your creativity with intelligent
-              tools and a fluid design experience.
+              SketchShaper Pro provides 1000+ ready-to-use assets and textures to help you design faster and build stunning scenes effortlessly.
             </p>
             <Link href="/pro">
               <button className="bg-gradient-to-r from-purple-600 to-indigo-700 text-white text-2xl md:text-3xl px-10 py-2 rounded-full font-bold shadow-2xl hover:scale-110 hover:shadow-indigo-500/50 transition-all duration-300">

@@ -87,82 +87,18 @@ export const Pro = () => {
   };
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white px-4 py-6 flex flex-col items-center">
-      <h1 className="text-3xl md:text-4xl font-bold text-center mb-1">
+      <h1 className="text-3xl md:text-4xl font-bold text-center mb-8">
         SketchShaper Pro
       </h1>
-      <div className="text-base text-gray-300 text-center max-w-4xl mb-6 space-y-4">
-        <h2 className="text-xl font-bold text-blue-400">
-          Supercharge Your SketchUp!
-        </h2>
-        <p className="text-sm mb-4">
-          Access high-quality, ready-to-use 3D models directly inside SketchUp
-          with SketchShaper Pro plugins. No manual downloads needed.
-        </p>
-
-        <div className="bg-gray-800 rounded-xl p-4 border border-gray-700 text-sm w-full">
-          <h3 className="text-xl font-bold text-center mb-3 text-white">
-            All-In-One Features —{" "}
-            <span className="text-yellow-400">$10/month</span>
-          </h3>
-          <div className="grid md:grid-cols-3 gap-x-6 gap-y-6">
-            <ul className="text-left space-y-4">
-              <li className="flex items-start">
-                <span className="mr-2">•</span>
-                <span>Cloud Library (1500+ Models)</span>
-              </li>
-
-              <li className="flex items-start">
-                <span className="mr-2">•</span>
-                <span>15+ Categories</span>
-              </li>
-
-              <li className="flex items-start">
-                <span className="mr-2">•</span>
-                <span>Pro Models included (Ikea, Wayfair, Crate & Barrel)</span>
-              </li>
-
-              <li className="flex items-start">
-                <span className="mr-2">•</span>
-                <span>100+ New Models Monthly</span>
-              </li>
-            </ul>
-            <ul className="text-left space-y-4">
-              <li className="flex items-start">
-                <span className="mr-2">•</span>
-                <span>Patreon Integration</span>
-              </li>
-
-              <li className="flex items-start">
-                <span className="mr-2">•</span>
-                <span>One-Click Import</span>
-              </li>
-
-              <li className="flex items-start">
-                <span className="mr-2">•</span>
-                <span>SketchUp 2020-2025</span>
-              </li>
-
-              <li className="flex items-start">
-                <span className="mr-2">•</span>
-                <span>Custom Model Requests</span>
-              </li>
-            </ul>
-
-            <div>
-              <button
-                onClick={handleDownload}
-                disabled={isDownloading}
-                className="mt-4 bg-yellow-500 hover:bg-yellow-600 disabled:bg-yellow-700 text-gray-900 font-bold py-2 px-6 rounded-lg transition-colors duration-200"
-              >
-                {isDownloading ? "Downloading..." : "Download"}
-              </button>
-              
-              <p className="mt-2 text-green-500 font-bold"> or try the <Link href="https://extensions.sketchup.com/extension/ac6a412b-69cf-4397-9e4c-aef489185e3d/sketchshaper" target="_blank" rel="noopener noreferrer" className="underline">Free Version</Link></p>
-
-              <p className="mt-2 font-bold text-white">Downloaded: <span className="text-yellow-400">{downloadData?.data?.count || 0}</span> </p>
-            </div>
-          </div>
-        </div>
+      
+      <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black border border-gray-700 rounded-xl p-12 text-center w-full md:max-w-none md:w-full max-w-lg mb-10 shadow-2xl">
+        {/* <h2 className="text-2xl font-bold mb-6">Browse Extension</h2> */}
+        <p className="text-gray-300 mb-8">Explore our powerful SketchUp free extension with premium features</p>
+        <Link href="/extension">
+          <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-lg transition-all duration-200 shadow-lg">
+            Browse Extension
+          </button>
+        </Link>
       </div>
 
       {error && (
