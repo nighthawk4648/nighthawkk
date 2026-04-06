@@ -34,8 +34,8 @@ const ExtensionPage = () => {
             await mutateDownloadData();
 
             const link = document.createElement("a");
-            link.href = "/assets/rbz/sketchshaper(version 1.1.0).rbz";
-            link.download = "sketchshaper(version 1.1.0).rbz";
+            link.href = "/assets/rbz/Sketchshaper (version 1.2.0).rbz";
+            link.download = "Sketchshaper (version 1.2.0).rbz";
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -97,7 +97,7 @@ const ExtensionPage = () => {
                         )}
                     </button>
                     <p className="mt-4 text-sm text-gray-400">
-                        Version 1.1.0 • Compatible with SketchUp 2022-2025
+                        Version 1.2.0 • Compatible with SketchUp 2022-2025
                     </p>
                     <p className="mt-2 font-bold text-gray-200">Downloaded: <span className="text-cyan-400">{downloadData?.data?.count || 0}</span> times</p>
                 </div>
