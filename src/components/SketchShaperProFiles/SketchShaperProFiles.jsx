@@ -21,7 +21,7 @@ export const SketchShaperProFiles = ({ categoryId }) => {
     const { user, isAuthenticated, login, loading: authLoading, verifyPatronStatus, token } = usePatreonAuth();
     const [isPatron, setIsPatron] = useState(false);
     const [checkingPatron, setCheckingPatron] = useState(false);
-
+    const [searchTerm, setSearchTerm] = useState('');
 
     const fetchFiles = async (page, limit) => {
         try {
@@ -43,6 +43,10 @@ export const SketchShaperProFiles = ({ categoryId }) => {
     };
 
     const { data: files, isLoading: filesLoading, hasMore, error: filesError, observerTarget } = useInfiniteScroll(fetchFiles, 12);
+
+    const filteredFiles = files.filter(file => 
+        file.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
 
     useEffect(() => {
@@ -198,8 +202,38 @@ export const SketchShaperProFiles = ({ categoryId }) => {
 
             <h2 className='text-2xl font-bold mb-2'>{categoryInfo?.name || 'Loading...'}</h2>
             {categoryInfo?.description && (
-                <p className='text-gray-400 mb-6'>{categoryInfo.description}</p>
+                <p className='text-gray-400 mb-4'>{categoryInfo.description}</p>
             )}
+
+            <div className='mb-6'>
+                <div className='relative max-w-md'>
+                    <input
+                        type='text'
+                        placeholder='Search assets by name...'
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className='w-full px-4 py-2 pl-10 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:bg-white/20 transition-all'
+                    />
+                    <svg
+                        className='absolute left-3 top-2.5 w-5 h-5 text-gray-400'
+                        fill='none'
+                        stroke='currentColor'
+                        viewBox='0 0 24 24'
+                    >
+                        <path
+                            strokeLinecap='round'
+                            strokeLinejoin='round'
+                            strokeWidth={2}
+                            d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
+                        />
+                    </svg>
+                </div>
+                {searchTerm && (
+                    <p className='text-sm text-gray-400 mt-2'>
+                        Found {filteredFiles.length} {filteredFiles.length === 1 ? 'asset' : 'assets'} matching "{searchTerm}"
+                    </p>
+                )}
+            </div>
 
             {filesError && (
                 <div className="mb-6 p-4 bg-red-900/20 border border-red-500 rounded-lg text-red-300">
@@ -208,7 +242,7 @@ export const SketchShaperProFiles = ({ categoryId }) => {
             )}
 
             <div className='mt-10 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4'>
-                {files.map((file) => {
+                {filteredFiles.map((file) => {
                     const imageUrl = file.preview_image ? getOptimizedImageUrl(getOriginalImageUrl(file.preview_image)) : 'https://placehold.co/300x200?text=File';
 
                     return (
@@ -316,9 +350,19 @@ export const SketchShaperProFiles = ({ categoryId }) => {
             )}
 
           
-            {!filesLoading && files.length === 0 && !filesError && (
+            {!filesLoading && filteredFiles.length === 0 && !filesError && (
                 <div className='text-center mt-8 text-gray-400'>
-                    No files available in this category
+                    {searchTerm ? (
+                        <>
+                            <p className='text-lg mb-2'>No assets found matching "{searchTerm}"</p>
+                            <p className='text-sm'>Try adjusting your search terms</p>
+                        </>
+                    ) : (
+                        <>
+                            <p className='text-lg mb-2'>No files available in this category</p>
+                            <p className='text-sm'>Check back later for new content</p>
+                        </>
+                    )}
                 </div>
             )}
 

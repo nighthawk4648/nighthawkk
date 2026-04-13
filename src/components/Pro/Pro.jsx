@@ -109,8 +109,14 @@ export const Pro = () => {
 
       <div className="mt-10 text-center w-full">
         <div className="w-full mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
-            {categories?.map((category) => {
+          {isLoading && categories.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+              <p className="text-gray-400">Loading categories...</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 px-4">
+              {categories?.map((category) => {
               const imageUrl = category?.preview_image
                 ? getOptimizedImageUrl(
                     getOriginalImageUrl(category.preview_image)
@@ -151,7 +157,8 @@ export const Pro = () => {
                 </div>
               );
             })}
-          </div>
+            </div>
+          )}
 
           {isLoading && categories.length > 0 && (
             <div className="flex justify-center mt-8">

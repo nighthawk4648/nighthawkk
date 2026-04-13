@@ -184,7 +184,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
              <CategoryAds />
 
             <div className="bg-secondary py-5 text-white px-5">
-                <p className="md:text-2xl mb-1 font-semibold">ASSET DETAILS</p>
+                {/* <p className="md:text-2xl mb-1 font-semibold">ASSET DETAILS</p> */}
                 <h1 className="text-sm">
                     <span className="font-semibold">Name - </span>
                     <span className="text-xs">{assetDetails?.name}</span>
@@ -197,9 +197,13 @@ const SubCategoryDetails = ({ assetDetails }) => {
                     <span className="font-semibold">Resolution - </span>
                     <span className="text-xs">{assetDetails?.resolution}</span>
                 </h3>
+                <h4 className="text-sm max-w-md">
+                    <span className="font-semibold">Short Description - </span>
+                    <span className="text-xs">{assetDetails?.short_description}</span>
+                </h4>
 
                 {assetDetails?.id && (
-                    <div className="w-48 mx-auto p-1 bg-primary mt-10 rounded-md cursor-pointer border-b-2 border-gray-500">
+                    <div className="w-48 mx-auto mt-10">
                         <button
                             type="button"
                             onClick={() => {
@@ -208,9 +212,10 @@ const SubCategoryDetails = ({ assetDetails }) => {
                                 setIsModalOpen(true);
                                 setIsCountdownActive(true);
                             }}
-                            className="w-full"
+                            className="w-full group relative overflow-hidden bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 hover:from-purple-700 hover:via-pink-700 hover:to-red-700 active:scale-95"
                         >
-                            <p className="font-semibold text-center">DOWNLOAD</p>
+                            <span className="relative z-10 font-semibold tracking-wide">DOWNLOAD</span>
+                            <div className="absolute inset-0 bg-white opacity-0 transition-opacity duration-300 group-hover:opacity-10"></div>
                         </button>
                     </div>
                 )}

@@ -119,7 +119,7 @@ export default async function RootLayout({ children }) {
 						footerPages={footerPages?.data}
 						socials={socials?.data}
 					/>
-					<Chatbot />
+					
 				</Providers>
 				<GoogleAnalytics gaId="G-JCLNX11Z2V" />
 			</body>
