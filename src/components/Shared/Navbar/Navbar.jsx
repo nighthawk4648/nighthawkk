@@ -27,15 +27,15 @@ const Navbar = ({ categories, footerPages }) => {
 
         <div className="relative">
 
-            <nav className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 text-slate-100 md:px-4 px-3 shadow-sm py-1 h-12">
+            <nav className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 text-slate-100 px-3 md:px-4 shadow-sm py-2 md:py-1 h-auto md:h-12">
 
-                <div className="px-6">
+                <div className="px-2 md:px-6">
 
                     <div className="flex justify-between items-center">
 
-                        <div className="flex items-center gap-5">
+                        <div className="flex items-center gap-3 md:gap-5">
 
-                            <p className="font-bold text-white text-lg"><Link href="/">Sketchshaper</Link></p>
+                            <p className="font-bold text-white text-lg md:text-xl"><Link href="/">Sketchshaper</Link></p>
 
                         </div>
 
@@ -45,19 +45,19 @@ const Navbar = ({ categories, footerPages }) => {
 
                         <div className="flex items-center">
 
-                            <div className="hidden md:flex items-center gap-5">
+                            <div className="hidden lg:flex items-center gap-3 xl:gap-5">
 
-                                <SearchForDesktopScreen />
+                                {/* <SearchForDesktopScreen /> */}
 
-                                <p className="font-semibold cursor-pointer text-slate-100 flex items-center text-sm px-3 py-2 bg-cyan-600 hover:bg-cyan-500 rounded-lg"><Link href="/pro">Pro</Link></p>
+                                <p className="font-semibold cursor-pointer text-slate-100 flex items-center text-xs xl:text-sm px-2 xl:px-3 py-2 bg-cyan-600 hover:bg-cyan-500 rounded-lg"><Link href="/pro">Pro</Link></p>
 
-                                <p className="font-semibold cursor-pointer text-slate-100 flex items-center text-sm px-3 py-2 bg-slate-800/20 hover:bg-slate-800 rounded-lg"><Link href="/extension">Extension</Link></p>
+                                <p className="font-semibold cursor-pointer text-slate-100 flex items-center text-xs xl:text-sm px-2 xl:px-3 py-2 bg-slate-800/20 hover:bg-slate-800 rounded-lg"><Link href="/extension">Extension</Link></p>
 
-                                <p className="font-semibold cursor-pointer text-slate-100 flex items-center text-sm px-3 py-2 bg-slate-800/20 hover:bg-slate-800 rounded-lg"><Link href="/gallery">Gallery</Link></p>
+                                <p className="font-semibold cursor-pointer text-slate-100 flex items-center text-xs xl:text-sm px-2 xl:px-3 py-2 bg-slate-800/20 hover:bg-slate-800 rounded-lg"><Link href="/gallery">Gallery</Link></p>
 
-                                {/* <p className="font-semibold cursor-pointer text-slate-100 flex items-center text-sm px-3 py-2 bg-slate-800/20 hover:bg-slate-800 rounded-lg"><Link href="/rbzconverter"> zip2rbz </Link></p> */}
+                                {/* <p className="font-semibold cursor-pointer text-slate-100 flex items-center text-xs xl:text-sm px-2 xl:px-3 py-2 bg-slate-800/20 hover:bg-slate-800 rounded-lg"><Link href="/rbzconverter"> zip2rbz </Link></p> */}
 
-                                <p className="font-semibold cursor-pointer text-slate-100 flex items-center text-sm px-3 py-2 bg-slate-800/20 hover:bg-slate-800 rounded-lg"><Link href='https://blog.sketchshaper.com/'>Blog</Link></p>
+                                <p className="font-semibold cursor-pointer text-slate-100 flex items-center text-xs xl:text-sm px-2 xl:px-3 py-2 bg-slate-800/20 hover:bg-slate-800 rounded-lg"><Link href='https://blog.sketchshaper.com/'>Blog</Link></p>
 
                                 
 
@@ -67,16 +67,16 @@ const Navbar = ({ categories, footerPages }) => {
 
 
 
-                            <div className="hidden md:block relative ml-5 menu-dropdown"
+                            <div className="hidden md:block relative ml-2 lg:ml-5 menu-dropdown"
                                 onMouseEnter={() => setShowCategoryList(true)}
                                 onMouseLeave={() => setShowCategoryList(false)}
                             >
-                                <p className="font-semibold cursor-pointer text-slate-100 flex items-center text-sm px-3 py-2 bg-slate-800/20 rounded-lg">
+                                <p className="font-semibold cursor-pointer text-slate-100 flex items-center text-xs lg:text-sm px-2 lg:px-3 py-2 bg-slate-800/20 rounded-lg">
                                     Menu {showCategoryList ? <IoIosArrowUp className="ml-1" /> : <IoIosArrowDown className="ml-1" />}
                                 </p>
 
                                 {showCategoryList && (
-                                    <div className="absolute right-0 top-full mt-1 w-80 bg-slate-800 shadow-lg border border-slate-700 rounded-md max-h-96 overflow-y-auto">
+                                    <div className="absolute right-0 top-full mt-1 w-64 md:w-80 bg-slate-800 shadow-lg border border-slate-700 rounded-md max-h-96 overflow-y-auto z-50">
                                         <div className="py-2">
                                             {categories?.map((category) => (
                                                 <div key={category.id}
@@ -129,21 +129,17 @@ const Navbar = ({ categories, footerPages }) => {
 
 
 
-                            <div className="md:hidden">
+                            <div className="flex md:hidden items-center gap-2">
 
-                                <div className='flex gap-3 items-center mt-2'>
+                            <SearchForMobileScreen />
 
-                                    <SearchForMobileScreen />
+                            <button onClick={toggleNavbar} className="font-medium p-1">
 
-                                    <button onClick={toggleNavbar} className="font-medium">
+                                <AiOutlineMenuFold className="text-xl lg:text-2xl text-white" />
 
-                                        <AiOutlineMenuFold className="md:text-2xl text-xl text-white" />
+                            </button>
 
-                                    </button>
-
-                                </div>
-
-                            </div>
+                        </div>
 
                         </div>
 
@@ -159,7 +155,7 @@ const Navbar = ({ categories, footerPages }) => {
 
                 <div className={`md:hidden ${isOpen ? 'block' : 'hidden'}`}>
 
-                    <div className={`fixed inset-y-0 left-0 z-50 w-4/5 bg-slate-900 text-slate-100 transform transition-transform ease-in-out duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}> 
+                    <div className={`fixed inset-y-0 left-0 z-50 w-4/5 sm:w-3/4 md:w-1/2 lg:w-1/3 bg-slate-900 text-slate-100 transform transition-transform ease-in-out duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}> 
 
                         <div className="flex items-center justify-end h-16 px-4">
 

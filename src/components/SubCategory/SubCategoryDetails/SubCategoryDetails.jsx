@@ -11,6 +11,9 @@ import Link from 'next/link';
 import { getOptimizedImageUrl } from '@/utils/cloudinary';
 import { HorizontalBanner } from '@/components/Shared/GoogleAdsense/HorizontalBanner';
 import { CategoryAds } from '@/components/Shared/GoogleAdsense/categoryads';
+import useSWR from 'swr';
+import { fetcher } from '@/utils/swrFetcher';
+import slugify from '@/utils/slugify';
 
 const SubCategoryDetails = ({ assetDetails }) => {
     const [thumbsSwiper, setThumbsSwiper] = useState(null);
@@ -21,6 +24,14 @@ const SubCategoryDetails = ({ assetDetails }) => {
     const modalAdRef = useRef(null);
     const leftAdRef = useRef(null);
     const rightAdRef = useRef(null);
+
+    // Fetch related assets from the same sub-category
+    const { data: relatedAssetsData } = useSWR(
+        assetDetails?.sub_category_id 
+            ? `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/sub-categories/${assetDetails.sub_category_id}`
+            : null,
+        fetcher
+    );
 
     useEffect(() => {
         const handleResize = () => {
@@ -88,12 +99,18 @@ const SubCategoryDetails = ({ assetDetails }) => {
         return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
     };
 
+    // Filter related assets (exclude current asset and show 6 random assets)
+    const relatedAssets = relatedAssetsData?.data?.assets
+        ?.filter(asset => asset.id !== assetDetails?.id)
+        ?.sort(() => Math.random() - 0.5) // Random shuffle
+        ?.slice(0, 6) || [];
+
     return (
         <div className="">
-            <div className="bg-secondary py-5">
-                <div className="flex justify-center items-center relative">
+            <div className="bg-secondary py-3 md:py-5">
+                <div className="flex justify-center items-center relative px-2 md:px-4">
                     {showAds && (
-                        <div className="hidden md:block w-48 h-[578px] mr-4">
+                        <div className="hidden xl:block w-32 lg:w-40 h-[400px] lg:h-[500px] mr-2 lg:mr-4">
                             <ins
                                 ref={leftAdRef}
                                 className="adsbygoogle"
@@ -107,7 +124,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
                     )}
 
                     {/* Main Swiper */}
-                    <div className="max-w-[1147px] w-full">
+                    <div className="w-full max-w-6xl xl:max-w-[1147px]">
                         <Swiper
                             style={{
                                 '--swiper-navigation-color': '#fff',
@@ -126,7 +143,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
                                         alt={assetDetails?.name || "Asset Image"}
                                         height={1600}
                                         width={1600}
-                                        className="md:w-[1147px] mx-auto md:h-[578px] w-full h-[200px] rounded-md"
+                                        className="w-full h-[200px] sm:h-[300px] md:h-[400px] lg:h-[500px] xl:h-[578px] object-cover rounded-md"
                                     />
                                 </SwiperSlide>
                             ))}
@@ -134,7 +151,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
                     </div>
 
                     {showAds && (
-                        <div className="hidden md:block w-48 h-[578px] ml-4">
+                        <div className="hidden xl:block w-32 lg:w-40 h-[400px] lg:h-[500px] ml-2 lg:ml-4">
                             <ins
                                 ref={rightAdRef}
                                 className="adsbygoogle"
@@ -217,6 +234,44 @@ const SubCategoryDetails = ({ assetDetails }) => {
                             <span className="relative z-10 font-semibold tracking-wide">DOWNLOAD</span>
                             <div className="absolute inset-0 bg-white opacity-0 transition-opacity duration-300 group-hover:opacity-10"></div>
                         </button>
+                    </div>
+                )}
+
+                {/* Related Assets Section */}
+                {relatedAssets.length > 0 && (
+                    <div className="mt-12 px-4 md:px-0">
+                        <h2 className="text-xl md:text-2xl font-bold text-white mb-6 md:mb-8 text-center">Related Assets</h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-6 xl:grid-cols-6 gap-2 md:gap-3 lg:gap-4">
+                            {relatedAssets.map((asset) => (
+                                <div key={asset.id} className="group cursor-pointer">
+                                    <div className="relative overflow-hidden rounded-lg mb-2 w-[300px] h-[300px] bg-gray-800">
+                                        <Link 
+                                            href={`/${slugify(relatedAssetsData?.data?.category?.name)}/${slugify(relatedAssetsData?.data?.name)}/${slugify(asset?.name)}-${asset?.id}`}
+                                            className="block w-full h-full"
+                                        >
+                                            {asset?.cover && (
+                                                <Image
+                                                    src={getOptimizedImageUrl(getOriginalImageUrl(asset?.cover))}
+                                                    height={300}
+                                                    width={300}
+                                                    alt={asset?.name}
+                                                    className="w-full h-full object-cover transform transition-all duration-300 group-hover:scale-105 group-hover:brightness-110"
+                                                />
+                                            )}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                        </Link>
+                                    </div>
+                                    <p className="text-white text-center text-xs sm:text-sm font-medium line-clamp-2 group-hover:text-blue-400 transition-colors duration-200">
+                                        <Link 
+                                            href={`/${slugify(relatedAssetsData?.data?.category?.name)}/${slugify(relatedAssetsData?.data?.name)}/${slugify(asset?.name)}-${asset?.id}`}
+                                            className="block w-full"
+                                        >
+                                            {asset?.name}
+                                        </Link>
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 )}
             </div>

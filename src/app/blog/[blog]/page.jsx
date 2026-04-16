@@ -71,7 +71,7 @@ const Blogs = async ({ params }) => {
             className="w-full max-w-4xl mx-auto rounded-md"
           />
         </div>
-       <HorizontalBanner />
+       {/* <HorizontalBanner /> */}
 
         {/* Blog Description */}
         <div className="text-white max-w-4xl mx-auto text-justify text-sm md:text-base px-2 md:px-0 mb-8">
@@ -89,14 +89,14 @@ const Blogs = async ({ params }) => {
               __html: sanitizeHtml(blog?.data?.paragraph_one),
             }}
           />
-           <HorizontalBanner />
+           {/* <HorizontalBanner /> */}
           <div
             dangerouslySetInnerHTML={{
               __html: sanitizeHtml(blog?.data?.paragraph_two),
             }}
           />
         </div>
-        <HorizontalBanner />
+        {/* <HorizontalBanner /> */}
         
         {/* Middle Blog Image */}
         {blog?.data?.bgImage && (
@@ -110,7 +110,7 @@ const Blogs = async ({ params }) => {
             />
           </div>
         )}
-         <HorizontalBanner />
+         {/* <HorizontalBanner /> */}
 
         {/* Blog Paragraph Part After Image */}
         <div className="text-white max-w-4xl mx-auto space-y-6 text-justify text-sm md:text-base px-2 md:px-0">
@@ -120,8 +120,8 @@ const Blogs = async ({ params }) => {
             }}
           />
         </div>
-         <HorizontalBanner />
-          <HorizontalBanner />
+         {/* <HorizontalBanner />
+          <HorizontalBanner /> */}
       </div>
     </div>
   );
