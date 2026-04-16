@@ -241,10 +241,10 @@ const SubCategoryDetails = ({ assetDetails }) => {
                 {relatedAssets.length > 0 && (
                     <div className="mt-12 px-4 md:px-0">
                         <h2 className="text-xl md:text-2xl font-bold text-white mb-6 md:mb-8 text-center">Related Assets</h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-6 xl:grid-cols-6 gap-2 md:gap-3 lg:gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-3 lg:gap-4 px-2 md:px-0">
                             {relatedAssets.map((asset) => (
-                                <div key={asset.id} className="group cursor-pointer">
-                                    <div className="relative overflow-hidden rounded-lg mb-2 w-[300px] h-[300px] bg-gray-800">
+                                <div key={asset.id} className="group cursor-pointer mx-auto max-w-[300px]">
+                                    <div className="relative overflow-hidden rounded-lg mb-2 aspect-square bg-gray-800">
                                         <Link 
                                             href={`/${slugify(relatedAssetsData?.data?.category?.name)}/${slugify(relatedAssetsData?.data?.name)}/${slugify(asset?.name)}-${asset?.id}`}
                                             className="block w-full h-full"
