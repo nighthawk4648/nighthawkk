@@ -15,12 +15,12 @@ const Features = ({ categories }) => {
     return (
         <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black p-4 lg:p-8 w-full">
             <div className="w-full max-w-full">
-                <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 items-stretch">
+                <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 lg:items-stretch">
                     {/* Features Section - 3/4 width */}
-                    <div className="w-3/4">
+                    <div className="w-full lg:w-3/4">
                         <div className="text-center mb-4">
                             <h2 className="text-2xl lg:text-3xl font-bold text-white mb-2">
-                                Explore Our Features
+                                Explore Our Categories
                             </h2>
                             <p className="text-gray-400 text-sm lg:text-base max-w-2xl mx-auto">
                                 Discover our comprehensive range of categories designed to meet your needs
@@ -77,7 +77,7 @@ const Features = ({ categories }) => {
                     </div>
 
                     {/* Extensions Section - 1/4 width */}
-                    <div className="w-1/4 flex flex-col">
+                    <div className="w-full lg:w-1/4">
                         <div className="text-center mb-4">
                             <h2 className="text-2xl lg:text-3xl font-bold text-white mb-2">
                                 Quick Access
