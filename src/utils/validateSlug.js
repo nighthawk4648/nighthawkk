@@ -22,7 +22,6 @@ export async function validateCategory(categoryParam) {
 
 // ─── SubCategory page: /category-slug-{id}/subcategory-slug-{id} ───
 export async function validateSubCategory(categoryParam, subCategoryParam) {
-    // First validate the category segment
     const categoryData = await validateCategory(categoryParam);
     if (!categoryData) return null;
 
