@@ -38,9 +38,7 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                 <h1 className="text-white font-semibold text-2xl text-center">
                     {subCategoriesByCategoryId?.data?.name}
                 </h1>
-                <h2 className="text-white text-center mt-2 px-4 py-2 text-sm font-medium">
-                    {subCategoriesByCategoryId?.data?.short_description}
-                </h2>
+                
             </div>
 
             {/* Subcategory Grid */}
@@ -57,7 +55,7 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                             className="w-full h-28 object-cover"
                         />
                         <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black py-1">
-                            <h2 className="text-white font-semibold text-sm text-center">All</h2>
+                            <p className="text-white font-semibold text-sm text-center">All</p>
                         </div>
                     </Link>
                 </div>
@@ -91,9 +89,9 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
 
             {/* Premium CTA */}
             <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black py-3 px-4 flex items-center justify-center gap-4 text-center">
-                <h6 className="text-white font-semibold text-lg">
+                <p className="text-white font-semibold text-lg">
                     Checkout Our Premium Models, Textures and SketchUp Extension
-                </h6>
+                </p>
 
                 <a
                     href="https://sketchshaper.com/pro"
@@ -164,13 +162,13 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                                         </Link>
                                     </div>
 
-                                    <h3 className="text-white text-center font-semibold mt-2">
+                                    <p className="text-white text-center font-semibold mt-2">
                                         <Link
                                             href={`/${slugify(asset?.sub_category?.category?.name)}/${slugify(asset?.sub_category?.name)}/${slugify(asset?.name)}-${asset?.id}`}
                                         >
                                             {asset?.name}
                                         </Link>
-                                    </h3>
+                                    </p>
                                 </div>
                             ))}
                         </div>
@@ -211,24 +209,28 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                                                 </Link>
                                             </div>
 
-                                            <h3 className="text-white text-center font-semibold mt-2">
+                                            <p className="text-white text-center font-semibold mt-2">
                                                 <Link
                                                     href={`/${slugify(asset?.sub_category?.category?.name)}/${slugify(asset?.sub_category?.name)}/${slugify(asset?.name)}-${asset?.id}`}
                                                 >
                                                     {asset?.name}
                                                 </Link>
-                                            </h3>
+                                            </p>
                                         </div>
                                     ))}
                                 </div>
 
                                 {/* Horizontal banner after each slice */}
                                 <HorizontalBanner />
+                                
 
                             </div>
                         );
                     })
                 )}
+                <p className="text-white text-center mt-2 px-4 py-2 text-sm font-medium">
+                    {subCategoriesByCategoryId?.data?.short_description}
+                </p>
             </div>
         </div>
     );

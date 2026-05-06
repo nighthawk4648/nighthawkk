@@ -202,22 +202,22 @@ const SubCategoryDetails = ({ assetDetails }) => {
 
             <div className="bg-secondary py-5 text-white px-5">
                 {/* <p className="md:text-2xl mb-1 font-semibold">ASSET DETAILS</p> */}
-                <h1 className="text-sm">
-                    <span className="font-semibold">Name - </span>
-                    <span className="text-xs">{assetDetails?.name}</span>
-                </h1>
-                <h2 className="text-sm">
+                <div className="flex items-center gap-2">
+                    <p className="font-semibold text-sm">Name - </p>
+                    <h1 className="text-xs">{assetDetails?.name}</h1>
+                </div>
+                <p className="text-sm">
                     <span className="font-semibold">Size - </span>
                     <span className="text-xs">{assetDetails?.size}</span>
-                </h2>
-                <h3 className="text-sm">
+                </p>
+                <p className="text-sm">
                     <span className="font-semibold">Resolution - </span>
                     <span className="text-xs">{assetDetails?.resolution}</span>
-                </h3>
-                <h4 className="text-sm max-w-md">
+                </p>
+                <p className="text-sm max-w-md">
                     <span className="font-semibold">Short Description - </span>
                     <span className="text-xs">{assetDetails?.short_description}</span>
-                </h4>
+                </p>
 
                 {assetDetails?.id && (
                     <div className="w-48 mx-auto mt-10">

@@ -76,12 +76,10 @@ const SingleSubCategoryPage = ({ categoryId, subCategoryId }) => {
 
             {/* Header */}
             <div className='bg-gradient-to-br from-gray-900 via-gray-900 to-black py-2'>
-                <h1 className='text-white font-semibold text-2xl text-center'>
+                <h1 className="text-white font-semibold text-2xl text-center">
                     {assetBySubCategoryId?.data?.name}
                 </h1>
-                <h2 className="text-white text-center mt-2 px-4 py-2 text-sm font-medium">
-                    {assetBySubCategoryId?.data?.short_description}
-                </h2>
+               
             </div>
 
             {/* Subcategory list */}
@@ -123,9 +121,9 @@ const SingleSubCategoryPage = ({ categoryId, subCategoryId }) => {
                             )}
 
                             <div className="bg-gradient-to-br from-black to-gray-900 py-1">
-                                <p className="text-white font-semibold text-sm text-center">
+                                <h2 className="text-white font-semibold text-sm text-center">
                                     {subCategory?.name}
-                                </p>
+                                </h2>
                             </div>
                         </Link>
                     </div>
@@ -135,9 +133,9 @@ const SingleSubCategoryPage = ({ categoryId, subCategoryId }) => {
 
             {/* Premium Banner */}
             <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black py-3 px-4 flex items-center justify-center gap-4 text-center">
-                <h6 className="text-white font-semibold text-lg">
+                <p className="text-white font-semibold text-lg">
                     Checkout Our Premium Models, Textures & SketchUp Extension
-                </h6>
+                </p>
 
                 <a
                     href="https://sketchshaper.com/pro"
@@ -251,6 +249,9 @@ const SingleSubCategoryPage = ({ categoryId, subCategoryId }) => {
                         ))}
                     </div>
                 )}
+                <p className="text-white text-center mt-2 px-4 py-2 text-sm font-medium">
+                    {assetBySubCategoryId?.data?.short_description}
+                </p>
             </div>
         </div>
     );
