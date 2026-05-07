@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 import SubCategory from '@/components/SubCategory/SubCategory/SubCategory';
 import { notFound } from 'next/navigation';
 import { validateCategory, notFoundMeta } from '@/utils/validateSlug';
-
+import { getCleanMetadata } from '@/utils/seo';
 
 export async function generateMetadata({ params }) {
     const { category } = params;
@@ -11,10 +11,12 @@ export async function generateMetadata({ params }) {
     const categoryData = await validateCategory(category);
     if (!categoryData) return notFoundMeta;
 
-    return {
+    const pathname = `/${category}`;
+    
+    return getCleanMetadata(pathname, {
         title: `${categoryData.data?.meta_title}`,
         description: `${categoryData.data?.meta_description}`,
-    };
+    });
 }
 
 

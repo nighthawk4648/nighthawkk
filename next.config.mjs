@@ -48,6 +48,16 @@ const nextConfig = {
         destination: '/404',
         permanent: true,
       },
+      {
+        source: '/sketchup-3d-model-3',
+        destination: '/sketchup-3d-models-3',
+        permanent: true,
+      },
+      {
+        source: '/sketchup-3d-model-3/:path*',
+        destination: '/sketchup-3d-models-3/:path*',
+        permanent: true,
+      },
     ];
   },
 
