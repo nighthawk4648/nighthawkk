@@ -122,33 +122,11 @@ export const Pro = () => {
 
       <div className="px-4 py-6 text-center border-b border-gray-800">
 
-        <h1 className="text-3xl md:text-4xl font-bold mb-4">
+        <h1 className="text-3xl md:text-4xl font-bold">
 
           SketchShaper Pro
 
         </h1>
-
-        
-
-        <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black border border-gray-700 rounded-xl p-6 max-w-4xl mx-auto shadow-2xl">
-
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-
-            <p className="text-gray-300 text-center md:text-left">Explore our powerful SketchUp free extension with premium features</p>
-
-            <Link href="/extension">
-
-              <button className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 px-8 rounded-lg transition-all duration-200 shadow-lg border border-gray-700">
-
-                Browse Extension
-
-              </button>
-
-            </Link>
-
-          </div>
-
-        </div>
 
       </div>
 
@@ -160,7 +138,7 @@ export const Pro = () => {
 
         {/* Left Side - Categories */}
 
-        <div className="w-full lg:w-1/5 border-r border-gray-800 lg:fixed lg:h-screen lg:overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900 hover:scrollbar-thumb-gray-600">
+        <div className="w-full lg:w-1/5 border-r border-gray-800 lg:fixed lg:h-screen lg:overflow-y-auto [scrollbar-width:thin] [scrollbar-color:rgba(75,85,99,0.5)_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-600/50 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-gray-500/70 [&::-webkit-scrollbar-thumb]:transition-colors [&::-webkit-scrollbar-thumb]:duration-300">
 
           <div className="p-4">
 

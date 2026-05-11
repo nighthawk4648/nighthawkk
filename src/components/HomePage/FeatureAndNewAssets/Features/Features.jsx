@@ -31,7 +31,7 @@ const Features = ({ categories }) => {
                             {sortedCategories.map((category) => (
                                 <div 
                                     key={category.id} 
-                                    className='group relative bg-gray-800 bg-opacity-30 backdrop-blur-sm border border-gray-600 rounded-lg p-4 lg:p-6 transition-all duration-500 hover:bg-gradient-to-br hover:from-blue-900 hover:to-purple-900 hover:border-transparent hover:shadow-2xl hover:shadow-blue-500/25'
+                                    className='group relative bg-gray-800 bg-opacity-30 backdrop-blur-sm border border-gray-600 rounded-lg p-4 lg:p-6 transition-all duration-500 hover:bg-gradient-to-br hover:from-gray-800 hover:to-gray-900 hover:border-transparent hover:shadow-2xl hover:shadow-blue-500/25'
                                 >
                                     <Link 
                                         href={`/${slugify(category.name)}-${category.id}`}
@@ -42,7 +42,7 @@ const Features = ({ categories }) => {
                                             <div className="relative mb-4">
                                                 {category.image && (
                                                     <div className="relative w-20 h-20 mx-auto">
-                                                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-full opacity-0 group-hover:opacity-30 transition-all duration-500 group-hover:scale-125"></div>
+                                                        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-900 to-black rounded-full opacity-0 group-hover:opacity-30 transition-all duration-500 group-hover:scale-125"></div>
                                                         <Image
                                                             src={getOptimizedImageUrl(getOriginalImageUrl(category.image))}
                                                             height={120}
@@ -54,14 +54,14 @@ const Features = ({ categories }) => {
                                                 )}
                                             </div>
                                             
-                                            <h3 className='font-bold text-white text-base lg:text-lg mb-3 group-hover:text-cyan-300 transition-all duration-500'>
+                                            <h3 className='font-bold text-white text-base lg:text-lg mb-3 group-hover:text-gray-400 transition-all duration-500'>
                                                 {category.name}
                                             </h3>
                                             
-                                        <div className="flex items-center justify-center space-x-1 text-gray-400 group-hover:text-cyan-300 transition-all duration-500">
+                                        <div className="flex items-center justify-center space-x-1 text-gray-400 group-hover:text-gray-300 transition-all duration-500">
                                                 <span className="text-sm">Explore</span>
                                                 <svg 
-                                                    className="w-3 h-3 transform transition-all duration-500 group-hover:translate-x-2 group-hover:text-cyan-300" 
+                                                    className="w-3 h-3 transform transition-all duration-500 group-hover:translate-x-2 group-hover:text-gray-300" 
                                                     fill="none" 
                                                     stroke="currentColor" 
                                                     viewBox="0 0 24 24"
@@ -88,7 +88,7 @@ const Features = ({ categories }) => {
                         </div>
                         
                         <div className="grid grid-cols-1 gap-3 lg:gap-4 flex-1 content-center">
-                            <div className='group relative bg-gray-800 bg-opacity-30 backdrop-blur-sm border border-gray-600 rounded-lg p-4 lg:p-6 transition-all duration-500 hover:bg-gradient-to-br hover:from-blue-900 hover:to-purple-900 hover:border-transparent hover:shadow-2xl hover:shadow-blue-500/25 h-full flex flex-col justify-center'>
+                            <div className='group relative bg-gray-800 bg-opacity-30 backdrop-blur-sm border border-gray-600 rounded-lg p-4 lg:p-6 transition-all duration-500 hover:bg-gradient-to-br hover:from-gray-800 hover:to-gray-900 hover:border-transparent hover:shadow-2xl hover:shadow-blue-500/25 h-full flex flex-col justify-center'>
                                 <Link 
                                     href="/extension"
                                     className="block rounded-lg"
@@ -97,8 +97,8 @@ const Features = ({ categories }) => {
                                     <div className='text-center'>
                                         <div className="relative mb-4">
                                             <div className="relative w-16 h-16 mx-auto">
-                                                <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-full opacity-0 group-hover:opacity-30 transition-all duration-500 group-hover:scale-125"></div>
-                                                <div className="w-full h-full bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full shadow-lg flex items-center justify-center transition-all duration-500 group-hover:rotate-12 group-hover:shadow-cyan-500/50">
+                                                <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-900 to-black rounded-full opacity-0 group-hover:opacity-30 transition-all duration-500 group-hover:scale-125"></div>
+                                                <div className="w-full h-full bg-gradient-to-br from-gray-900 via-gray-900 to-black rounded-full shadow-lg flex items-center justify-center transition-all duration-500 group-hover:rotate-12 group-hover:shadow-gray-900/50">
                                                     <svg 
                                                         className="w-8 h-8 text-white" 
                                                         fill="none" 
@@ -111,14 +111,14 @@ const Features = ({ categories }) => {
                                             </div>
                                         </div>
                                         
-                                        <h3 className='font-bold text-white text-sm lg:text-base mb-2 group-hover:text-cyan-300 transition-all duration-500'>
+                                        <h3 className='font-bold text-white text-sm lg:text-base mb-2 group-hover:text-gray-400 transition-all duration-500'>
                                             Extension
                                         </h3>
                                         
-                                        <div className="flex items-center justify-center space-x-1 text-gray-400 group-hover:text-cyan-300 transition-all duration-500">
+                                        <div className="flex items-center justify-center space-x-1 text-gray-400 group-hover:text-gray-300 transition-all duration-500">
                                                 <span className="text-xs">Explore</span>
                                                 <svg 
-                                                    className="w-3 h-3 transform transition-all duration-500 group-hover:translate-x-2 group-hover:text-cyan-300" 
+                                                    className="w-3 h-3 transform transition-all duration-500 group-hover:translate-x-2 group-hover:text-gray-300" 
                                                     fill="none" 
                                                     stroke="currentColor" 
                                                     viewBox="0 0 24 24"

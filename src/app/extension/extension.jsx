@@ -69,7 +69,7 @@ const ExtensionPage = () => {
                             </svg>
                         </div>
                     </div>
-                    <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-cyan-300 to-purple-400 bg-clip-text text-transparent">
+                    <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-[#55db8d] via-[#3c634c] to-[#12924c] bg-clip-text text-transparent">
                         SketchShaper
                     </h1>
                     <p className="text-xl md:text-2xl mb-8 text-gray-300 font-light">
@@ -82,7 +82,7 @@ const ExtensionPage = () => {
                     <button
                         onClick={handleDownload}
                         disabled={isDownloading}
-                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 disabled:from-gray-600 disabled:to-gray-700 text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-2xl"
+                        className="bg-[#379960] hover:bg-[#3c634c] disabled:bg-green-600 text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-2xl"
                     >
                         {isDownloading ? (
                             <span className="flex items-center gap-2">
@@ -106,7 +106,7 @@ const ExtensionPage = () => {
             {/* Video Section */}
             <div className="py-20 px-4">
                 <div className="max-w-6xl mx-auto">
-                    <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                    <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-[#55db8d] via-[#3c634c] to-[#12924c] bg-clip-text text-transparent">
                         See SketchShaper in Action
                     </h2>
                     <div className="aspect-video rounded-2xl overflow-hidden shadow-2xl">
@@ -124,7 +124,7 @@ const ExtensionPage = () => {
             {/* Features Gallery */}
             <div className="py-20 px-4 bg-slate-900/50">
                 <div className="max-w-6xl mx-auto">
-                    <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-blue-400 via-cyan-300 to-purple-400 bg-clip-text text-transparent">
+                    <h2 className="text-4xl font-bold text-center mb-12 bg-gradient-to-r from-[#55db8d] via-[#3c634c] to-[#12924c] bg-clip-text text-transparent">
                         Powerful Features
                     </h2>
                     <div className="grid md:grid-cols-3 gap-6">
@@ -195,7 +195,7 @@ const ExtensionPage = () => {
             {/* CTA Section */}
             <div className="py-20 px-4">
                 <div className="max-w-4xl mx-auto text-center">
-                    <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+                    <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-[#55db8d] via-[#1ca053] to-[#12924c] bg-clip-text text-transparent">
                         Start Creating Today
                     </h2>
                     <p className="text-xl text-gray-300 mb-8">
@@ -204,7 +204,7 @@ const ExtensionPage = () => {
                     <button
                         onClick={handleDownload}
                         disabled={isDownloading}
-                        className="bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-2xl"
+                        className="bg-gradient-to-r from-[#55db8d] to-[#12924c] hover:from-[#55db8d] hover:to-[#12924c] disabled:from-gray-600 disabled:to-gray-700 text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-2xl"
                     >
                         {isDownloading ? "Downloading..." : "Download Now - It's Free!"}
                     </button>

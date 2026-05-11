@@ -201,41 +201,49 @@ const SubCategoryDetails = ({ assetDetails }) => {
              <CategoryAds />
 
             <div className="bg-secondary py-5 text-white px-5">
-                {/* <p className="md:text-2xl mb-1 font-semibold">ASSET DETAILS</p> */}
-                <div className="flex items-center gap-2">
-                    <p className="font-semibold text-sm">Name - </p>
-                    <h1 className="text-xs">{assetDetails?.name}</h1>
-                </div>
-                <p className="text-sm">
-                    <span className="font-semibold">Size - </span>
-                    <span className="text-xs">{assetDetails?.size}</span>
-                </p>
-                <p className="text-sm">
-                    <span className="font-semibold">Resolution - </span>
-                    <span className="text-xs">{assetDetails?.resolution}</span>
-                </p>
-                <p className="text-sm max-w-md">
-                    <span className="font-semibold">Short Description - </span>
-                    <span className="text-xs">{assetDetails?.short_description}</span>
-                </p>
-
-                {assetDetails?.id && (
-                    <div className="w-48 mx-auto mt-10">
-                        <button
-                            type="button"
-                            onClick={() => {
-                                // open modal interstitial
-                                setCountdown(10); // reset to 10 seconds
-                                setIsModalOpen(true);
-                                setIsCountdownActive(true);
-                            }}
-                            className="w-full group relative overflow-hidden bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 hover:from-purple-700 hover:via-pink-700 hover:to-red-700 active:scale-95"
-                        >
-                            <span className="relative z-10 font-semibold tracking-wide">DOWNLOAD</span>
-                            <div className="absolute inset-0 bg-white opacity-0 transition-opacity duration-300 group-hover:opacity-10"></div>
-                        </button>
+                <div className="flex flex-col md:flex-row items-center md:justify-center gap-6">
+                    {/* Left: Asset Details */}
+                    <div className="md:flex-1 md:text-left text-center">
+                        <div className="flex items-center gap-2">
+                            <p className="font-semibold text-sm">Name - </p>
+                            <h1 className="text-xs">{assetDetails?.name}</h1>
+                        </div>
+                        <p className="text-sm">
+                            <span className="font-semibold">Size - </span>
+                            <span className="text-xs">{assetDetails?.size}</span>
+                        </p>
+                        <p className="text-sm">
+                            <span className="font-semibold">Resolution - </span>
+                            <span className="text-xs">{assetDetails?.resolution}</span>
+                        </p>
+                        <p className="text-sm max-w-md">
+                            <span className="font-semibold">Short Description - </span>
+                            <span className="text-xs">{assetDetails?.short_description}</span>
+                        </p>
                     </div>
-                )}
+
+                    {/* Center: Download Button */}
+                    {assetDetails?.id && (
+                        <div className="w-48">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    // open modal interstitial
+                                    setCountdown(10); // reset to 10 seconds
+                                    setIsModalOpen(true);
+                                    setIsCountdownActive(true);
+                                }}
+                                className="w-full group relative overflow-hidden bg-[#379960] hover:bg-[#3c634c] disabled:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 active:scale-95"
+                            >
+                                <span className="relative z-10 font-semibold tracking-wide">DOWNLOAD</span>
+                                <div className="absolute inset-0 bg-white opacity-0 transition-opacity duration-300 group-hover:opacity-10"></div>
+                            </button>
+                        </div>
+                    )}
+                    {/* Right spacer for centering balance */}
+                    <div className="hidden md:block md:flex-1"></div>
+                </div>
+ 
 
                 {/* Related Assets Section */}
                 {relatedAssets.length > 0 && (

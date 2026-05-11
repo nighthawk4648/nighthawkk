@@ -4,6 +4,7 @@ import { usePatreonAuth } from "@/contexts/PatreonAuthContext";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 import { getOptimizedImageUrl } from "@/utils/cloudinary";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -138,6 +139,18 @@ export const AllProFiles = () => {
         <div className='px-5 md:px-10 lg:px-20 min-h-screen bg-gradient-to-br from-gray-900 to-black text-white py-8 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-black'>
            
             <h1 className='text-3xl font-bold mb-6'>Assets</h1>
+
+            {/* Extension Browser Section */}
+            <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black border border-gray-700 rounded-xl p-6 mb-6 shadow-2xl">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <p className="text-gray-300 text-center md:text-left">Explore our powerful SketchUp free extension with premium features</p>
+                    <Link href="/extension">
+                        <button className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 px-8 rounded-lg transition-all duration-200 shadow-lg border border-gray-700">
+                            Browse Extension
+                        </button>
+                    </Link>
+                </div>
+            </div>
 
             {isAuthenticated && (
                 <div className={`mb-6 p-4 rounded-lg border ${isPatron ? 'bg-green-900/20 border-green-500' : 'bg-yellow-900/20 border-yellow-500'}`}>
