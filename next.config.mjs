@@ -58,6 +58,11 @@ const nextConfig = {
         destination: '/sketchup-3d-models-3/:path*',
         permanent: true,
       },
+       {
+        source: '/sketchshaperpro',
+        destination: '/extension',
+        permanent: true,
+      },
     ];
   },
 
