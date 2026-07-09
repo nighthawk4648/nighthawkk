@@ -71,10 +71,10 @@ const Blogs = async ({ params }) => {
             className="w-full max-w-4xl mx-auto rounded-md"
           />
         </div>
-       {/* <HorizontalBanner /> */}
+       <HorizontalBanner />
 
         {/* Blog Description */}
-        <div className="text-white max-w-4xl mx-auto text-justify text-sm md:text-base px-2 md:px-0 mb-8">
+        <div className="blog-content text-white max-w-4xl mx-auto text-justify text-sm md:text-base px-2 md:px-0 mb-8">
           <div
             dangerouslySetInnerHTML={{
               __html: sanitizeHtml(blog?.data?.short_description),
@@ -83,7 +83,7 @@ const Blogs = async ({ params }) => {
         </div>
 
         {/* Blog Paragraphs Part Before Image */}
-        <div className="text-white max-w-4xl mx-auto space-y-6 text-justify text-sm md:text-base px-2 md:px-0">
+        <div className="blog-content text-white max-w-4xl mx-auto space-y-6 text-justify text-sm md:text-base px-2 md:px-0">
           <div
             dangerouslySetInnerHTML={{
               __html: sanitizeHtml(blog?.data?.paragraph_one),
@@ -96,7 +96,7 @@ const Blogs = async ({ params }) => {
             }}
           />
         </div>
-        {/* <HorizontalBanner /> */}
+        <HorizontalBanner />
         
         {/* Middle Blog Image */}
         {blog?.data?.bgImage && (
@@ -110,18 +110,18 @@ const Blogs = async ({ params }) => {
             />
           </div>
         )}
-         {/* <HorizontalBanner /> */}
+         <HorizontalBanner />
 
         {/* Blog Paragraph Part After Image */}
-        <div className="text-white max-w-4xl mx-auto space-y-6 text-justify text-sm md:text-base px-2 md:px-0">
+        <div className="blog-content text-white max-w-4xl mx-auto space-y-6 text-justify text-sm md:text-base px-2 md:px-0">
           <div
             dangerouslySetInnerHTML={{
               __html: sanitizeHtml(blog?.data?.paragraph_three),
             }}
           />
         </div>
-         {/* <HorizontalBanner />
-          <HorizontalBanner /> */}
+         <HorizontalBanner />
+          <HorizontalBanner />
       </div>
     </div>
   );
