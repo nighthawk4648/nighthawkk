@@ -89,7 +89,7 @@ const Blogs = async ({ params }) => {
               __html: sanitizeHtml(blog?.data?.paragraph_one),
             }}
           />
-           {/* <HorizontalBanner /> */}
+           <HorizontalBanner />
           <div
             dangerouslySetInnerHTML={{
               __html: sanitizeHtml(blog?.data?.paragraph_two),
