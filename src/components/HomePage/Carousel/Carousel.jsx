@@ -1,0 +1,79 @@
+'use client'
+import React, { useRef, useState } from 'react';
+// Import Swiper React components
+import { Swiper, SwiperSlide } from 'swiper/react';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/effect-fade';
+
+import { Autoplay, EffectFade } from 'swiper/modules'
+
+import Image from 'next/image';
+import { getOptimizedImageUrl } from '@/utils/cloudinary';
+
+const Carousel = ({carousels}) => {
+
+    const getOriginalImageUrl = (imagePath) => {
+        return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
+    }; 
+   
+    return (
+        <div>
+
+            <>
+                <Swiper
+                    spaceBetween={30}
+                    centeredSlides={true}
+                    effect="fade"
+                    speed={3000}
+                    autoplay={{
+                        delay: 5000,
+                        disableOnInteraction: false,
+                    }}
+                    modules={[Autoplay, EffectFade]}
+                    className="mySwiper"
+                >
+                    {
+                        carousels?.map((carousel, index) => (
+                            <SwiperSlide key={carousel?.id}>
+                                <div className="relative">
+                                  <Image
+                                        src={getOptimizedImageUrl(getOriginalImageUrl(carousel?.image))}
+                                        height={800}
+                                        width={1300}
+                                        loading={index === 0 ? 'eager' : 'lazy'}
+                                        priority={index === 0}
+                                        className='w-full md:h-[800px] h-[300px]'
+                                        alt={carousel?.name}
+                                    ></Image>
+
+                                </div>
+                                <div className="absolute inset-0 flex items-center justify-center ">
+                                    <div>
+                                        { carousel?.logo && <Image 
+                                            src={getOptimizedImageUrl(getOriginalImageUrl(carousel?.logo))}
+                                            height={500}
+                                            width={500}
+                                            loading={index === 0 ? 'eager' : 'lazy'}
+                                            priority={index === 0}
+                                            className='md:w-48 w-24 mx-auto h-auto'
+                                            alt={carousel?.name}
+                                        ></Image>}
+                                        <h1 className='text-white font-bold md:text-3xl text-xl text-center mt-1'> {carousel.name}</h1>
+                                    </div>
+                                </div>
+
+                            </SwiperSlide>
+
+                        ))
+                    }
+
+                </Swiper>
+            </>
+
+        </div>
+    );
+};
+
+export default Carousel;

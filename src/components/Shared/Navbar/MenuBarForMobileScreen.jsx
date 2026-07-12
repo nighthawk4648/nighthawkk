@@ -1,0 +1,99 @@
+import Link from 'next/link';
+import React, { useState } from 'react';
+import { MdDashboard, MdKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
+import slugify from '@/utils/slugify';
+
+
+const MenuBarForMobileScreen = ({ categories }) => {
+
+    const [isDropdownSectionOpen, setIsDropdownSectionOpen] = useState(null);
+
+    const toggleDropdownSection = (index) => {
+        setIsDropdownSectionOpen(isDropdownSectionOpen === index ? null : index);
+    };
+
+    const [isDropdownSubSectionOpen, setIsDropdownSubSectionOpen] = useState(null);
+
+    const toggleDropdownSubSection = (index) => {
+        setIsDropdownSubSectionOpen(
+            isDropdownSubSectionOpen === index ? null : index
+        );
+    };
+
+
+    return (
+        <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 text-slate-100 p-3 rounded-lg">
+            <div className='flex gap-2 items-center mb-4 px-1'>
+                <MdDashboard className="text-xl text-cyan-300" />
+                <div className="text-sm text-slate-100">
+                    <Link href="/">Home</Link>
+                </div>
+            </div>
+
+            <div className="flex-none ">
+                {categories?.length
+                    ? categories?.map((category, index) => (
+                        <div key={index}>
+                            <div className="flex justify-between items-center w-full py-2 px-3 text-sm hover:text-cyan-300 bg-slate-800/20 rounded-md focus:outline-none">
+                                <button
+                                    onClick={() => toggleDropdownSection(index)}
+                                    className="flex justify-center items-center"
+                                >
+                                    <Link href={`/${slugify(category?.name)}-${category?.id}`} ><span className="select-none">{category?.name}</span></Link>
+
+                                    {isDropdownSectionOpen === index ? (
+                                        <MdKeyboardArrowUp className="text-xl" />
+                                    ) : (
+                                        <MdKeyboardArrowDown className="text-xl" />
+                                    )}
+                                </button>
+
+                            </div>
+
+                                {isDropdownSectionOpen === index && (
+                                <div
+                                    id="options"
+                                    className="w-full py-2 px-3 text-sm bg-slate-800/20 rounded-lg"
+                                >
+                                    {category?.sub_categories?.map((subCategory, index) => (
+                                        <div key={subCategory?.id}>
+                                            <div className="flex justify-between items-center  ml-4">
+                                                <button
+                                                    onClick={() => toggleDropdownSubSection(index)}
+                                                    className="flex items-center py-2 text-slate-200 hover:text-cyan-300 bg-transparent rounded-md focus:outline-none"
+                                                >
+                                                    <Link href={`/${slugify(category?.name)}-${category?.id}/${subCategory?.name}-${subCategory?.id}`} ><p className="">{subCategory?.name}</p></Link>
+                                                    {isDropdownSubSectionOpen === index ? (
+                                                        <MdKeyboardArrowUp className="text-xl" />
+                                                    ) : (
+                                                        <MdKeyboardArrowDown className="text-xl" />
+                                                    )}
+                                                </button>
+
+                                            </div>
+
+                                            {isDropdownSubSectionOpen === index && (
+                                                <div className='px-3'>
+                                                    {subCategory?.assets?.map((asset) => (
+                                                        <ul className="ml-8" key={asset?.id}>
+                                                            <li className="mb-2">
+                                                                <Link href={`/${slugify(category?.name)}/${slugify(subCategory?.name)}/${slugify(asset?.name)}-${asset?.id}`}>{asset.name}</Link>
+
+                                                            </li>
+                                                        </ul>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    ))
+                    : null}
+            </div>
+        </div>
+    );
+};
+
+export default MenuBarForMobileScreen;

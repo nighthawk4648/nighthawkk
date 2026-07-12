@@ -1,0 +1,21 @@
+// export const formatDate = (dateString) => {
+//     const date = new Date(dateString);
+//     return date.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
+//   };
+
+
+import { format } from "date-fns";
+
+export function formatDate(isoString) {
+  if (!isoString) return "N/A";
+  const date = new Date(isoString);
+  if (isNaN(date.getTime())) return "N/A";
+  return format(date, "MMMM d, yyyy");
+}
+
+
+// import { format } from "date-fns";
+
+// export function formatDate(isoString) {
+//   return format(new Date(isoString), "MMMM d, yyyy 'at' h:mm a");
+// }
