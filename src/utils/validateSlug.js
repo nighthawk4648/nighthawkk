@@ -6,8 +6,21 @@ import slugify from '@/utils/slugify';
  * Ensures only the ONE correct URL renders a page — all others get 404.
  */
 
+const isValidRouteParam = (param) => {
+    if (typeof param !== 'string') return false;
+
+    const trimmed = param.trim();
+    if (!trimmed) return false;
+    if (trimmed.includes('/') || trimmed.includes('\\')) return false;
+    if (trimmed.includes('.')) return false;
+
+    return true;
+};
+
 // ─── Category page: /category-slug-{id} ────────────────────────────
 export async function validateCategory(categoryParam) {
+    if (!isValidRouteParam(categoryParam)) return null;
+
     const categoryId = categoryParam?.split("-").slice(-1)?.[0];
     if (!categoryId) return null;
 
@@ -22,6 +35,8 @@ export async function validateCategory(categoryParam) {
 
 // ─── SubCategory page: /category-slug-{id}/subcategory-slug-{id} ───
 export async function validateSubCategory(categoryParam, subCategoryParam) {
+    if (!isValidRouteParam(categoryParam) || !isValidRouteParam(subCategoryParam)) return null;
+
     const categoryData = await validateCategory(categoryParam);
     if (!categoryData) return null;
 
@@ -41,6 +56,8 @@ export async function validateSubCategory(categoryParam, subCategoryParam) {
 // Note: Asset URLs use PURE slugs for category/subcategory (no IDs),
 //       and slug-{id} for the asset name only.
 export async function validateAsset(categoryParam, subCategoryParam, assetParam) {
+    if (!isValidRouteParam(categoryParam) || !isValidRouteParam(subCategoryParam) || !isValidRouteParam(assetParam)) return null;
+
     const assetId = assetParam?.split("-").slice(-1)?.[0];
     if (!assetId) return null;
 
