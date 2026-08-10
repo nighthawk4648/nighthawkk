@@ -2,7 +2,7 @@
 import slugify from '@/utils/slugify';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import all_sub_cat_image from '../../../../public/assets/sub_category/all.png'
 import { getOptimizedImageUrl } from '@/utils/cloudinary';
 import { HorizontalBanner } from '@/components/Shared/GoogleAdsense/HorizontalBanner';
@@ -14,14 +14,52 @@ import { fetcher } from '@/utils/swrFetcher';
 
 const SubCategory = ({ subCategoriesByCategoryId }) => {
     const [searchTerm, setSearchTerm] = useState('');
+    const adRefs = useRef([]);
+
+    // Initialize ads when component mounts
+    useEffect(() => {
+        const initializeAds = () => {
+            try {
+                (window.adsbygoogle = window.adsbygoogle || []).push({});
+            } catch (error) {
+                console.error('AdSense error:', error);
+            }
+        };
+
+        // Initialize ads after a short delay to ensure DOM is ready
+        const timer = setTimeout(initializeAds, 500);
+        return () => clearTimeout(timer);
+    }, []);
 
     // Collect all assets from all subcategories
     const allAssets = subCategoriesByCategoryId?.data?.sub_categories?.flatMap(subCategory => 
         subCategory?.assets || []
     ) || [];
 
+    // Sort all assets by newest first (by id or created_at)
+    const sortedAssets = allAssets.sort((a, b) => {
+        const dateA = new Date(a.created_at || a.id);
+        const dateB = new Date(b.created_at || b.id);
+        return dateB - dateA; // Descending order (newest first)
+    });
+
+    // Generate random ad positions (approximately every 4-5 assets)
+    const adPositions = useMemo(() => {
+        const positions = [];
+        const totalAssets = sortedAssets.length;
+        let position = 4;
+        
+        while (position < totalAssets) {
+            positions.push(position);
+            // Random interval between 4-5 assets
+            position += Math.floor(Math.random() * 2) + 4;
+        }
+        
+        return positions;
+    }, [sortedAssets.length]);
+
     // Filter assets based on search term
-    const filteredAssets = allAssets.filter(asset => 
+    const filteredAssets = sortedAssets.filter(asset => 
         asset && asset.name && typeof asset.name === 'string' && asset.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -179,54 +217,54 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                         </div>
                     )
                 ) : (
-                    /* All Subcategory Assets + Horizontal Banner after every slice */
-                    subCategoriesByCategoryId?.data?.sub_categories?.map((subCategories, index) => {
-                        const sortedAssets = subCategories?.assets
-                            ?.slice()
-                            ?.sort((a, b) => b.id - a.id);
+                    /* All Assets Combined with Square Ads */
+                    <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4 px-4">
+                        {sortedAssets?.map((asset, index) => (
+                            <React.Fragment key={asset?.id}>
+                                <div>
+                                    <div className="lg:w-[300px] md:w-[200px] w-full lg:h-[308px] md:h-[200px] h-auto mx-auto overflow-hidden">
+                                        <Link
+                                            href={`/${slugify(asset?.sub_category?.category?.name)}/${slugify(asset?.sub_category?.name)}/${slugify(asset?.name)}-${asset?.id}`}
+                                        >
+                                            {asset?.cover && (
+                                                <Image
+                                                    src={getOptimizedImageUrl(getOriginalImageUrl(asset?.cover))}
+                                                    height={400}
+                                                    width={400}
+                                                    alt={asset?.name}
+                                                    className="transform transition-transform duration-1000 hover:scale-150"
+                                                    style={{ transformOrigin: 'center' }}
+                                                />
+                                            )}
+                                        </Link>
+                                    </div>
 
-                        return (
-                            <div key={subCategories?.id}>
-                                
-                                {/* Asset Grid */}
-                                <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4 px-4">
-                                    {sortedAssets?.map((asset) => (
-                                        <div key={asset?.id}>
-                                            <div className="lg:w-[300px] md:w-[200px] w-full lg:h-[308px] md:h-[200px] h-auto mx-auto relative overflow-hidden">
-                                                <Link
-                                                    href={`/${slugify(asset?.sub_category?.category?.name)}/${slugify(asset?.sub_category?.name)}/${slugify(asset?.name)}-${asset?.id}`}
-                                                >
-                                                    {asset?.cover && (
-                                                        <Image
-                                                            src={getOptimizedImageUrl(getOriginalImageUrl(asset?.cover))}
-                                                            height={400}
-                                                            width={400}
-                                                            alt={asset?.name}
-                                                            className="transform transition-transform duration-1000 hover:scale-150"
-                                                            style={{ transformOrigin: 'center' }}
-                                                        />
-                                                    )}
-                                                </Link>
-                                            </div>
-
-                                            <p className="text-white text-center font-semibold mt-2">
-                                                <Link
-                                                    href={`/${slugify(asset?.sub_category?.category?.name)}/${slugify(asset?.sub_category?.name)}/${slugify(asset?.name)}-${asset?.id}`}
-                                                >
-                                                    {asset?.name}
-                                                </Link>
-                                            </p>
-                                        </div>
-                                    ))}
+                                    <p className="text-white text-center font-semibold mt-2">
+                                        <Link
+                                            href={`/${slugify(asset?.sub_category?.category?.name)}/${slugify(asset?.sub_category?.name)}/${slugify(asset?.name)}-${asset?.id}`}
+                                        >
+                                            {asset?.name}
+                                        </Link>
+                                    </p>
                                 </div>
 
-                                {/* Horizontal banner after each slice */}
-                                <HorizontalBanner />
-                                
-
-                            </div>
-                        );
-                    })
+                                {/* Insert square ad at random positions */}
+                                {adPositions.includes(index + 1) && (
+                                    <div className="lg:w-[300px] md:w-[200px] w-full lg:h-[308px] md:h-[200px] h-auto mx-auto">
+                                        <div className="text-center text-gray-400 text-xs mb-1">Advertisement</div>
+                                        <ins
+                                            className="adsbygoogle"
+                                            style={{ display: 'block' }}
+                                            data-ad-client="ca-pub-5557791257949251"
+                                            data-ad-slot="5146613914"
+                                            data-ad-format="auto"
+                                            data-full-width-responsive="true"
+                                        ></ins>
+                                    </div>
+                                )}
+                            </React.Fragment>
+                        ))}
+                    </div>
                 )}
                 <p className="text-white text-center mt-2 px-4 py-2 text-sm font-medium">
                     {subCategoriesByCategoryId?.data?.short_description}

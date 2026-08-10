@@ -6,6 +6,8 @@ import Image from "next/image";
 import React from "react";
 import { ErrorFallback } from "@/components/Shared/ErrorFallback/ErrorFallback ";
 import { HorizontalBanner } from "@/components/Shared/GoogleAdsense/HorizontalBanner";
+import Link from "next/link";
+import slugify from "@/utils/slugify";
 
 // Dynamic metadata generation
 export async function generateMetadata({ params }) {
@@ -33,6 +35,15 @@ export async function generateMetadata({ params }) {
 const Blogs = async ({ params }) => {
   const id = params?.blog?.split("-").pop();
   const blog = await getData(`blogs/${id}`);
+  
+  // Fetch all blogs for navigation
+  const allBlogsResponse = await getData(`blogs/pages?page=1&limit=1000&order=desc`);
+  const allBlogs = allBlogsResponse?.data?.result || [];
+  
+  // Find current blog index and determine prev/next
+  const currentIndex = allBlogs.findIndex(b => b.id === parseInt(id));
+  const prevBlog = currentIndex > 0 ? allBlogs[currentIndex - 1] : null;
+  const nextBlog = currentIndex < allBlogs.length - 1 ? allBlogs[currentIndex + 1] : null;
 
   const getOriginalImageUrl = (imagePath) => {
     return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
@@ -120,10 +131,65 @@ const Blogs = async ({ params }) => {
             }}
           />
         </div>
-         <HorizontalBanner />
+         
+
+        {/* Navigation Buttons */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-12 mb-8 max-w-4xl mx-auto">
+          {/* Previous Button */}
+          {prevBlog && (
+            <Link 
+              href={`/blog/${slugify(prevBlog.title)}-${prevBlog.id}`}
+              className="flex items-center gap-3 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors p-4 w-full sm:w-80"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              {prevBlog.image && (
+                <Image
+                  src={getOptimizedImageUrl(getOriginalImageUrl(prevBlog.image))}
+                  alt={prevBlog.title}
+                  width={80}
+                  height={50}
+                  className="rounded object-cover flex-shrink-0"
+                />
+              )}
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs text-gray-400">Previous</span>
+                <span className="text-white text-sm font-medium">{prevBlog.title}</span>
+              </div>
+            </Link>
+          )}
+
+          {/* Next Button */}
+          {nextBlog && (
+            <Link 
+              href={`/blog/${slugify(nextBlog.title)}-${nextBlog.id}`}
+              className="flex items-center gap-3 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors p-4 w-full sm:w-80 sm:ml-auto"
+            >
+              <div className="flex flex-col text-right min-w-0">
+                <span className="text-xs text-gray-400">Next</span>
+                <span className="text-white text-sm font-medium">{nextBlog.title}</span>
+              </div>
+              {nextBlog.image && (
+                <Image
+                  src={getOptimizedImageUrl(getOriginalImageUrl(nextBlog.image))}
+                  alt={nextBlog.title}
+                  width={80}
+                  height={50}
+                  className="rounded object-cover flex-shrink-0"
+                />
+              )}
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+              </svg>
+            </Link>
+          )}
+        </div>
+        <HorizontalBanner />
           <HorizontalBanner />
       </div>
     </div>
+    
   );
 };
 
