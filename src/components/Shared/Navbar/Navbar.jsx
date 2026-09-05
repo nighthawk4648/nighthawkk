@@ -57,7 +57,7 @@ const Navbar = ({ categories, footerPages }) => {
 
                                 {/* <p className="font-semibold cursor-pointer text-slate-100 flex items-center text-xs xl:text-sm px-2 xl:px-3 py-2 bg-slate-800/20 hover:bg-slate-800 rounded-lg"><Link href="/rbzconverter"> zip2rbz </Link></p> */}
 
-                                <p className="font-semibold cursor-pointer text-slate-100 flex items-center text-xs xl:text-sm px-2 xl:px-3 py-2 bg-slate-800/20 hover:bg-slate-800 rounded-lg"><Link href='https://blog.sketchshaper.com/'>Blog</Link></p>
+                                <p className="font-semibold cursor-pointer text-slate-100 flex items-center text-xs xl:text-sm px-2 xl:px-3 py-2 bg-slate-800/20 hover:bg-slate-800 rounded-lg"><Link href='/blog  '>Blog</Link></p>
 
                                 
 
