@@ -5,6 +5,7 @@ import Image from 'next/image';
 import useSWR from 'swr';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
+const DOWNLOAD_COUNT_BASELINE = 24000; // Baseline download count
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
 const ExtensionPage = () => {
@@ -99,7 +100,7 @@ const ExtensionPage = () => {
                     <p className="mt-4 text-sm text-gray-400">
                         Version 1.5.0 • Compatible with SketchUp 2022-2026
                     </p>
-                    <p className="mt-2 font-bold text-gray-200">Downloaded: <span className="text-cyan-400">{downloadData?.data?.count || 0}</span> times</p>
+                    <p className="mt-2 font-bold text-gray-200">Downloaded: <span className="text-cyan-400">{DOWNLOAD_COUNT_BASELINE + (downloadData?.data?.count || 0)}</span> times</p>
                 </div>
             </div>
 
@@ -208,7 +209,7 @@ const ExtensionPage = () => {
                     >
                         {isDownloading ? "Downloading..." : "Download Now - It's Free!"}
                     </button>
-                    <p className="mt-4 font-bold text-white">Downloaded: <span className="text-yellow-400">{downloadData?.data?.count || 0}</span> times</p>
+                    <p className="mt-4 font-bold text-white">Downloaded: <span className="text-yellow-400">{DOWNLOAD_COUNT_BASELINE + (downloadData?.data?.count || 0)}</span> times</p>
                     <div className="mt-8 flex justify-center gap-8 text-sm text-gray-400">
                         <span>✓ Free Forever</span>
                         <span>✓ No Registration Required</span>
