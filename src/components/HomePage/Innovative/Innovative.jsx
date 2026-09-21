@@ -1,7 +1,7 @@
-import { getOptimizedImageUrl } from '@/utils/cloudinary';
-import Image from 'next/image';
-import Link from 'next/link';
-import React from 'react';
+import { getOptimizedImageUrl } from "@/utils/cloudinary";
+import Image from "next/image";
+
+import React from "react";
 
 const Innovative = ({ innovatives }) => {
   const getOriginalImageUrl = (imagePath) => {
@@ -11,14 +11,11 @@ const Innovative = ({ innovatives }) => {
   return (
     <div className="flex flex-col">
       {innovatives?.map((innovative, index) => (
-        <div
-          key={index}
-          className="relative w-full h-[400px] overflow-hidden"
-        >
+        <div key={index} className="relative w-full h-[400px] overflow-hidden">
           {/* Background Image */}
           <Image
             src={getOptimizedImageUrl(getOriginalImageUrl(innovative?.bgImg))}
-            alt={innovative?.title || 'SketchShaper Pro'}
+            alt={innovative?.title || "SketchShaper Pro"}
             fill
             className="object-cover"
             priority
@@ -27,19 +24,15 @@ const Innovative = ({ innovatives }) => {
           {/* Dark Overlay */}
           <div className="absolute inset-0 bg-black/50 z-10" />
 
-           {/* Centered Content */}
+          {/* Centered Content */}
           <div className="absolute inset-0 z-20 flex flex-col justify-center items-center text-center text-white px-6">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
-              SketchShaper Pro
+              {innovative?.title || "SketchShaper"}
             </h2>
             <p className="text-sm md:text-lg max-w-2xl mb-6">
-              SketchShaper Pro provides 1000+ ready-to-use assets and textures to help you design faster and build stunning scenes effortlessly.
+              {innovative?.description ||
+                "Premium quality 3D models and textures for your projects."}
             </p>
-            <Link href="/pro">
-              <button className="bg-[#379960] hover:bg-[#3c634c] disabled:bg-green-600 text-white text-2xl md:text-3xl px-10 py-2 rounded-full font-bold shadow-2xl hover:scale-110 hover:shadow-indigo-500/50 transition-all duration-300">
-                Access
-              </button>
-            </Link>
           </div>
         </div>
       ))}
@@ -56,11 +49,11 @@ export default Innovative;
 // import { FaCreativeCommonsSamplingPlus } from "react-icons/fa6";
 
 // const Innovative = ({ innovatives }) => {
-   
+
 //     const getOriginalImageUrl = (imagePath) => {
 //         return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
-//     }; 
-   
+//     };
+
 //   return (
 //   <div>
 //     {innovatives?.map((innovative, index) => (

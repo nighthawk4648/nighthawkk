@@ -33,9 +33,9 @@ const SupportedBy = ({ supportedby }) => {
     return (
         <div>
             {
-                supportedby?.map((support) => (
+                supportedby?.map((support, idx) => (
                     // <div className="bg-[url('/assets/bgImage/bgGray.jpeg')] bg-cover bg-center w-full text-white p-5">
-                    <div className="bg-gradient-to-bl from-black via-gray-900 to-gray-900 text-white p-5 border-b-2 border-gray-500">
+                    <div key={support?.id ?? idx} className="bg-gradient-to-bl from-black via-gray-900 to-gray-900 text-white p-5 border-b-2 border-gray-500">
                         <h2 className='text-center font-semibold text-2xl '>{support?.title}</h2>
                         <div className="grid grid-cols-5 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-2 px-2 mt-5">
                             <Image

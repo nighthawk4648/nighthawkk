@@ -1,13 +1,19 @@
-import { getOptimizedImageUrl } from "@/utils/cloudinary";
+import { getOptimizedImageUrl, getOriginalImageUrl } from "@/utils/cloudinary";
 import { formatDate } from "@/utils/formateDate";
 import getData from "@/utils/getData";
-import { sanitizeHtml } from "@/utils/sanitizeHtml";
+import { sanitizeHtml, stripHtml } from "@/utils/sanitizeHtml";
 import Image from "next/image";
-import React from "react";
-import { ErrorFallback } from "@/components/Shared/ErrorFallback/ErrorFallback ";
-import { HorizontalBanner } from "@/components/Shared/GoogleAdsense/HorizontalBanner";
 import Link from "next/link";
-import slugify from "@/utils/slugify";
+import React from "react";
+import { ErrorFallback } from "@/components/Shared/ErrorFallback/ErrorFallback";
+import { FiArrowLeft, FiCalendar, FiClock, FiUser } from "react-icons/fi";
+
+function estimateReadingTime(content) {
+  const text = stripHtml(content, 100000);
+  const words = text ? text.trim().split(/\s+/).filter(Boolean).length : 0;
+  const minutes = Math.ceil(words / 200);
+  return `${Math.max(1, minutes)} min read`;
+}
 
 // Dynamic metadata generation
 export async function generateMetadata({ params }) {
@@ -16,181 +22,187 @@ export async function generateMetadata({ params }) {
 
   if (!blog?.data) {
     return {
-      title: "Blog Not Found",
+      title: "Blog Not Found - SketchShaper",
       description: "The requested blog post could not be found.",
     };
   }
 
+  const cleanDescription =
+    stripHtml(
+      blog.data.short_description || blog.data.paragraph_one || "",
+      160,
+    ) ||
+    "Read our latest architectural 3D and visualization insights on SketchShaper.";
+  const coverUrl = blog.data.image
+    ? getOriginalImageUrl(blog.data.image)
+    : undefined;
+
   return {
-    title: blog.data.title,
-    description: blog.data.short_description?.replace(/<[^>]*>/g, '').substring(0, 160) || "Read our blog",
+    title: `${blog.data.title} - SketchShaper Blog`,
+    description: cleanDescription,
     openGraph: {
       title: blog.data.title,
-      description: blog.data.short_description?.replace(/<[^>]*>/g, '').substring(0, 160),
-      images: blog.data.image ? [`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${blog.data.image}`] : [],
+      description: cleanDescription,
+      images: coverUrl ? [coverUrl] : [],
     },
   };
 }
 
-const Blogs = async ({ params }) => {
+const BlogDetailPage = async ({ params }) => {
   const id = params?.blog?.split("-").pop();
   const blog = await getData(`blogs/${id}`);
-  
-  // Fetch all blogs for navigation
-  const allBlogsResponse = await getData(`blogs/pages?page=1&limit=1000&order=desc`);
-  const allBlogs = allBlogsResponse?.data?.result || [];
-  
-  // Find current blog index and determine prev/next
-  const currentIndex = allBlogs.findIndex(b => b.id === parseInt(id));
-  const prevBlog = currentIndex > 0 ? allBlogs[currentIndex - 1] : null;
-  const nextBlog = currentIndex < allBlogs.length - 1 ? allBlogs[currentIndex + 1] : null;
 
-  const getOriginalImageUrl = (imagePath) => {
-    return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
-  };
-
-  if (!blog) {
-    return <ErrorFallback />
+  if (!blog?.data) {
+    return <ErrorFallback />;
   }
 
+  const post = blog.data;
+
+  // Filter out empty sections, literal "undefined" strings, and blank markup
+  const rawSections = [
+    { key: "short_description", html: post.short_description },
+    { key: "paragraph_one", html: post.paragraph_one },
+    { key: "paragraph_two", html: post.paragraph_two },
+    { key: "paragraph_three", html: post.paragraph_three },
+    { key: "content", html: post.content || post.body },
+  ];
+
+  const contentSections = rawSections.filter((section) => {
+    if (!section.html) return false;
+    const str = String(section.html).trim();
+    if (!str || str === "undefined" || str === "<p>undefined</p>") return false;
+    const textOnly = str.replace(/<[^>]*>/g, "").trim();
+    return textOnly.length > 0 && textOnly !== "undefined";
+  });
+
+  // Calculate estimated reading time
+  const fullText = contentSections.map((s) => s.html).join(" ");
+  const readingTime = estimateReadingTime(fullText);
+
   return (
-    <div className="bg-primary px-4 py-8 md:px-12 md:py-16">
-      {/* Main content */}
-      <div className="max-w-5xl mx-auto">
-        {/* Heading */}
-        <h2 className="text-2xl md:text-3xl font-bold mb-4 text-white">
-          Blogs
-        </h2>
+    <article className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black text-white px-4 py-8 sm:px-6 md:px-12 md:py-14">
+      <div className="max-w-4xl mx-auto">
+        {/* Top Breadcrumb / Back Link */}
+        <nav className="mb-8">
+          <Link
+            href="/blog"
+            className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors duration-200 group"
+          >
+            <FiArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" />
+            <span>Back to all articles</span>
+          </Link>
+        </nav>
 
-        {/* Title and Date */}
-        <div className="text-center">
-          <h1 className="text-white text-2xl md:text-3xl font-bold mt-8">
-            {blog?.data?.title}
+        {/* Article Header */}
+        <header className="mb-8">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight mb-6">
+            {post.title}
           </h1>
-          <p className="text-gray-500 mt-4 mb-10 text-sm md:text-base">
-            {formatDate(blog?.data?.created_at)}
-          </p>
-        </div>
 
-        {/* Cover Image */}
-        <div className="mb-8">
-          <Image
-            src={getOptimizedImageUrl(getOriginalImageUrl(blog?.data?.image))}
-            alt={blog?.data?.title || "Blog cover image"}
-            width={1000}
-            height={500}
-            className="w-full max-w-4xl mx-auto rounded-md"
-          />
-        </div>
-       <HorizontalBanner />
+          {/* Metadata Row: Author, Date, Reading Time */}
+          <div className="flex flex-wrap items-center gap-y-3 gap-x-6 pb-6 border-b border-zinc-800/80 text-sm text-zinc-400">
+            {/* Author */}
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                <FiUser className="w-4 h-4" />
+              </div>
+              <span className="font-medium text-zinc-200">
+                {post.name || "SketchShaper"}
+              </span>
+            </div>
 
-        {/* Blog Description */}
-        <div className="blog-content text-white max-w-4xl mx-auto text-justify text-sm md:text-base px-2 md:px-0 mb-8">
-          <div
-            dangerouslySetInnerHTML={{
-              __html: sanitizeHtml(blog?.data?.short_description),
-            }}
-          />
-        </div>
+            {/* Publication Date */}
+            {post.created_at && (
+              <div className="flex items-center gap-1.5">
+                <FiCalendar className="w-4 h-4 text-zinc-500" />
+                <time dateTime={post.created_at}>
+                  {formatDate(post.created_at)}
+                </time>
+              </div>
+            )}
 
-        {/* Blog Paragraphs Part Before Image */}
-        <div className="blog-content text-white max-w-4xl mx-auto space-y-6 text-justify text-sm md:text-base px-2 md:px-0">
-          <div
-            dangerouslySetInnerHTML={{
-              __html: sanitizeHtml(blog?.data?.paragraph_one),
-            }}
-          />
-           <HorizontalBanner />
-          <div
-            dangerouslySetInnerHTML={{
-              __html: sanitizeHtml(blog?.data?.paragraph_two),
-            }}
-          />
-        </div>
-        <HorizontalBanner />
-        
-        {/* Middle Blog Image */}
-        {blog?.data?.bgImage && (
-          <div className="mb-8 mt-8">
-            <Image
-              src={getOptimizedImageUrl(getOriginalImageUrl(blog?.data?.bgImage))}
-              alt={blog?.data?.title || "Blog image"}
-              width={600}
-              height={300}
-              className="w-full max-w-4xl mx-auto rounded-md"
-            />
+            {/* Reading Time */}
+            <div className="flex items-center gap-1.5">
+              <FiClock className="w-4 h-4 text-zinc-500" />
+              <span>{readingTime}</span>
+            </div>
+          </div>
+        </header>
+
+        {/* Cover Hero Image */}
+        {post.image && (
+          <div className="mb-10 rounded-2xl overflow-hidden border border-zinc-800/90 shadow-2xl bg-zinc-900/60">
+            <div className="relative aspect-[16/9] w-full">
+              <Image
+                src={getOptimizedImageUrl(getOriginalImageUrl(post.image))}
+                alt={post.title || "Blog cover image"}
+                fill
+                priority
+                className="object-cover"
+                sizes="(max-width: 896px) 100vw, 896px"
+              />
+            </div>
           </div>
         )}
-         <HorizontalBanner />
 
-        {/* Blog Paragraph Part After Image */}
-        <div className="blog-content text-white max-w-4xl mx-auto space-y-6 text-justify text-sm md:text-base px-2 md:px-0">
-          <div
-            dangerouslySetInnerHTML={{
-              __html: sanitizeHtml(blog?.data?.paragraph_three),
-            }}
-          />
-        </div>
-         
-
-        {/* Navigation Buttons */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-12 mb-8 max-w-4xl mx-auto">
-          {/* Previous Button */}
-          {prevBlog && (
-            <Link 
-              href={`/blog/${slugify(prevBlog.title)}-${prevBlog.id}`}
-              className="flex items-center gap-3 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors p-4 w-full sm:w-80"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-              {prevBlog.image && (
-                <Image
-                  src={getOptimizedImageUrl(getOriginalImageUrl(prevBlog.image))}
-                  alt={prevBlog.title}
-                  width={80}
-                  height={50}
-                  className="rounded object-cover flex-shrink-0"
+        {/* Content Body */}
+        <div className="max-w-3xl mx-auto">
+          {contentSections.length > 0 ? (
+            contentSections.map((section) => (
+              <div
+                key={section.key}
+                className="blog-content mb-8 text-zinc-300 text-base md:text-lg leading-relaxed"
+              >
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: sanitizeHtml(section.html),
+                  }}
                 />
-              )}
-              <div className="flex flex-col min-w-0">
-                <span className="text-xs text-gray-400">Previous</span>
-                <span className="text-white text-sm font-medium">{prevBlog.title}</span>
               </div>
-            </Link>
+            ))
+          ) : (
+            <p className="text-zinc-500 italic py-8 text-center">
+              No content available for this post.
+            </p>
           )}
 
-          {/* Next Button */}
-          {nextBlog && (
-            <Link 
-              href={`/blog/${slugify(nextBlog.title)}-${nextBlog.id}`}
-              className="flex items-center gap-3 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors p-4 w-full sm:w-80 sm:ml-auto"
-            >
-              <div className="flex flex-col text-right min-w-0">
-                <span className="text-xs text-gray-400">Next</span>
-                <span className="text-white text-sm font-medium">{nextBlog.title}</span>
-              </div>
-              {nextBlog.image && (
+          {/* Secondary / In-Article Image */}
+          {post.bgImage && (
+            <figure className="my-10 rounded-xl overflow-hidden border border-zinc-800/80 bg-zinc-900/40">
+              <div className="relative aspect-[16/9] w-full">
                 <Image
-                  src={getOptimizedImageUrl(getOriginalImageUrl(nextBlog.image))}
-                  alt={nextBlog.title}
-                  width={80}
-                  height={50}
-                  className="rounded object-cover flex-shrink-0"
+                  src={getOptimizedImageUrl(getOriginalImageUrl(post.bgImage))}
+                  alt={post.title || "Blog featured visual"}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 768px"
                 />
-              )}
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-              </svg>
-            </Link>
+              </div>
+            </figure>
           )}
+
+          {/* Bottom Footer CTA */}
+          <footer className="mt-14 pt-8 border-t border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <h4 className="text-white font-semibold text-base">
+                Enjoyed this article?
+              </h4>
+              <p className="text-zinc-400 text-sm">
+                Discover more guides, 3D models, and rendering tips.
+              </p>
+            </div>
+            <Link
+              href="/blog"
+              className="px-5 py-2.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-medium transition-colors duration-200 border border-zinc-700 flex items-center gap-2 flex-shrink-0"
+            >
+              <FiArrowLeft className="w-4 h-4" />
+              <span>Explore all blogs</span>
+            </Link>
+          </footer>
         </div>
-        <HorizontalBanner />
-          <HorizontalBanner />
       </div>
-    </div>
-    
+    </article>
   );
 };
 
-export default Blogs;
+export default BlogDetailPage;
