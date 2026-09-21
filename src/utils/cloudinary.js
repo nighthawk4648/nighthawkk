@@ -1,19 +1,39 @@
 import { Cloudinary } from "@cloudinary/url-gen";
 
+const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+const hasValidCloudName = Boolean(cloudName && !cloudName.includes("your_cloudinary"));
+
 export const cld = new Cloudinary({
   cloud: {
-    cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+    cloudName: cloudName || "demo"
   },
   url: {
     secure: true
   }
 });
 
-// Function to generate optimized image URLs using Cloudinary's fetch feature
+export function getOriginalImageUrl(imagePath) {
+  if (!imagePath) return "";
+
+  if (/^https?:\/\//i.test(imagePath)) {
+    return imagePath;
+  }
+
+  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE || "";
+  return `${baseUrl}${imagePath}`.replace(/([^:]\/)\/{2,}/g, "$1");
+}
+
 export function getOptimizedImageUrl(originalUrl) {
-  // Make sure the URL is properly encoded
-  const encodedUrl = encodeURIComponent(originalUrl);
-  
-  // Create fetch URL with optimizations
-  return `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/fetch/f_auto,q_auto,w_auto,dpr_auto,c_limit/${encodedUrl}`;
+  if (!originalUrl) return "";
+
+  const normalizedUrl = /^https?:\/\//i.test(originalUrl)
+    ? originalUrl
+    : getOriginalImageUrl(originalUrl);
+
+  if (!hasValidCloudName) {
+    return normalizedUrl;
+  }
+
+  const encodedUrl = encodeURIComponent(normalizedUrl);
+  return `https://res.cloudinary.com/${cloudName}/image/fetch/f_auto,q_auto,w_auto,dpr_auto,c_limit/${encodedUrl}`;
 }

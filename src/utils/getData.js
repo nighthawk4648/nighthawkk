@@ -1,9 +1,17 @@
-const getData = async (path) => {
+const getData = async (path, options = {}) => {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/${path}`, {
-      next: { revalidate: 10 },
-      signal: AbortSignal.timeout(10000)
-    });
+    const fetchOptions = {
+      signal: AbortSignal.timeout(10000),
+      ...options,
+    };
+    if (!options.cache && !options.next) {
+      fetchOptions.next = { revalidate: 10 };
+    }
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/${path}`,
+      fetchOptions,
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

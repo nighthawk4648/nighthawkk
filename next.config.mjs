@@ -4,11 +4,10 @@ const nextConfig = {
   swcMinify: true,
 
   // Optimize fonts to reduce CLS
-  optimizeFonts: true,
+  optimizeFonts: false,
 
   images: {
-    unoptimized: true,
-    domains: ['res.cloudinary.com', 'api.sketchshaper.com', 'ik.imagekit.io'],
+    unoptimized: false,
     remotePatterns: [
       {
         protocol: "https",
@@ -23,15 +22,24 @@ const nextConfig = {
         hostname: "ik.imagekit.io",
       },
       {
-        protocol: "https",
-        hostname: "**",
+        protocol: "http",
+        hostname: "localhost",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "5000",
+      },
+      {
+        protocol: "http",
+        hostname: "127.0.0.1",
+      },
+      {
+        protocol: "http",
+        hostname: "127.0.0.1",
+        port: "5000",
       },
     ],
-  },
-
-  // Reduce layout shift
-  experimental: {
-    optimizeCss: true, // Enable CSS optimization
   },
 
   // Add trailing slashes for consistent URLs
@@ -44,23 +52,23 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: '/api.php',
-        destination: '/404',
+        source: "/api.php",
+        destination: "/404",
         permanent: true,
       },
       {
-        source: '/sketchup-3d-model-3',
-        destination: '/sketchup-3d-models-3',
+        source: "/sketchup-3d-model-3",
+        destination: "/sketchup-3d-models-3",
         permanent: true,
       },
       {
-        source: '/sketchup-3d-model-3/:path*',
-        destination: '/sketchup-3d-models-3/:path*',
+        source: "/sketchup-3d-model-3/:path*",
+        destination: "/sketchup-3d-models-3/:path*",
         permanent: true,
       },
-       {
-        source: '/sketchshaperpro',
-        destination: '/extension',
+      {
+        source: "/sketchshaperpro",
+        destination: "/extension",
         permanent: true,
       },
     ];
@@ -69,27 +77,27 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/:path*',
+        source: "/:path*",
         headers: [
           {
-            key: 'X-Robots-Tag',
-            value: 'index, follow',
+            key: "X-Robots-Tag",
+            value: "index, follow",
           },
         ],
       },
       {
         // Block indexing of URLs with _rsc parameter
-        source: '/:path*',
+        source: "/:path*",
         has: [
           {
-            type: 'query',
-            key: '_rsc',
+            type: "query",
+            key: "_rsc",
           },
         ],
         headers: [
           {
-            key: 'X-Robots-Tag',
-            value: 'noindex, nofollow',
+            key: "X-Robots-Tag",
+            value: "noindex, nofollow",
           },
         ],
       },
@@ -98,7 +106,3 @@ const nextConfig = {
 };
 
 export default nextConfig;
-
-
-
-

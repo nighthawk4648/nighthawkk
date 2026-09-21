@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { getOptimizedImageUrl } from '@/utils/cloudinary';
 import { formatDate } from '@/utils/formateDate';
+import { stripHtml } from '@/utils/sanitizeHtml';
 import slugify from '@/utils/slugify';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
@@ -115,7 +116,7 @@ const BlogsPage = () => {
                                 {/* Description */}
                                 {blog?.short_description && (
                                     <p className="text-xs text-gray-300 mb-4 line-clamp-3">
-                                        {blog.short_description}
+                                        {stripHtml(blog.short_description, 140)}
                                     </p>
                                 )}
 

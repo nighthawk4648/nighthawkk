@@ -1,4 +1,4 @@
-import { ErrorFallback } from '@/components/Shared/ErrorFallback/ErrorFallback ';
+import { ErrorFallback } from '@/components/Shared/ErrorFallback/ErrorFallback';
 import getData from '@/utils/getData';
 import React from 'react';
 
