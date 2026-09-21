@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { usePatreonAuth } from "@/contexts/PatreonAuthContext";
 
@@ -11,14 +11,28 @@ function PatreonCallbackContent() {
   const [error, setError] = useState(null);
   const [errorDetails, setErrorDetails] = useState(null);
   const [countdown, setCountdown] = useState(0);
+  const handledRef = useRef(false);
+
+  const getReturnUrl = () => {
+    const fromParam = searchParams.get("returnUrl");
+    if (fromParam) return fromParam;
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("patreon_return_url");
+      if (stored) return stored;
+    }
+    return "/";
+  };
 
   useEffect(() => {
+    if (handledRef.current) return;
+
     const token = searchParams.get("token");
     const success = searchParams.get("success");
     const errorParam = searchParams.get("error");
     const message = searchParams.get("message");
 
     if (errorParam) {
+      handledRef.current = true;
       let errorMessage = "Authentication failed. Please try again.";
       let details = null;
       let redirectDelay = 8000; // Default 8 seconds
@@ -56,11 +70,10 @@ function PatreonCallbackContent() {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(countdownInterval);
-            const returnUrl =
-              searchParams.get("returnUrl") ||
-              (typeof window !== "undefined"
-                ? localStorage.getItem("patreon_return_url") || "/"
-                : "/");
+            const returnUrl = getReturnUrl();
+            if (typeof window !== "undefined") {
+              localStorage.removeItem("patreon_return_url");
+            }
             router.push(returnUrl);
             return 0;
           }
@@ -72,23 +85,19 @@ function PatreonCallbackContent() {
     }
 
     if (token && success === "true") {
+      handledRef.current = true;
       handleCallback(token);
 
-      // Redirect back to the originating page (or home as default)
-      const returnUrl =
-        searchParams.get("returnUrl") ||
-        (typeof window !== "undefined"
-          ? localStorage.getItem("patreon_return_url") || "/"
-          : "/");
-
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("patreon_return_url");
-      }
+      const returnUrl = getReturnUrl();
 
       setTimeout(() => {
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("patreon_return_url");
+        }
         router.push(returnUrl);
       }, 1200);
     } else {
+      handledRef.current = true;
       setError("Authentication Error");
       setErrorDetails(
         "Something went wrong during authentication. This could mean:\n\n• You are not an active patron\n• Your Patreon subscription expired\n• There was a connection issue\n\nPlease try logging in again or subscribe on Patreon first.",
@@ -100,27 +109,27 @@ function PatreonCallbackContent() {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(countdownInterval);
-            const returnUrl =
-              searchParams.get("returnUrl") ||
-              (typeof window !== "undefined"
-                ? localStorage.getItem("patreon_return_url") || "/"
-                : "/");
+            const returnUrl = getReturnUrl();
+            if (typeof window !== "undefined") {
+              localStorage.removeItem("patreon_return_url");
+            }
             router.push(returnUrl);
             return 0;
           }
           return prev - 1;
         });
       }, 1000);
+
+      return () => clearInterval(countdownInterval);
     }
   }, [searchParams, handleCallback, router]);
 
   if (error) {
     const handleGoBack = () => {
-      const returnUrl =
-        searchParams.get("returnUrl") ||
-        (typeof window !== "undefined"
-          ? localStorage.getItem("patreon_return_url") || "/"
-          : "/");
+      const returnUrl = getReturnUrl();
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("patreon_return_url");
+      }
       router.push(returnUrl);
     };
 

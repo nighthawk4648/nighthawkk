@@ -71,6 +71,16 @@ const nextConfig = {
         destination: "/extension",
         permanent: true,
       },
+      {
+        source: "/blogs",
+        destination: "/blog",
+        permanent: true,
+      },
+      {
+        source: "/blogs/:path*",
+        destination: "/blog/:path*",
+        permanent: true,
+      },
     ];
   },
 

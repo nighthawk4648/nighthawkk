@@ -5,7 +5,7 @@ import { sanitizeHtml, stripHtml } from "@/utils/sanitizeHtml";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import { ErrorFallback } from "@/components/Shared/ErrorFallback/ErrorFallback";
+import { notFound } from "next/navigation";
 import { FiArrowLeft, FiCalendar, FiClock, FiUser } from "react-icons/fi";
 
 function estimateReadingTime(content) {
@@ -18,6 +18,12 @@ function estimateReadingTime(content) {
 // Dynamic metadata generation
 export async function generateMetadata({ params }) {
   const id = params?.blog?.split("-").pop();
+  if (!id || isNaN(Number(id))) {
+    return {
+      title: "Blog Not Found - SketchShaper",
+      description: "The requested blog post could not be found.",
+    };
+  }
   const blog = await getData(`blogs/${id}`);
 
   if (!blog?.data) {
@@ -50,10 +56,14 @@ export async function generateMetadata({ params }) {
 
 const BlogDetailPage = async ({ params }) => {
   const id = params?.blog?.split("-").pop();
+  if (!id || isNaN(Number(id))) {
+    notFound();
+  }
+
   const blog = await getData(`blogs/${id}`);
 
   if (!blog?.data) {
-    return <ErrorFallback />;
+    notFound();
   }
 
   const post = blog.data;

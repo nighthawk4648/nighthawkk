@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 
 const PatreonAuthContext = createContext();
 
@@ -12,6 +18,38 @@ export function PatreonAuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [isClient, setIsClient] = useState(false);
 
+  const logout = useCallback(() => {
+    localStorage.removeItem("patreon_token");
+    setToken(null);
+    setUser(null);
+  }, []);
+
+  const fetchUserData = useCallback(
+    async (authToken) => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/patreon/me`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.data);
+        } else {
+          // Token invalid, clear it
+          logout();
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        logout();
+      } finally {
+        setLoading(false);
+      }
+    },
+    [logout],
+  );
+
   useEffect(() => {
     setIsClient(true);
     // Check if user is already logged in (only on client side)
@@ -22,40 +60,25 @@ export function PatreonAuthProvider({ children }) {
     } else {
       setLoading(false);
     }
-  }, []);
-
-  const fetchUserData = async (authToken) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/patreon/me`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data.data);
-      } else {
-        // Token invalid, clear it
-        logout();
-      }
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      logout();
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [fetchUserData]);
 
   const login = async (returnUrl) => {
     try {
+      let target = returnUrl;
       if (typeof window !== "undefined") {
-        const target = returnUrl || window.location.pathname;
+        target = returnUrl || window.location.pathname + window.location.search;
         localStorage.setItem("patreon_return_url", target);
       }
 
-      // Fetch the OAuth URL from backend
-      const response = await fetch(`${API_BASE_URL}/patreon/auth?intent=login`);
+      // Fetch the OAuth URL from backend with returnUrl
+      const queryParams = new URLSearchParams({ intent: "login" });
+      if (target) {
+        queryParams.set("returnUrl", target);
+      }
+
+      const response = await fetch(
+        `${API_BASE_URL}/patreon/auth?${queryParams.toString()}`,
+      );
       const data = await response.json();
 
       if (data.data?.authUrl) {
@@ -71,17 +94,14 @@ export function PatreonAuthProvider({ children }) {
     }
   };
 
-  const handleCallback = (jwtToken) => {
-    localStorage.setItem("patreon_token", jwtToken);
-    setToken(jwtToken);
-    fetchUserData(jwtToken);
-  };
-
-  const logout = () => {
-    localStorage.removeItem("patreon_token");
-    setToken(null);
-    setUser(null);
-  };
+  const handleCallback = useCallback(
+    (jwtToken) => {
+      localStorage.setItem("patreon_token", jwtToken);
+      setToken(jwtToken);
+      fetchUserData(jwtToken);
+    },
+    [fetchUserData],
+  );
 
   const checkDownloadEligibility = async (assetId) => {
     if (!token) return false;

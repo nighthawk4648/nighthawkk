@@ -38,14 +38,15 @@ export async function generateMetadata() {
   try {
     const applicationSettings = await getCachedApplicationSettings();
     return {
-      title: applicationSettings?.data?.site_name || "Nighthawk",
+      title: applicationSettings?.data?.site_name || "SketchShaper",
       description:
-        applicationSettings?.data?.site_description || "Project Dashboard",
+        applicationSettings?.data?.site_description ||
+        "Free & Pro 3D Models, Textures, and Plugins for SketchUp",
     };
   } catch (e) {
     return {
-      title: "Nighthawk",
-      description: "Project Dashboard",
+      title: "SketchShaper",
+      description: "Free & Pro 3D Models, Textures, and Plugins for SketchUp",
     };
   }
 }
