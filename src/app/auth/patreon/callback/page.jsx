@@ -57,9 +57,10 @@ function PatreonCallbackContent() {
           if (prev <= 1) {
             clearInterval(countdownInterval);
             const returnUrl =
-              typeof window !== "undefined"
+              searchParams.get("returnUrl") ||
+              (typeof window !== "undefined"
                 ? localStorage.getItem("patreon_return_url") || "/"
-                : "/";
+                : "/");
             router.push(returnUrl);
             return 0;
           }
@@ -75,9 +76,10 @@ function PatreonCallbackContent() {
 
       // Redirect back to the originating page (or home as default)
       const returnUrl =
-        typeof window !== "undefined"
+        searchParams.get("returnUrl") ||
+        (typeof window !== "undefined"
           ? localStorage.getItem("patreon_return_url") || "/"
-          : "/";
+          : "/");
 
       if (typeof window !== "undefined") {
         localStorage.removeItem("patreon_return_url");
@@ -99,9 +101,10 @@ function PatreonCallbackContent() {
           if (prev <= 1) {
             clearInterval(countdownInterval);
             const returnUrl =
-              typeof window !== "undefined"
+              searchParams.get("returnUrl") ||
+              (typeof window !== "undefined"
                 ? localStorage.getItem("patreon_return_url") || "/"
-                : "/";
+                : "/");
             router.push(returnUrl);
             return 0;
           }
@@ -114,9 +117,10 @@ function PatreonCallbackContent() {
   if (error) {
     const handleGoBack = () => {
       const returnUrl =
-        typeof window !== "undefined"
+        searchParams.get("returnUrl") ||
+        (typeof window !== "undefined"
           ? localStorage.getItem("patreon_return_url") || "/"
-          : "/";
+          : "/");
       router.push(returnUrl);
     };
 

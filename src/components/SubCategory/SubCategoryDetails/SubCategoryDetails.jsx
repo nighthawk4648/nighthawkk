@@ -29,14 +29,23 @@ const SubCategoryDetails = ({ assetDetails }) => {
   }, []);
 
   const isPatron = mounted && !!token && !!user?.is_active_patron;
+  const isFreeUser = mounted && !!token && !user?.is_active_patron;
 
   const handleDownload = () => {
     if (!assetDetails?.id) return;
 
-    // If it is a paid asset and user is not an active patron, start login flow
-    if (assetDetails?.access_type === "paid" && !isPatron) {
-      login();
-      return;
+    // If it is a paid asset
+    if (assetDetails?.access_type === "paid") {
+      // If user is logged in to Patreon but does not have an active paid subscription
+      if (isFreeUser) {
+        window.open("https://www.patreon.com/sketchshaper", "_blank");
+        return;
+      }
+      // If user is not logged in at all, start login flow
+      if (!isPatron) {
+        login();
+        return;
+      }
     }
 
     const tokenQuery =
@@ -236,22 +245,36 @@ const SubCategoryDetails = ({ assetDetails }) => {
 
           {/* Center: Download Button */}
           {assetDetails?.id && (
-            <div className="w-56">
+            <div className="w-60 flex flex-col items-center">
               <button
                 type="button"
                 onClick={handleDownload}
                 className={`w-full group relative overflow-hidden font-semibold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 active:scale-95 text-white ${
                   assetDetails?.access_type === "paid"
-                    ? "bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 shadow-purple-500/30"
+                    ? isFreeUser
+                      ? "bg-gradient-to-r from-[#FF424D] to-[#E63A42] hover:from-[#E63A42] hover:to-[#cc333b] shadow-red-500/30"
+                      : "bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 shadow-purple-500/30"
                     : "bg-[#379960] hover:bg-[#3c634c] shadow-emerald-500/20"
                 }`}
               >
                 {assetDetails?.access_type === "paid"
                   ? isPatron
                     ? "PRO DOWNLOAD"
-                    : "UNLOCK WITH PATREON"
+                    : isFreeUser
+                      ? "SUBSCRIBE ON PATREON"
+                      : "UNLOCK WITH PATREON"
                   : "DOWNLOAD"}
               </button>
+              {assetDetails?.access_type === "paid" && isFreeUser && (
+                <a
+                  href="https://www.patreon.com/sketchshaper"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] text-amber-300 hover:text-amber-200 underline mt-2 text-center transition block"
+                >
+                  Active Patreon tier required to unlock
+                </a>
+              )}
             </div>
           )}
           {/* Right spacer for centering balance */}
