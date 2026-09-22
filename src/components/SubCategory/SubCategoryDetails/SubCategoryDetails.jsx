@@ -230,10 +230,19 @@ const SubCategoryDetails = ({ assetDetails }) => {
               <span className="font-semibold">Resolution - </span>
               <span className="text-xs">{assetDetails?.resolution}</span>
             </p>
-            <p className="text-sm max-w-md">
+            <div className="text-sm max-w-md">
               <span className="font-semibold">Short Description - </span>
-              <span className="text-xs">{assetDetails?.short_description}</span>
-            </p>
+              {assetDetails?.short_description ? (
+                <div
+                  className="text-xs inline-block text-slate-300 [&_p]:inline [&_ul]:list-disc [&_ul]:ml-4 [&_ol]:list-decimal [&_ol]:ml-4 [&_a]:text-blue-400 [&_a]:underline"
+                  dangerouslySetInnerHTML={{
+                    __html: assetDetails.short_description,
+                  }}
+                />
+              ) : (
+                <span className="text-xs text-slate-400">—</span>
+              )}
+            </div>
           </div>
 
           {/* Center: Action / Download Button */}
