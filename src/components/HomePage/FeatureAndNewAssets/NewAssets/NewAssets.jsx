@@ -102,7 +102,9 @@ const NewAssets = ({ categories }) => {
                     )}
                     height={800}
                     width={800}
-                    alt={asset?.name || "Asset image"}
+                    alt={
+                      asset?.cover_alt?.trim() || asset?.name || "Asset image"
+                    }
                     className="w-[180px] h-[180px] md:w-[200px] md:h-[200px] object-cover rounded-md transform transition-transform duration-700 ease-out group-hover:scale-125"
                   />
                 )}

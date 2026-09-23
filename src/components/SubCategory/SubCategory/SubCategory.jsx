@@ -157,7 +157,11 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                           )}
                           height={400}
                           width={400}
-                          alt={asset?.name}
+                          alt={
+                            asset?.cover_alt?.trim() ||
+                            asset?.name ||
+                            "Asset image"
+                          }
                           className="transform transition-transform duration-1000 group-hover:scale-125"
                           style={{ transformOrigin: "center" }}
                         />
@@ -215,7 +219,11 @@ const SubCategory = ({ subCategoriesByCategoryId }) => {
                                 )}
                                 height={400}
                                 width={400}
-                                alt={asset?.name}
+                                alt={
+                                  asset?.cover_alt?.trim() ||
+                                  asset?.name ||
+                                  "Asset image"
+                                }
                                 className="transform transition-transform duration-1000 group-hover:scale-125"
                                 style={{ transformOrigin: "center" }}
                               />

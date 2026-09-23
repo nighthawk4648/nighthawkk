@@ -147,7 +147,9 @@ const SubCategoryDetails = ({ assetDetails }) => {
                     src={getOptimizedImageUrl(
                       getOriginalImageUrl(image?.image),
                     )}
-                    alt={assetDetails?.name || "Asset Image"}
+                    alt={
+                      image?.alt?.trim() || assetDetails?.name || "Asset Image"
+                    }
                     height={1600}
                     width={1600}
                     className="w-full h-[200px] sm:h-[300px] md:h-[400px] lg:h-[500px] xl:h-[578px] object-cover rounded-md"
@@ -194,7 +196,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
               <SwiperSlide key={image?.id}>
                 <Image
                   src={getOptimizedImageUrl(getOriginalImageUrl(image?.image))}
-                  alt={assetDetails?.name || "Thumbnail"}
+                  alt={image?.alt?.trim() || assetDetails?.name || "Thumbnail"}
                   height={150}
                   width={150}
                   className="md:w-28 w-20 mx-auto h-auto rounded-md"
@@ -344,7 +346,11 @@ const SubCategoryDetails = ({ assetDetails }) => {
                           )}
                           height={300}
                           width={300}
-                          alt={asset?.name}
+                          alt={
+                            asset?.cover_alt?.trim() ||
+                            asset?.name ||
+                            "Asset image"
+                          }
                           className="w-full h-full object-cover transform transition-all duration-300 group-hover:scale-105 group-hover:brightness-110"
                         />
                       )}

@@ -145,7 +145,9 @@ const BlogDetailPage = async ({ params }) => {
             <div className="relative aspect-[16/9] w-full">
               <Image
                 src={getOptimizedImageUrl(getOriginalImageUrl(post.image))}
-                alt={post.title || "Blog cover image"}
+                alt={
+                  post?.image_alt?.trim() || post?.title || "Blog cover image"
+                }
                 fill
                 priority
                 className="object-cover"
@@ -182,7 +184,11 @@ const BlogDetailPage = async ({ params }) => {
               <div className="relative aspect-[16/9] w-full">
                 <Image
                   src={getOptimizedImageUrl(getOriginalImageUrl(post.bgImage))}
-                  alt={post.title || "Blog featured visual"}
+                  alt={
+                    post?.bg_image_alt?.trim() ||
+                    post?.title ||
+                    "Blog featured visual"
+                  }
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 768px"
