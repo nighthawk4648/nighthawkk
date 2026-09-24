@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import useSWR from "swr";
 
@@ -10,41 +10,80 @@ const fetcher = (url) => fetch(url).then((res) => res.json());
 
 const ExtensionPage = () => {
   const [isDownloading, setIsDownloading] = useState(false);
+  const feedbackTimeoutRef = useRef(null);
   const { data: downloadData, mutate: mutateDownloadData } = useSWR(
     `${API_BASE_URL}/extension-downloads/MyExtension`,
     fetcher,
     { revalidateOnFocus: false },
   );
 
-  const handleDownload = async () => {
-    setIsDownloading(true);
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/extension-downloads/increment`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ extensionName: "MyExtension" }),
+  useEffect(() => {
+    return () => {
+      if (feedbackTimeoutRef.current) {
+        clearTimeout(feedbackTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleDownload = () => {
+    // 1. Immediately increment the counter on screen (optimistic UI update)
+    mutateDownloadData(
+      (current) => ({
+        ...current,
+        data: {
+          ...(current?.data || {}),
+          count: (current?.data?.count || 0) + 1,
         },
-      );
+      }),
+      false,
+    );
 
-      if (!response.ok) throw new Error("Failed to increment download count");
+    // 2. Dispatch increment request to backend (keepalive: true)
+    fetch(`${API_BASE_URL}/extension-downloads/increment`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ extensionName: "MyExtension" }),
+      keepalive: true,
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((resData) => {
+        if (resData?.data?.count != null) {
+          // Reconcile monotonically with server count without firing redundant GET requests
+          // and without overwriting newer in-flight optimistic increments
+          mutateDownloadData(
+            (current) => ({
+              ...current,
+              data: {
+                ...(current?.data || {}),
+                count: Math.max(current?.data?.count || 0, resData.data.count),
+              },
+            }),
+            false,
+          );
+        }
+      })
+      .catch((error) => {
+        console.error("Error incrementing click count:", error);
+      });
 
-      await mutateDownloadData();
+    // 3. Trigger browser file download immediately
+    const link = document.createElement("a");
+    link.href = "/assets/rbz/Sketchshaper (version 1.5.0).rbz";
+    link.download = "Sketchshaper (version 1.5.0).rbz";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 
-      const link = document.createElement("a");
-      link.href = "/assets/rbz/Sketchshaper (version 1.5.0).rbz";
-      link.download = "Sketchshaper (version 1.5.0).rbz";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      console.error("Error incrementing download count:", error);
-    } finally {
-      setIsDownloading(false);
+    // 4. Brief visual feedback on button without blocking clicks
+    setIsDownloading(true);
+    if (feedbackTimeoutRef.current) {
+      clearTimeout(feedbackTimeoutRef.current);
     }
+    feedbackTimeoutRef.current = setTimeout(() => {
+      setIsDownloading(false);
+    }, 1500);
   };
 
   return (
@@ -93,8 +132,7 @@ const ExtensionPage = () => {
           </p>
           <button
             onClick={handleDownload}
-            disabled={isDownloading}
-            className="bg-[#379960] hover:bg-[#3c634c] disabled:bg-green-600 text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-2xl"
+            className="bg-[#379960] hover:bg-[#3c634c] text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-2xl"
           >
             {isDownloading ? (
               <span className="flex items-center gap-2">
@@ -234,8 +272,7 @@ const ExtensionPage = () => {
           </p>
           <button
             onClick={handleDownload}
-            disabled={isDownloading}
-            className="bg-gradient-to-r from-[#55db8d] to-[#12924c] hover:from-[#55db8d] hover:to-[#12924c] disabled:from-gray-600 disabled:to-gray-700 text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-2xl"
+            className="bg-gradient-to-r from-[#55db8d] to-[#12924c] hover:from-[#55db8d] hover:to-[#12924c] text-white font-bold py-4 px-8 rounded-full text-lg transition-all duration-300 transform hover:scale-105 shadow-2xl"
           >
             {isDownloading ? "Downloading..." : "Download Now - It's Free!"}
           </button>

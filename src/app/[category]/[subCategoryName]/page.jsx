@@ -16,6 +16,7 @@ export async function generateMetadata({ params }) {
   return getCleanMetadata(pathname, {
     title: `${result.subCategoryData.data?.meta_title}`,
     description: `${result.subCategoryData.data?.meta_description}`,
+    keywords: result.subCategoryData.data?.keywords || undefined,
   });
 }
 

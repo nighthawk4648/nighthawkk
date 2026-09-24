@@ -7,12 +7,9 @@ export const CategoryAds = () => {
   const adRef = useRef(null);
   const { user } = usePatreonAuth();
 
-  // Hide ads completely for active Patreon subscribers
-  if (user?.is_active_patron) {
-    return null;
-  }
-
   useEffect(() => {
+    if (user?.is_active_patron) return;
+
     if (typeof window !== "undefined" && window.adsbygoogle && adRef.current) {
       try {
         // Check if ad has already been initialized on this <ins> element
@@ -23,7 +20,12 @@ export const CategoryAds = () => {
         console.error("AdSense error:", e);
       }
     }
-  }, []);
+  }, [user?.is_active_patron]);
+
+  // Hide ads completely for active Patreon subscribers
+  if (user?.is_active_patron) {
+    return null;
+  }
 
   return (
     <div className="w-full h-[150px] flex justify-center items-center bg-gradient-to-br from-gray-900 to-black py-2 border-b-2 border-t-2 border-gray-500 ">

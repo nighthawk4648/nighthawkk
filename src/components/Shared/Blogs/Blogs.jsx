@@ -25,7 +25,9 @@ const Blogs = ({ blogs }) => {
             {lastBlog?.image ? (
               <Image
                 src={getOptimizedImageUrl(getOriginalImageUrl(lastBlog.image))}
-                alt={lastBlog?.title || "Blog cover"}
+                alt={
+                  lastBlog?.image_alt?.trim() || lastBlog?.title || "Blog cover"
+                }
                 width={500}
                 height={500}
                 className="w-full h-[260px] md:h-[360px] mx-auto object-cover rounded"
@@ -71,7 +73,11 @@ const Blogs = ({ blogs }) => {
                         src={getOptimizedImageUrl(
                           getOriginalImageUrl(blog.image),
                         )}
-                        alt={blog?.title || "Blog thumbnail"}
+                        alt={
+                          blog?.image_alt?.trim() ||
+                          blog?.title ||
+                          "Blog thumbnail"
+                        }
                         width={500}
                         height={500}
                         className="w-full md:w-[320px] md:h-[150px] h-[260px] object-cover rounded"

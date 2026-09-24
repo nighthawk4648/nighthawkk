@@ -19,33 +19,26 @@ const SubCategoryDetails = ({ assetDetails }) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [showAds, setShowAds] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const leftAdRef = useRef(null);
   const rightAdRef = useRef(null);
 
-  const { token, user, login } = usePatreonAuth();
+  const { token, user, login, logout } = usePatreonAuth();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const isPatron = mounted && !!token && !!user?.is_active_patron;
-  const isFreeUser = mounted && !!token && !user?.is_active_patron;
+  const isAuthenticated = mounted && !!token && !!user;
+  const isPatron = isAuthenticated && !!user?.is_active_patron;
 
   const handleDownload = () => {
     if (!assetDetails?.id) return;
 
-    // If it is a paid asset
-    if (assetDetails?.access_type === "paid") {
-      // If user is logged in to Patreon but does not have an active paid subscription
-      if (isFreeUser) {
-        window.open("https://www.patreon.com/sketchshaper", "_blank");
-        return;
-      }
-      // If user is not logged in at all, start login flow
-      if (!isPatron) {
-        login();
-        return;
-      }
+    // If it is a paid asset and user is not an active patron, open the Patreon modal
+    if (assetDetails?.access_type === "paid" && !isPatron) {
+      setShowModal(true);
+      return;
     }
 
     const tokenQuery =
@@ -154,7 +147,9 @@ const SubCategoryDetails = ({ assetDetails }) => {
                     src={getOptimizedImageUrl(
                       getOriginalImageUrl(image?.image),
                     )}
-                    alt={assetDetails?.name || "Asset Image"}
+                    alt={
+                      image?.alt?.trim() || assetDetails?.name || "Asset Image"
+                    }
                     height={1600}
                     width={1600}
                     className="w-full h-[200px] sm:h-[300px] md:h-[400px] lg:h-[500px] xl:h-[578px] object-cover rounded-md"
@@ -201,7 +196,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
               <SwiperSlide key={image?.id}>
                 <Image
                   src={getOptimizedImageUrl(getOriginalImageUrl(image?.image))}
-                  alt={assetDetails?.name || "Thumbnail"}
+                  alt={image?.alt?.trim() || assetDetails?.name || "Thumbnail"}
                   height={150}
                   width={150}
                   className="md:w-28 w-20 mx-auto h-auto rounded-md"
@@ -237,43 +232,84 @@ const SubCategoryDetails = ({ assetDetails }) => {
               <span className="font-semibold">Resolution - </span>
               <span className="text-xs">{assetDetails?.resolution}</span>
             </p>
-            <p className="text-sm max-w-md">
+            <div className="text-sm max-w-md">
               <span className="font-semibold">Short Description - </span>
-              <span className="text-xs">{assetDetails?.short_description}</span>
-            </p>
+              {assetDetails?.short_description ? (
+                <div
+                  className="text-xs inline-block text-slate-300 [&_p]:inline [&_ul]:list-disc [&_ul]:ml-4 [&_ol]:list-decimal [&_ol]:ml-4 [&_a]:text-blue-400 [&_a]:underline"
+                  dangerouslySetInnerHTML={{
+                    __html: assetDetails.short_description,
+                  }}
+                />
+              ) : (
+                <span className="text-xs text-slate-400">—</span>
+              )}
+            </div>
           </div>
 
-          {/* Center: Download Button */}
+          {/* Center: Action / Download Button */}
           {assetDetails?.id && (
-            <div className="w-60 flex flex-col items-center">
-              <button
-                type="button"
-                onClick={handleDownload}
-                className={`w-full group relative overflow-hidden font-semibold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 active:scale-95 text-white ${
-                  assetDetails?.access_type === "paid"
-                    ? isFreeUser
-                      ? "bg-gradient-to-r from-[#FF424D] to-[#E63A42] hover:from-[#E63A42] hover:to-[#cc333b] shadow-red-500/30"
-                      : "bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 shadow-purple-500/30"
-                    : "bg-[#379960] hover:bg-[#3c634c] shadow-emerald-500/20"
-                }`}
-              >
-                {assetDetails?.access_type === "paid"
-                  ? isPatron
-                    ? "PRO DOWNLOAD"
-                    : isFreeUser
-                      ? "SUBSCRIBE ON PATREON"
-                      : "UNLOCK WITH PATREON"
-                  : "DOWNLOAD"}
-              </button>
-              {assetDetails?.access_type === "paid" && isFreeUser && (
-                <a
-                  href="https://www.patreon.com/sketchshaper"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[11px] text-amber-300 hover:text-amber-200 underline mt-2 text-center transition block"
+            <div className="w-64 flex flex-col items-center">
+              {assetDetails?.access_type === "paid" ? (
+                isPatron ? (
+                  /* Case 1: Active Patron */
+                  <button
+                    type="button"
+                    onClick={handleDownload}
+                    className="w-full font-semibold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 active:scale-95 text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 shadow-purple-500/30 cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    <span>💎</span> PRO DOWNLOAD
+                  </button>
+                ) : isAuthenticated ? (
+                  /* Case 2: Logged in, but not an active patron */
+                  <div className="w-full flex flex-col items-center">
+                    <button
+                      type="button"
+                      onClick={() => setShowModal(true)}
+                      className="w-full font-semibold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 active:scale-95 text-white bg-[#FF424D] hover:bg-[#E63A42] shadow-red-500/20 cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M15.386.524c-4.764 0-8.64 3.876-8.64 8.64 0 4.75 3.876 8.613 8.64 8.613 4.75 0 8.614-3.864 8.614-8.613C24 4.4 20.136.524 15.386.524M.003 23.537h4.22V.524H.003" />
+                      </svg>
+                      SUBSCRIBE TO UNLOCK
+                    </button>
+                    <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
+                      <span className="truncate max-w-[140px]">
+                        {user?.email || "Free Account"}
+                      </span>
+                      <span>•</span>
+                      <button
+                        type="button"
+                        onClick={logout}
+                        className="hover:text-red-400 underline cursor-pointer"
+                      >
+                        Log out
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  /* Case 3: Not logged in */
+                  <button
+                    type="button"
+                    onClick={() => setShowModal(true)}
+                    className="w-full font-semibold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 active:scale-95 text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 shadow-purple-500/30 cursor-pointer flex items-center justify-center gap-2"
+                  >
+                    <span>🔒</span> UNLOCK WITH PATREON
+                  </button>
+                )
+              ) : (
+                /* Free asset */
+                <button
+                  type="button"
+                  onClick={handleDownload}
+                  className="w-full font-semibold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 active:scale-95 text-white bg-[#379960] hover:bg-[#3c634c] shadow-emerald-500/20 cursor-pointer"
                 >
-                  Active Patreon tier required to unlock
-                </a>
+                  DOWNLOAD
+                </button>
               )}
             </div>
           )}
@@ -310,7 +346,11 @@ const SubCategoryDetails = ({ assetDetails }) => {
                           )}
                           height={300}
                           width={300}
-                          alt={asset?.name}
+                          alt={
+                            asset?.cover_alt?.trim() ||
+                            asset?.name ||
+                            "Asset image"
+                          }
                           className="w-full h-full object-cover transform transition-all duration-300 group-hover:scale-105 group-hover:brightness-110"
                         />
                       )}
@@ -332,6 +372,124 @@ const SubCategoryDetails = ({ assetDetails }) => {
         )}
       </div>
       <CategoryAds />
+
+      {/* Patreon Access Modal (Restored from old Pro section) */}
+      {showModal && (
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={() => setShowModal(false)}
+        >
+          <div
+            className="bg-gray-900 p-6 md:p-8 rounded-xl max-w-md w-full mx-4 border border-gray-700 shadow-2xl relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white text-xl font-bold transition cursor-pointer"
+            >
+              ✕
+            </button>
+
+            <h2 className="text-2xl font-bold mb-3 text-white flex items-center gap-2">
+              <span>💎</span>
+              {isAuthenticated ? "Become a Patron" : "Premium Access Required"}
+            </h2>
+
+            <p className="mb-5 text-gray-300 text-sm leading-relaxed">
+              {isAuthenticated
+                ? "Your account is not linked to an active Patreon subscription. Subscribe now to unlock this model and all premium 3D assets!"
+                : "To access our premium 3D models, please login with Patreon. Your support helps us create more amazing assets!"}
+            </p>
+
+            <div className="bg-gray-800/70 rounded-lg p-4 mb-6 border border-gray-700/50">
+              <h3 className="font-semibold text-xs uppercase tracking-wider mb-2.5 text-purple-300">
+                What you get with PRO:
+              </h3>
+              <ul className="text-xs text-gray-300 space-y-1.5">
+                <li className="flex items-center gap-2">
+                  <span className="text-emerald-400 font-bold">✓</span> Access
+                  to 1500+ premium 3D models
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-emerald-400 font-bold">✓</span> Direct
+                  download & SketchUp compatibility
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-emerald-400 font-bold">✓</span> 100+ new
+                  models added every month
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="text-emerald-400 font-bold">✓</span> Priority
+                  model requests & support
+                </li>
+              </ul>
+            </div>
+
+            <div className="flex flex-col space-y-3">
+              {isAuthenticated ? (
+                <a
+                  href="https://www.patreon.com/sketchshaper"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full bg-[#FF424D] hover:bg-[#E63A42] text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-red-500/20"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M15.386.524c-4.764 0-8.64 3.876-8.64 8.64 0 4.75 3.876 8.613 8.64 8.613 4.75 0 8.614-3.864 8.614-8.613C24 4.4 20.136.524 15.386.524M.003 23.537h4.22V.524H.003" />
+                  </svg>
+                  Subscribe on Patreon
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowModal(false);
+                    login(
+                      typeof window !== "undefined"
+                        ? window.location.pathname
+                        : undefined,
+                    );
+                  }}
+                  className="w-full bg-[#FF424D] hover:bg-[#E63A42] text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-red-500/20 cursor-pointer"
+                >
+                  <svg
+                    className="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M15.386.524c-4.764 0-8.64 3.876-8.64 8.64 0 4.75 3.876 8.613 8.64 8.613 4.75 0 8.614-3.864 8.614-8.613C24 4.4 20.136.524 15.386.524M.003 23.537h4.22V.524H.003" />
+                  </svg>
+                  Login with Patreon
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setShowModal(false)}
+                className="text-gray-400 hover:text-white text-xs font-medium py-2 transition-colors cursor-pointer"
+              >
+                Maybe later
+              </button>
+
+              {isAuthenticated && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowModal(false);
+                    logout();
+                  }}
+                  className="text-gray-500 hover:text-red-400 text-xs transition-colors cursor-pointer"
+                >
+                  Log out / Switch account
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
