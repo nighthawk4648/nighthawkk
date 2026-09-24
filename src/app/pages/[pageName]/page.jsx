@@ -1,4 +1,5 @@
 import getData from "@/utils/getData";
+import { stripHtml } from "@/utils/sanitizeHtml";
 import { notFound } from "next/navigation";
 import React from "react";
 
@@ -14,9 +15,16 @@ export async function generateMetadata({ params }) {
     return { title: "Page Not Found - SketchShaper" };
   }
 
+  const cleanDescription = footerPage.data.meta_description
+    ? stripHtml(footerPage.data.meta_description, 160)
+    : "";
+
   return {
-    title: `${footerPage.data.title || footerPage.data.name || "Page"} - SketchShaper`,
-    description: footerPage.data.meta_description || "SketchShaper custom page",
+    title:
+      footerPage.data.meta_title?.trim() ||
+      `${footerPage.data.title || footerPage.data.name || "Page"} - SketchShaper`,
+    description: cleanDescription || "SketchShaper custom page",
+    keywords: footerPage.data.keywords?.trim() || undefined,
   };
 }
 

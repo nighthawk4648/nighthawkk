@@ -43,12 +43,21 @@ export async function generateMetadata({ params }) {
     ? getOriginalImageUrl(blog.data.image)
     : undefined;
 
+  const title =
+    blog.data.meta_title?.trim() || `${blog.data.title} - SketchShaper Blog`;
+  const description =
+    (blog.data.meta_description
+      ? stripHtml(blog.data.meta_description, 160)
+      : "") || cleanDescription;
+  const keywords = blog.data.keywords?.trim() || undefined;
+
   return {
-    title: `${blog.data.title} - SketchShaper Blog`,
-    description: cleanDescription,
+    title,
+    description,
+    keywords,
     openGraph: {
       title: blog.data.title,
-      description: cleanDescription,
+      description,
       images: coverUrl ? [coverUrl] : [],
     },
   };
