@@ -226,7 +226,13 @@ const SubCategoryDetails = ({ assetDetails }) => {
             </div>
             <p className="text-sm">
               <span className="font-semibold">Size - </span>
-              <span className="text-xs">{assetDetails?.size}</span>
+              <span className="text-xs">
+                {assetDetails?.size && String(assetDetails.size).trim() !== ""
+                  ? assetDetails.size
+                  : assetDetails?.file?.file_size
+                    ? `${(Number(assetDetails.file.file_size) / (1024 * 1024)).toFixed(2)} MB`
+                    : "—"}
+              </span>
             </p>
             <p className="text-sm">
               <span className="font-semibold">Resolution - </span>
