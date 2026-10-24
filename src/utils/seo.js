@@ -3,6 +3,8 @@
  * Use this in your page components to ensure proper canonical tags
  */
 
+import { stripHtml } from "@/utils/sanitizeHtml";
+
 export function generateCanonicalUrl(pathname) {
     // Remove trailing slashes
     const cleanPath = pathname.replace(/\/$/, '') || '/';
@@ -16,8 +18,13 @@ export function generateCanonicalUrl(pathname) {
 export function getCleanMetadata(pathname, metadata = {}) {
     const canonicalUrl = generateCanonicalUrl(pathname);
 
+    const cleanTitle = metadata.title ? stripHtml(metadata.title, 60) : undefined;
+    const cleanDescription = metadata.description ? stripHtml(metadata.description, 160) : undefined;
+
     return {
         ...metadata,
+        ...(cleanTitle ? { title: cleanTitle } : {}),
+        ...(cleanDescription ? { description: cleanDescription } : {}),
         alternates: {
             canonical: canonicalUrl,
             ...metadata.alternates,
