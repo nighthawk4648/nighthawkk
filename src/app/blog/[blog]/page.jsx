@@ -1,12 +1,17 @@
-import { getOptimizedImageUrl, getOriginalImageUrl } from "@/utils/cloudinary";
+import { getOriginalImageUrl } from "@/utils/cloudinary";
 import { formatDate } from "@/utils/formateDate";
 import getData from "@/utils/getData";
 import { sanitizeHtml, stripHtml } from "@/utils/sanitizeHtml";
+import slugify from "@/utils/slugify";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { notFound } from "next/navigation";
 import { FiArrowLeft, FiCalendar, FiClock, FiUser } from "react-icons/fi";
+import BlogLeftRail from "@/components/Blog/BlogLeftRail";
+import BlogRightRailAd from "@/components/Blog/BlogRightRailAd";
+import BlogMobileToc from "@/components/Blog/BlogMobileToc";
+import BlogHorizontalAd from "@/components/Blog/BlogHorizontalAd";
 
 function estimateReadingTime(content) {
   const text = stripHtml(content, 100000);
@@ -15,13 +20,69 @@ function estimateReadingTime(content) {
   return `${Math.max(1, minutes)} min read`;
 }
 
+function extractHeadingsAndInjectIds(sections) {
+  const toc = [];
+  const existingIds = new Set();
+
+  const processedSections = sections.map((section) => {
+    if (!section.html) return section;
+
+    const processedHtml = section.html.replace(
+      /<(h[1-4])([^>]*)>([\s\S]*?)<\/\1>/gi,
+      (match, tag, attrs, text) => {
+        const plainText = text.replace(/<[^>]*>/g, "").trim();
+        if (!plainText) return match;
+
+        // Check if id already exists in attrs
+        const idMatch = attrs.match(/id=["']([^"']+)["']/i);
+        let slug = idMatch ? idMatch[1] : null;
+
+        if (!slug) {
+          let baseSlug = plainText
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "");
+          if (!baseSlug) baseSlug = "section";
+
+          slug = baseSlug;
+          let counter = 1;
+          while (existingIds.has(slug)) {
+            slug = `${baseSlug}-${counter++}`;
+          }
+        }
+        existingIds.add(slug);
+
+        toc.push({ id: slug, text: plainText, level: tag.toLowerCase() });
+
+        if (idMatch) {
+          return match;
+        }
+        return `<${tag} id="${slug}"${attrs}>${text}</${tag}>`;
+      }
+    );
+
+    return {
+      ...section,
+      html: processedHtml,
+    };
+  });
+
+  return { processedSections, toc };
+}
+
 // Dynamic metadata generation
 export async function generateMetadata({ params }) {
-  const id = params?.blog?.split("-").pop();
+  const resolvedParams = await params;
+  const id = resolvedParams?.blog?.split("-").pop();
+  const fallbackCanonical = `https://www.sketchshaper.com/blog/${resolvedParams?.blog || ""}`;
+
   if (!id || isNaN(Number(id))) {
     return {
       title: "Blog Not Found - SketchShaper",
       description: "The requested blog post could not be found.",
+      alternates: {
+        canonical: fallbackCanonical,
+      },
     };
   }
   const blog = await getData(`blogs/${id}`);
@@ -30,33 +91,56 @@ export async function generateMetadata({ params }) {
     return {
       title: "Blog Not Found - SketchShaper",
       description: "The requested blog post could not be found.",
+      alternates: {
+        canonical: fallbackCanonical,
+      },
     };
   }
 
+  const post = blog.data;
+  const canonicalUrl =
+    post.title && post.id
+      ? `https://www.sketchshaper.com/blog/${slugify(post.title)}-${post.id}`
+      : fallbackCanonical;
+
   const cleanDescription =
     stripHtml(
-      blog.data.short_description || blog.data.paragraph_one || "",
+      post.short_description || post.paragraph_one || "",
       160,
     ) ||
     "Read our latest architectural 3D and visualization insights on SketchShaper.";
-  const coverUrl = blog.data.image
-    ? getOriginalImageUrl(blog.data.image)
+  const coverUrl = post.image
+    ? getOriginalImageUrl(post.image)
     : undefined;
 
   const title =
-    blog.data.meta_title?.trim() || `${blog.data.title} - SketchShaper Blog`;
+    post.meta_title?.trim() || `${post.title} - SketchShaper Blog`;
   const description =
-    (blog.data.meta_description
-      ? stripHtml(blog.data.meta_description, 160)
+    (post.meta_description
+      ? stripHtml(post.meta_description, 160)
       : "") || cleanDescription;
-  const keywords = blog.data.keywords?.trim() || undefined;
+  const keywords = post.keywords?.trim() || undefined;
 
   return {
     title,
     description,
     keywords,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
-      title: blog.data.title,
+      title: post.title,
+      description,
+      url: canonicalUrl,
+      type: "article",
+      siteName: "SketchShaper",
+      publishedTime: post.created_at,
+      modifiedTime: post.updated_at || post.created_at,
+      images: coverUrl ? [coverUrl] : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
       description,
       images: coverUrl ? [coverUrl] : [],
     },
@@ -64,7 +148,8 @@ export async function generateMetadata({ params }) {
 }
 
 const BlogDetailPage = async ({ params }) => {
-  const id = params?.blog?.split("-").pop();
+  const resolvedParams = await params;
+  const id = resolvedParams?.blog?.split("-").pop();
   if (!id || isNaN(Number(id))) {
     notFound();
   }
@@ -94,136 +179,277 @@ const BlogDetailPage = async ({ params }) => {
     return textOnly.length > 0 && textOnly !== "undefined";
   });
 
+  const { processedSections, toc: tocItems } =
+    extractHeadingsAndInjectIds(contentSections);
+
   // Calculate estimated reading time
-  const fullText = contentSections.map((s) => s.html).join(" ");
+  const fullText = processedSections.map((s) => s.html).join(" ");
   const readingTime = estimateReadingTime(fullText);
 
+  const canonicalUrl = `https://www.sketchshaper.com/blog/${slugify(post.title)}-${post.id}`;
+
+  const normalizedAuthor = (post?.name || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+
+  const authorObject =
+    normalizedAuthor === "sketchshaper" || !normalizedAuthor
+      ? {
+          "@type": "Organization",
+          name: "SketchShaper",
+          url: "https://www.sketchshaper.com",
+        }
+      : {
+          "@type": "Person",
+          name: post.name.trim(),
+        };
+
+  const publisherObject = {
+    "@type": "Organization",
+    name: "SketchShaper",
+    url: "https://www.sketchshaper.com",
+    logo: {
+      "@type": "ImageObject",
+      url: "https://www.sketchshaper.com/assets/navbar/navbar_logo.png",
+    },
+  };
+
+  const coverUrl = post.image ? getOriginalImageUrl(post.image) : undefined;
+  const postDescription =
+    post.meta_description?.trim()
+      ? stripHtml(post.meta_description, 160)
+      : stripHtml(post.short_description || post.paragraph_one || "", 160);
+
+  const blogPostingLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: postDescription,
+    image: coverUrl ? [coverUrl] : [],
+    datePublished: post.created_at,
+    dateModified: post.updated_at || post.created_at,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": canonicalUrl,
+    },
+    url: canonicalUrl,
+    keywords: post.keywords?.trim() || undefined,
+    author: authorObject,
+    publisher: publisherObject,
+  };
+
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://www.sketchshaper.com",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Articles",
+        item: "https://www.sketchshaper.com/blog",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: post.title,
+        item: canonicalUrl,
+      },
+    ],
+  };
+
   return (
-    <article className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-black text-white px-4 py-8 sm:px-6 md:px-12 md:py-14">
-      <div className="max-w-4xl mx-auto">
-        {/* Top Breadcrumb / Back Link */}
-        <nav className="mb-8">
-          <Link
-            href="/blog"
-            className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors duration-200 group"
-          >
-            <FiArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" />
-            <span>Back to all articles</span>
-          </Link>
-        </nav>
+    <article className="min-h-screen text-fg font-sans px-4 py-8 sm:px-6 md:px-8 xl:px-10 md:py-14 relative">
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(blogPostingLd).replace(/</g, "\\u003c"),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbLd).replace(/</g, "\\u003c"),
+        }}
+      />
+      <div className="w-full max-w-[1560px] mx-auto relative z-10">
+        <div className="flex justify-center gap-8 2xl:gap-12 items-start">
+          {/* Left Rail (Sticky Table of Contents + Share) */}
+          <BlogLeftRail
+            tocItems={tocItems}
+            title={post.title}
+            url={canonicalUrl}
+          />
 
-        {/* Article Header */}
-        <header className="mb-8">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight mb-6">
-            {post.title}
-          </h1>
+          {/* Central Article Column */}
+          <div className="w-full max-w-3xl shrink min-w-0">
+            {/* Top Breadcrumb / Back Link (visible on mobile/tablet, hidden on desktop XL where left rail has it) */}
+            <nav className="mb-8 xl:hidden">
+              <Link
+                href="/blog"
+                className="inline-flex items-center gap-2 text-xs font-mono text-fg-secondary hover:text-action transition-colors duration-200 group"
+              >
+                <FiArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform duration-200" />
+                <span>Back to all articles</span>
+              </Link>
+            </nav>
 
-          {/* Metadata Row: Author, Date, Reading Time */}
-          <div className="flex flex-wrap items-center gap-y-3 gap-x-6 pb-6 border-b border-zinc-800/80 text-sm text-zinc-400">
-            {/* Author */}
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-                <FiUser className="w-4 h-4" />
+            {/* Article Header */}
+            <header className="mb-8">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-fg tracking-tight-h2 leading-tight mb-6 font-sans">
+                {post.title}
+              </h1>
+
+              {/* Metadata Row: Author, Date, Reading Time */}
+              <div className="flex flex-wrap items-center gap-y-3 gap-x-6 pb-6 border-b border-white/[0.08] text-xs font-mono text-fg-secondary">
+                {/* Author */}
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-full bg-action-tintBg border border-action-tintLine flex items-center justify-center text-action">
+                    <FiUser className="w-3.5 h-3.5" />
+                  </div>
+                  <span className="font-medium text-fg">
+                    {post.name || "SketchShaper"}
+                  </span>
+                </div>
+
+                {/* Publication Date */}
+                {post.created_at && (
+                  <div className="flex items-center gap-1.5">
+                    <FiCalendar className="w-3.5 h-3.5 text-fg-secondary/70" />
+                    <time dateTime={post.created_at}>
+                      {formatDate(post.created_at)}
+                    </time>
+                  </div>
+                )}
+
+                {/* Reading Time */}
+                <div className="flex items-center gap-1.5">
+                  <FiClock className="w-3.5 h-3.5 text-fg-secondary/70" />
+                  <span>{readingTime}</span>
+                </div>
               </div>
-              <span className="font-medium text-zinc-200">
-                {post.name || "SketchShaper"}
-              </span>
-            </div>
+            </header>
 
-            {/* Publication Date */}
-            {post.created_at && (
-              <div className="flex items-center gap-1.5">
-                <FiCalendar className="w-4 h-4 text-zinc-500" />
-                <time dateTime={post.created_at}>
-                  {formatDate(post.created_at)}
-                </time>
+            {/* Cover Hero Image in Frosted Glass Frame */}
+            {post.image && (
+              <div className="mb-10 rounded-[20px] overflow-hidden border border-white/[0.08] shadow-2xl bg-surface/30 backdrop-blur-2xl p-2 sm:p-3 relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] via-transparent to-action/[0.02] pointer-events-none" />
+                <div className="relative aspect-[16/9] w-full rounded-[14px] overflow-hidden bg-canvas/80 border border-white/10 shadow-inner z-10">
+                  <Image
+                    src={getOriginalImageUrl(post.image)}
+                    alt={
+                      post?.image_alt?.trim() || post?.title || "Blog cover image"
+                    }
+                    fill
+                    priority
+                    className="object-cover"
+                    sizes="(max-width: 896px) 100vw, 896px"
+                  />
+                </div>
               </div>
             )}
 
-            {/* Reading Time */}
-            <div className="flex items-center gap-1.5">
-              <FiClock className="w-4 h-4 text-zinc-500" />
-              <span>{readingTime}</span>
-            </div>
-          </div>
-        </header>
+            {/* In-Article Horizontal Ad directly after the Hero Image */}
+            <BlogHorizontalAd slot="2114378043" />
 
-        {/* Cover Hero Image */}
-        {post.image && (
-          <div className="mb-10 rounded-2xl overflow-hidden border border-zinc-800/90 shadow-2xl bg-zinc-900/60">
-            <div className="relative aspect-[16/9] w-full">
-              <Image
-                src={getOptimizedImageUrl(getOriginalImageUrl(post.image))}
-                alt={
-                  post?.image_alt?.trim() || post?.title || "Blog cover image"
-                }
-                fill
-                priority
-                className="object-cover"
-                sizes="(max-width: 896px) 100vw, 896px"
-              />
-            </div>
-          </div>
-        )}
+            {/* Mobile / Tablet Collapsible Table of Contents */}
+            <BlogMobileToc tocItems={tocItems} />
 
-        {/* Content Body */}
-        <div className="max-w-3xl mx-auto">
-          {contentSections.length > 0 ? (
-            contentSections.map((section) => (
-              <div
-                key={section.key}
-                className="blog-content mb-8 text-zinc-300 text-base md:text-lg leading-relaxed"
-              >
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: sanitizeHtml(section.html),
-                  }}
-                />
-              </div>
-            ))
-          ) : (
-            <p className="text-zinc-500 italic py-8 text-center">
-              No content available for this post.
-            </p>
-          )}
-
-          {/* Secondary / In-Article Image */}
-          {post.bgImage && (
-            <figure className="my-10 rounded-xl overflow-hidden border border-zinc-800/80 bg-zinc-900/40">
-              <div className="relative aspect-[16/9] w-full">
-                <Image
-                  src={getOptimizedImageUrl(getOriginalImageUrl(post.bgImage))}
-                  alt={
-                    post?.bg_image_alt?.trim() ||
-                    post?.title ||
-                    "Blog featured visual"
-                  }
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 768px"
-                />
-              </div>
-            </figure>
-          )}
-
-          {/* Bottom Footer CTA */}
-          <footer className="mt-14 pt-8 border-t border-zinc-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+            {/* Content Body */}
             <div>
-              <h4 className="text-white font-semibold text-base">
-                Enjoyed this article?
-              </h4>
-              <p className="text-zinc-400 text-sm">
-                Discover more guides, 3D models, and rendering tips.
-              </p>
+              {processedSections.length > 0 ? (
+                processedSections.map((section) => {
+                  const hasHtml = /<[a-z][\s\S]*>/i.test(section.html);
+                  const isLead = section.key === "short_description";
+                  const showAdAfter =
+                    section.key === "paragraph_one" ||
+                    section.key === "paragraph_two" ||
+                    section.key === "paragraph_three";
+
+                  return (
+                    <React.Fragment key={section.key}>
+                      {!hasHtml ? (
+                        <div
+                          className={`blog-plain-text leading-relaxed ${
+                            isLead
+                              ? "text-lg md:text-xl text-fg-secondary mb-8 italic font-normal"
+                              : "text-base md:text-lg text-fg/90 mb-5 last:mb-0"
+                          }`}
+                        >
+                          {section.html}
+                        </div>
+                      ) : (
+                        <div
+                          className="blog-content text-fg/90 text-base md:text-lg leading-relaxed mb-5 last:mb-0"
+                          dangerouslySetInnerHTML={{
+                            __html: sanitizeHtml(section.html),
+                          }}
+                        />
+                      )}
+
+                      {/* In-Article Horizontal Ad Box after paragraph 1, 2, and 3 */}
+                      {showAdAfter && (
+                        <BlogHorizontalAd slot="2114378043" />
+                      )}
+                    </React.Fragment>
+                  );
+                })
+              ) : (
+                <p className="text-fg-secondary italic py-8 text-center font-mono text-xs">
+                  No content available for this post.
+                </p>
+              )}
+
+              {/* Secondary / In-Article Image in Frosted Glass Frame */}
+              {post.bgImage && (
+                <figure className="my-10 rounded-[16px] overflow-hidden border border-white/[0.08] bg-surface/30 backdrop-blur-2xl p-2 relative shadow-lg">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] via-transparent to-transparent pointer-events-none" />
+                  <div className="relative aspect-[16/9] w-full rounded-[10px] overflow-hidden bg-canvas/80 border border-white/10 z-10">
+                    <Image
+                      src={getOriginalImageUrl(post.bgImage)}
+                      alt={
+                        post?.bg_image_alt?.trim() ||
+                        post?.title ||
+                        "Blog featured visual"
+                      }
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 768px"
+                    />
+                  </div>
+                </figure>
+              )}
+
+              {/* Bottom Footer CTA in Frosted Glass Card */}
+              <footer className="mt-14 p-6 sm:p-8 rounded-card border border-white/[0.08] bg-surface/30 backdrop-blur-2xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] via-transparent to-action/[0.02] pointer-events-none" />
+                <div className="relative z-10">
+                  <h4 className="text-fg font-semibold text-base">
+                    Enjoyed this article?
+                  </h4>
+                  <p className="text-fg-secondary text-xs sm:text-sm mt-0.5">
+                    Discover more guides, free 3D models, and rendering tips.
+                  </p>
+                </div>
+                <Link
+                  href="/blog"
+                  className="relative z-10 px-4 py-2.5 rounded-full bg-surface-raised/60 hover:bg-surface-raised text-fg text-xs font-mono transition-colors duration-200 border border-white/10 flex items-center gap-2 flex-shrink-0 hover:border-white/20 backdrop-blur-sm"
+                >
+                  <FiArrowLeft className="w-3.5 h-3.5" />
+                  <span>Explore all articles</span>
+                </Link>
+              </footer>
             </div>
-            <Link
-              href="/blog"
-              className="px-5 py-2.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white text-sm font-medium transition-colors duration-200 border border-zinc-700 flex items-center gap-2 flex-shrink-0"
-            >
-              <FiArrowLeft className="w-4 h-4" />
-              <span>Explore all blogs</span>
-            </Link>
-          </footer>
+          </div>
+
+          {/* Right Rail (Vertical Ad Slot 2445550536) */}
+          <BlogRightRailAd slot="2445550536" />
         </div>
       </div>
     </article>

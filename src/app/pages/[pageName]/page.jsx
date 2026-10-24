@@ -1,10 +1,10 @@
 import getData from "@/utils/getData";
-import { stripHtml } from "@/utils/sanitizeHtml";
+import { stripHtml, sanitizeHtml } from "@/utils/sanitizeHtml";
 import { notFound } from "next/navigation";
 import React from "react";
 
 export async function generateMetadata({ params }) {
-  const { pageName } = params;
+  const { pageName } = await params;
   const pageId = pageName?.split("-").pop();
   if (!pageId || isNaN(Number(pageId))) {
     return { title: "Page Not Found - SketchShaper" };
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }) {
 }
 
 const Page = async ({ params }) => {
-  const { pageName } = params;
+  const { pageName } = await params;
   const pageId = pageName?.split("-").pop();
 
   if (!pageId || isNaN(Number(pageId))) {
@@ -51,7 +51,7 @@ const Page = async ({ params }) => {
         {footerPage?.data?.content && (
           <div
             className="prose prose-invert max-w-none text-gray-300 leading-relaxed space-y-4"
-            dangerouslySetInnerHTML={{ __html: footerPage.data.content }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(footerPage.data.content) }}
           />
         )}
       </div>

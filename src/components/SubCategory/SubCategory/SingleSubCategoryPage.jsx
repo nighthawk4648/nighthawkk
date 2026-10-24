@@ -1,306 +1,42 @@
 "use client";
-import slugify from "@/utils/slugify";
-import React, { useEffect, useRef, useState } from "react";
 
-import all_sub_cat_image from "../../../../public/assets/sub_category/all.png";
-import Image from "next/image";
-import Link from "next/link";
-import { getOptimizedImageUrl } from "@/utils/cloudinary";
-import { CategoryAds } from "@/components/Shared/GoogleAdsense/categoryads";
-import useSWR from "swr";
-import { ErrorFallback } from "@/components/Shared/ErrorFallback/ErrorFallback";
-import { fetcher } from "@/utils/swrFetcher";
+import React from "react";
 import Loader from "@/components/Shared/Loader/Loader";
+import { ErrorFallback } from "@/components/Shared/ErrorFallback/ErrorFallback";
+import CatalogLayout from "@/components/Catalog/CatalogLayout";
 
 const SingleSubCategoryPage = ({
   categoryId,
   subCategoryId,
   initialCategoryData,
   initialSubCategoryData,
+  serverAssets = null,
+  currentPage = 1,
+  totalPages = 1,
+  totalCount = 0,
+  activeFilters = { search: "", access: "all", sort: "newest" },
+  basePath = "",
 }) => {
-  const assetsRef = useRef(null);
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const categoryNumber = parseInt(categoryId);
-  const subCategoryNumber = parseInt(subCategoryId);
-
-  const {
-    data: subCategoriesByCategoryId,
-    isLoading: subCategoriesByCategoryIdLoading,
-  } = useSWR(
-    `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/categories/${categoryNumber}`,
-    fetcher,
-    { fallbackData: initialCategoryData },
-  );
-
-  const { data: assetBySubCategoryId, isLoading: assetBySubCategoryIdLoading } =
-    useSWR(
-      `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/sub-categories/${subCategoryNumber}`,
-      fetcher,
-      { fallbackData: initialSubCategoryData },
-    );
-
-  const categoryData = subCategoriesByCategoryId || initialCategoryData;
-  const subCategoryData = assetBySubCategoryId || initialSubCategoryData;
-
-  // Auto-scroll on mobile
-  useEffect(() => {
-    if (
-      !subCategoriesByCategoryIdLoading &&
-      !assetBySubCategoryIdLoading &&
-      assetsRef.current
-    ) {
-      const isMobile = window.innerWidth < 768;
-      if (isMobile) {
-        const timer = setTimeout(() => {
-          assetsRef.current.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
-        }, 10);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, [subCategoriesByCategoryIdLoading, assetBySubCategoryIdLoading]);
-
-  const sortedAssets = subCategoryData?.data?.assets || [];
-
-  // Filter assets based on search term
-  const filteredAssets = sortedAssets.filter(
-    (asset) =>
-      asset &&
-      asset.name &&
-      typeof asset.name === "string" &&
-      asset.name.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
-
-  const getOriginalImageUrl = (imagePath) => {
-    return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
-  };
-
-  if (
-    !categoryData &&
-    !subCategoryData &&
-    (subCategoriesByCategoryIdLoading || assetBySubCategoryIdLoading)
-  ) {
-    return <Loader />;
-  }
+  const categoryData = initialCategoryData;
+  const subCategoryData = initialSubCategoryData;
 
   if (!categoryData || !subCategoryData) {
     return <ErrorFallback />;
   }
 
-  const currentCategoryName =
-    assetBySubCategoryId?.data?.category?.name || categoryData?.data?.name;
-  const currentSubCategoryName =
-    assetBySubCategoryId?.data?.name || subCategoryData?.data?.name;
-
   return (
-    <div>
-      {/* Header */}
-      <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black py-2">
-        <h1 className="text-white font-semibold text-2xl text-center">
-          {subCategoryData?.data?.name}
-        </h1>
-      </div>
-
-      {/* Subcategory list */}
-      <div className="grid md:grid-cols-8 grid-cols-2 gap-4 bg-gradient-to-br from-gray-900 via-gray-900 to-black py-8 px-4 border-b-2 border-gray-500">
-        {/* ALL category card */}
-        <div className="cursor-pointer">
-          <div className="cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/40 rounded-md overflow-hidden">
-            <Link
-              href={`/${slugify(categoryData?.data?.name)}-${categoryData?.data?.id || categoryId}`}
-            >
-              <Image
-                src={all_sub_cat_image}
-                height={400}
-                width={500}
-                alt="all subcategories"
-                className="w-full h-28 object-cover"
-              />
-              <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black py-1">
-                <p className="text-white font-semibold text-sm text-center">
-                  All
-                </p>
-              </div>
-            </Link>
-          </div>
-        </div>
-
-        {/* Dynamic Subcategories */}
-        {categoryData?.data?.sub_categories?.map((subCategory) => (
-          <div
-            className="cursor-pointer transition-transform duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-600/40 rounded-md overflow-hidden"
-            key={subCategory?.id}
-          >
-            <Link
-              href={`/${slugify(categoryData?.data?.name)}-${categoryData?.data?.id || categoryId}/${slugify(subCategory?.name)}-${subCategory?.id}`}
-            >
-              {subCategory?.image && (
-                <Image
-                  src={getOptimizedImageUrl(
-                    getOriginalImageUrl(subCategory?.image),
-                  )}
-                  height={800}
-                  width={900}
-                  alt={subCategory?.name}
-                  className="w-full h-28 object-cover"
-                />
-              )}
-
-              <div className="bg-gradient-to-br from-black to-gray-900 py-1">
-                <h2 className="text-white font-semibold text-sm text-center">
-                  {subCategory?.name}
-                </h2>
-              </div>
-            </Link>
-          </div>
-        ))}
-      </div>
-
-      {/* Google AdSense banner */}
-      <CategoryAds />
-
-      {/* Assets Grid with Search (NO ADS) */}
-      <div ref={assetsRef} className="bg-primary py-8">
-        {/* Search Bar */}
-        <div className="mb-8 px-4">
-          <div className="max-w-2xl mx-auto">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search assets by name..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-3 pl-10 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:bg-white/20 transition-all"
-              />
-              <svg
-                className="absolute left-3 top-3.5 w-5 h-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </div>
-            {searchTerm && (
-              <p className="text-sm text-gray-400 mt-2 text-center">
-                Found {filteredAssets.length}{" "}
-                {filteredAssets.length === 1 ? "asset" : "assets"} matching "
-                {searchTerm}"
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Search Results */}
-        {searchTerm ? (
-          filteredAssets.length > 0 ? (
-            <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4 px-4">
-              {filteredAssets.map((asset) => (
-                <div key={asset.id}>
-                  <div className="lg:w-[300px] md:w-[200px] w-full lg:h-[308px] md:h-[200px] h-auto mx-auto mb-5 relative overflow-hidden rounded-lg group">
-                    {asset?.access_type === "paid" && (
-                      <span className="absolute top-2 right-2 z-10 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1 backdrop-blur-sm border border-purple-400/30">
-                        <span>💎</span> PRO
-                      </span>
-                    )}
-                    <Link
-                      href={`/${slugify(currentCategoryName)}/${slugify(currentSubCategoryName)}/${slugify(asset?.name)}-${asset?.id}`}
-                    >
-                      {asset?.cover && (
-                        <Image
-                          src={getOptimizedImageUrl(
-                            getOriginalImageUrl(asset?.cover),
-                          )}
-                          height={400}
-                          width={400}
-                          alt={
-                            asset?.cover_alt?.trim() ||
-                            asset?.name ||
-                            "Asset image"
-                          }
-                          className="transform transition-transform duration-1000 group-hover:scale-125"
-                          style={{ transformOrigin: "center" }}
-                        />
-                      )}
-                    </Link>
-                  </div>
-
-                  <p className="text-white text-center font-semibold mt-2">
-                    <Link
-                      href={`/${slugify(currentCategoryName)}/${slugify(currentSubCategoryName)}/${slugify(asset?.name)}-${asset?.id}`}
-                    >
-                      {asset?.name}
-                    </Link>
-                  </p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-400 text-lg">
-                No assets found matching "{searchTerm}"
-              </p>
-              <p className="text-gray-500 text-sm mt-2">
-                Try adjusting your search terms
-              </p>
-            </div>
-          )
-        ) : (
-          <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4 px-4">
-            {sortedAssets?.map((asset) => (
-              <div key={asset.id}>
-                <div className="lg:w-[300px] md:w-[200px] w-full lg:h-[308px] md:h-[200px] h-auto mx-auto mb-5 relative overflow-hidden rounded-lg group">
-                  {asset?.access_type === "paid" && (
-                    <span className="absolute top-2 right-2 z-10 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1 backdrop-blur-sm border border-purple-400/30">
-                      <span>💎</span> PRO
-                    </span>
-                  )}
-                  <Link
-                    href={`/${slugify(currentCategoryName)}/${slugify(currentSubCategoryName)}/${slugify(asset?.name)}-${asset?.id}`}
-                  >
-                    {asset?.cover && (
-                      <Image
-                        src={getOptimizedImageUrl(
-                          getOriginalImageUrl(asset?.cover),
-                        )}
-                        height={400}
-                        width={400}
-                        alt={
-                          asset?.cover_alt?.trim() ||
-                          asset?.name ||
-                          "Asset image"
-                        }
-                        className="transform transition-transform duration-1000 group-hover:scale-125"
-                        style={{ transformOrigin: "center" }}
-                      />
-                    )}
-                  </Link>
-                </div>
-
-                <p className="text-white text-center font-semibold mt-2">
-                  <Link
-                    href={`/${slugify(currentCategoryName)}/${slugify(currentSubCategoryName)}/${slugify(asset?.name)}-${asset?.id}`}
-                  >
-                    {asset?.name}
-                  </Link>
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-        <p className="text-white text-center mt-2 px-4 py-2 text-sm font-medium">
-          {assetBySubCategoryId?.data?.short_description}
-        </p>
-      </div>
-    </div>
+    <CatalogLayout
+      activeCategoryId={categoryId}
+      activeSubCategoryId={subCategoryId}
+      initialCategoryData={categoryData}
+      initialSubCategoryData={subCategoryData}
+      serverAssets={serverAssets}
+      page={currentPage}
+      totalPages={totalPages}
+      totalCount={totalCount}
+      activeFilters={activeFilters}
+      basePath={basePath}
+    />
   );
 };
 

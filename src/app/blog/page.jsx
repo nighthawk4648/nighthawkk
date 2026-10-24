@@ -1,11 +1,43 @@
 import BlogsPage from "./BlogsPage";
+import getData from "@/utils/getData";
 
 export const metadata = {
-  title: "Our Blogs - Latest Articles and Insights - Sketchshaper",
+  title: "Articles & Knowledge Base - SketchShaper",
   description:
-    "Stay informed with our blogs covering architectural 3D models, PBR textures, rendering tips, visualization trends, material creation, and SketchUp/3D workflow guides. Learn, improve, and stay ahead in the world of 3D design..",
+    "Stay informed with curated architectural 3D workflows, PBR texturing guides, lighting breakdowns, rendering tips, and SketchUp tutorials.",
+  openGraph: {
+    title: "Articles & Knowledge Base - SketchShaper",
+    description:
+      "Stay informed with curated architectural 3D workflows, PBR texturing guides, lighting breakdowns, rendering tips, and SketchUp tutorials.",
+    url: "https://www.sketchshaper.com/blog",
+    type: "website",
+    siteName: "SketchShaper",
+  },
+  twitter: {
+    card: "summary",
+    title: "Articles & Knowledge Base - SketchShaper",
+    description:
+      "Stay informed with curated architectural 3D workflows, PBR texturing guides, lighting breakdowns, rendering tips, and SketchUp tutorials.",
+  },
 };
 
-export default function Page() {
-  return <BlogsPage />;
+export default async function Page() {
+  let initialData = null;
+  try {
+    const res = await getData("blogs/pages?page=1&limit=10&order=desc");
+    if (res?.data?.result) {
+      initialData = {
+        result: res.data.result,
+        pagination: res.data.pagination || {
+          total: res.data.result.length,
+          totalPage: 1,
+          currentPage: 1,
+        },
+      };
+    }
+  } catch (err) {
+    console.error("Error prefetching blogs:", err);
+  }
+
+  return <BlogsPage initialData={initialData} />;
 }

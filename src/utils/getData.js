@@ -1,15 +1,58 @@
+const deriveTagsFromPath = (path) => {
+  if (!path || typeof path !== "string") return ["general"];
+  const clean = path.split("?")[0];
+  const parts = clean.split("/").filter(Boolean);
+  const resource = parts[0] || "general";
+  const idOrSub = parts[1];
+
+  const tags = [resource];
+
+  if (resource === "assets" && idOrSub && !isNaN(Number(idOrSub))) {
+    tags.push(`asset-${idOrSub}`);
+  } else if (resource === "categories" && idOrSub && !isNaN(Number(idOrSub))) {
+    tags.push(`category-${idOrSub}`);
+  } else if (resource === "sub-categories" && idOrSub && !isNaN(Number(idOrSub))) {
+    tags.push(`subcategory-${idOrSub}`);
+  } else if (resource === "blogs" && idOrSub) {
+    tags.push(`blog-${idOrSub}`);
+  }
+
+  return tags;
+};
+
 const getData = async (path, options = {}) => {
   try {
+    const defaultTags = deriveTagsFromPath(path);
+    const customTags = options.tags || options.next?.tags || [];
+    const mergedTags = Array.from(new Set([...defaultTags, ...customTags]));
+    const revalidate =
+      options.revalidate ?? options.next?.revalidate ?? 300; // 300-second fallback TTL safety net
+
+    const timeoutMs = options.timeout ?? 30000;
     const fetchOptions = {
-      signal: AbortSignal.timeout(10000),
+      signal: options.signal || AbortSignal.timeout(timeoutMs),
       ...options,
     };
+    delete fetchOptions.timeout;
+
     if (!options.cache && !options.next) {
-      fetchOptions.next = { revalidate: 10 };
+      fetchOptions.next = {
+        revalidate,
+        tags: mergedTags,
+      };
+    } else if (options.next) {
+      fetchOptions.next = {
+        ...options.next,
+        revalidate: options.next.revalidate ?? revalidate,
+        tags: Array.from(new Set([...(options.next.tags || []), ...defaultTags])),
+      };
     }
 
+    const baseUrl =
+      process.env.API_URL_INTERNAL || process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
+
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/${path}`,
+      `${baseUrl}/${path}`,
       fetchOptions,
     );
 

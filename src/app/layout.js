@@ -1,16 +1,12 @@
-import AboutUs from "@/components/Shared/AboutUs/AboutUs";
-// ContactUs component for the new contact section below AboutUs
-import ContactUs from "@/components/Shared/ContactUs/ContactUs";
 import Footer from "@/components/Shared/Footer/Footer";
 import Navbar from "@/components/Shared/Navbar/Navbar";
 import getData from "@/utils/getData";
 import "./globals.css";
 
-import Blogs from "@/components/Shared/Blogs/Blogs";
-import SupportedBy from "@/components/Shared/SupportedBy/SupportedBy";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { ErrorFallback } from "@/components/Shared/ErrorFallback/ErrorFallback";
 import Providers from "@/components/Providers";
+
 const inter = {
   className: "font-sans",
   variable: "--font-inter",
@@ -38,6 +34,7 @@ export async function generateMetadata() {
   try {
     const applicationSettings = await getCachedApplicationSettings();
     return {
+      metadataBase: new URL("https://www.sketchshaper.com"),
       title: applicationSettings?.data?.site_name || "SketchShaper",
       description:
         applicationSettings?.data?.site_description ||
@@ -45,6 +42,7 @@ export async function generateMetadata() {
     };
   } catch (e) {
     return {
+      metadataBase: new URL("https://www.sketchshaper.com"),
       title: "SketchShaper",
       description: "Free & Pro 3D Models, Textures, and Plugins for SketchUp",
     };
@@ -52,41 +50,26 @@ export async function generateMetadata() {
 }
 
 export default async function RootLayout({ children }) {
-  // Fetch AboutUs data from /general/about-us endpoint
-  const aboutUsPromise = getData("general/about-us");
-  // ContactUs uses boilerplate UI - no backend fetch needed
-  // Later: add getData("general/contact-us") when backend is ready
   const categoriesPromise = getData("categories");
   const subCategoriesPromise = getData("sub-categories");
-  const assetsPromise = getData("assets");
   const footerPagesPromise = getData("pages");
   const socialsPromise = getData("social");
-  const supportedByPromise = getData("supportedby");
-  const blogsPromise = getData("blogs");
 
-  // Parallel fetch all data (Promise.all waits for all to complete)
+  // Parallel fetch data required by Navbar and Footer
   const [
-    aboutUs,
     categories,
     subCategories,
-    assets,
     footerPages,
     socials,
-    supportedby,
-    blogs,
   ] = await Promise.all([
-    aboutUsPromise,
     categoriesPromise,
     subCategoriesPromise,
-    assetsPromise,
     footerPagesPromise,
     socialsPromise,
-    supportedByPromise,
-    blogsPromise,
   ]);
 
   // Only show full-screen error if the primary backend connection completely failed
-  if (!categories && !assets && !subCategories) {
+  if (!categories && !subCategories) {
     return (
       <html lang="en" className={`${inter.variable} antialiased font-sans`}>
         <body className="antialiased font-sans">
@@ -99,8 +82,14 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} antialiased font-sans`}>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
+          rel="stylesheet"
+        />
         <link rel="preconnect" href="https://api.sketchshaper.com" />
-        <link rel="preconnect" href="https://ik.imagekit.io" />
+        <link rel="preconnect" href="https://res.cloudinary.com" />
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
         <script
           async
@@ -110,23 +99,14 @@ export default async function RootLayout({ children }) {
       </head>
       <body className={inter.className}>
         <Providers>
-          <div className="sticky top-0 z-50">
-            <Navbar
-              categories={categories?.data || []}
-              subCategories={subCategories?.data || []}
-              assets={assets?.data || []}
-              footerPages={footerPages?.data || []}
-            />
-          </div>
+          <Navbar
+            categories={categories?.data || []}
+            subCategories={subCategories?.data || []}
+            footerPages={footerPages?.data || []}
+          />
 
           {children}
 
-          {/* About Us Section - from backend /general/about-us */}
-          {aboutUs?.data && <AboutUs aboutUs={aboutUs.data} />}
-          {/* Contact Us Section - Boilerplate UI (no backend data needed yet) */}
-          <ContactUs />
-          {supportedby?.data && <SupportedBy supportedby={supportedby.data} />}
-          {blogs?.data?.length > 0 && <Blogs blogs={blogs.data} />}
           <Footer
             categories={categories?.data || []}
             footerPages={footerPages?.data || []}

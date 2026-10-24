@@ -1,27 +1,49 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/free-mode";
-import "swiper/css/navigation";
-import "swiper/css/thumbs";
-import { FreeMode, Navigation, Thumbs } from "swiper/modules";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getOptimizedImageUrl } from "@/utils/cloudinary";
-import { CategoryAds } from "@/components/Shared/GoogleAdsense/categoryads";
 import useSWR from "swr";
 import { fetcher } from "@/utils/swrFetcher";
 import slugify from "@/utils/slugify";
 import { usePatreonAuth } from "@/contexts/PatreonAuthContext";
+import {
+  FiDownload,
+  FiBox,
+  FiHardDrive,
+  FiLayers,
+  FiLock,
+  FiArrowLeft,
+  FiExternalLink,
+  FiFileText,
+  FiChevronLeft,
+  FiChevronRight,
+  FiZoomIn,
+  FiZoomOut,
+  FiMaximize,
+  FiX,
+  FiRotateCcw,
+  FiShield,
+  FiCheckCircle,
+  FiZap,
+} from "react-icons/fi";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
+import InFeedAd from "@/components/Shared/GoogleAdsense/InFeedAd";
+import ResponsiveBannerAd from "@/components/Shared/GoogleAdsense/ResponsiveBannerAd";
+import { formatAssetSize } from "@/utils/formatAssetSize";
 
 const SubCategoryDetails = ({ assetDetails }) => {
-  const [thumbsSwiper, setThumbsSwiper] = useState(null);
-  const [showAds, setShowAds] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const leftAdRef = useRef(null);
-  const rightAdRef = useRef(null);
+  const [shaderMode, setShaderMode] = useState("beauty"); // "beauty" | "clay" | "wireframe"
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [panPosition, setPanPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [toast, setToast] = useState(null);
 
   const { token, user, login, logout } = usePatreonAuth();
 
@@ -32,6 +54,143 @@ const SubCategoryDetails = ({ assetDetails }) => {
   const isAuthenticated = mounted && !!token && !!user;
   const isPatron = isAuthenticated && !!user?.is_active_patron;
 
+  // Toast notification helper
+  const showToast = (message, type = "info") => {
+    setToast({ message, type });
+    setTimeout(() => {
+      setToast((current) => (current?.message === message ? null : current));
+    }, 3200);
+  };
+
+  const getOriginalImageUrl = (imagePath) => {
+    if (!imagePath) return "";
+    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) return imagePath;
+    return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE || ""}${imagePath}`;
+  };
+
+  // Combine cover and gallery images so the primary cover is always slide #1
+  const displayImages = useMemo(() => {
+    if (!assetDetails) return [];
+    const gallery = assetDetails?.images || [];
+    const hasCoverInGallery =
+      assetDetails?.cover &&
+      gallery.some((img) => img?.image === assetDetails.cover);
+
+    const list = [];
+    if (assetDetails?.cover && !hasCoverInGallery) {
+      list.push({
+        id: "primary-cover",
+        image: assetDetails.cover,
+        alt:
+          assetDetails?.cover_alt?.trim() ||
+          assetDetails?.name ||
+          "Model preview render",
+      });
+    }
+    list.push(...gallery);
+    return list.length > 0
+      ? list
+      : [
+          {
+            id: "fallback-cover",
+            image: assetDetails?.cover || "",
+            alt: assetDetails?.name || "3D Model",
+          },
+        ];
+  }, [assetDetails]);
+
+  // Camera angle navigation (Left / Right)
+  const handlePrevAngle = (e) => {
+    e?.stopPropagation();
+    setActiveImageIndex((prev) => (prev > 0 ? prev - 1 : displayImages.length - 1));
+    setZoomLevel(1);
+    setPanPosition({ x: 0, y: 0 });
+  };
+
+  const handleNextAngle = (e) => {
+    e?.stopPropagation();
+    setActiveImageIndex((prev) => (prev < displayImages.length - 1 ? prev + 1 : 0));
+    setZoomLevel(1);
+    setPanPosition({ x: 0, y: 0 });
+  };
+
+  // Zoom handlers (1x to 3x)
+  const handleZoomChange = (delta) => {
+    setZoomLevel((prev) => {
+      const next = Math.min(Math.max(Number((prev + delta).toFixed(1)), 1), 3);
+      if (next === 1) setPanPosition({ x: 0, y: 0 });
+      return next;
+    });
+  };
+
+  const handleResetZoom = (e) => {
+    e?.stopPropagation();
+    setZoomLevel(1);
+    setPanPosition({ x: 0, y: 0 });
+  };
+
+  // Drag-to-pan handlers
+  const handleMouseDown = (e) => {
+    if (zoomLevel <= 1) return;
+    setIsDragging(true);
+    setDragStart({ x: e.clientX - panPosition.x, y: e.clientY - panPosition.y });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging || zoomLevel <= 1) return;
+    setPanPosition({
+      x: e.clientX - dragStart.x,
+      y: e.clientY - dragStart.y,
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // Touch handlers for mobile
+  const handleTouchStart = (e) => {
+    if (zoomLevel <= 1 || !e.touches[0]) return;
+    setIsDragging(true);
+    setDragStart({
+      x: e.touches[0].clientX - panPosition.x,
+      y: e.touches[0].clientY - panPosition.y,
+    });
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isDragging || zoomLevel <= 1 || !e.touches[0]) return;
+    setPanPosition({
+      x: e.touches[0].clientX - dragStart.x,
+      y: e.touches[0].clientY - dragStart.y,
+    });
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+      if (e.key === "ArrowLeft") {
+        setActiveImageIndex((prev) => (prev > 0 ? prev - 1 : displayImages.length - 1));
+        setZoomLevel(1);
+        setPanPosition({ x: 0, y: 0 });
+      } else if (e.key === "ArrowRight") {
+        setActiveImageIndex((prev) => (prev < displayImages.length - 1 ? prev + 1 : 0));
+        setZoomLevel(1);
+        setPanPosition({ x: 0, y: 0 });
+      } else if (e.key === "Escape") {
+        setIsFullscreen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [displayImages.length]);
+
+  // Download handler
   const handleDownload = () => {
     if (!assetDetails?.id) return;
 
@@ -40,6 +199,9 @@ const SubCategoryDetails = ({ assetDetails }) => {
       setShowModal(true);
       return;
     }
+
+    setIsDownloading(true);
+    showToast("Preparing .SKP package...", "info");
 
     const tokenQuery =
       assetDetails?.access_type === "paid" && token ? `?token=${token}` : "";
@@ -51,9 +213,12 @@ const SubCategoryDetails = ({ assetDetails }) => {
     a.download = "";
     document.body.appendChild(a);
     a.click();
+
     setTimeout(() => {
       document.body.removeChild(a);
-    }, 100);
+      setIsDownloading(false);
+      showToast(`Downloaded: ${assetDetails.name}.skp`, "success");
+    }, 1200);
   };
 
   // Fetch related assets from the same sub-category
@@ -62,434 +227,916 @@ const SubCategoryDetails = ({ assetDetails }) => {
       ? `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/sub-categories/${assetDetails.sub_category_id}`
       : null,
     fetcher,
+    { revalidateOnFocus: false, revalidateOnReconnect: false }
   );
 
-  useEffect(() => {
-    const handleResize = () => {
-      setShowAds(window.innerWidth >= 768 && !isPatron);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [isPatron]);
+  // Filter related assets (exclude current asset and take up to 5 so slot #3 can be an in-feed ad)
+  const relatedAssets = useMemo(() => {
+    return (
+      relatedAssetsData?.data?.assets
+        ?.filter((asset) => asset.id !== assetDetails?.id)
+        ?.sort(() => 0.5 - Math.random())
+        ?.slice(0, 5) || []
+    );
+  }, [relatedAssetsData, assetDetails?.id]);
 
-  useEffect(() => {
-    if (showAds) {
-      const loadAd = (ref) => {
-        if (ref && ref.current) {
-          const width = ref.current.offsetWidth;
-          if (width > 0) {
-            try {
-              // Avoid double-initializing the same <ins> element
-              if (
-                ref.current.getAttribute("data-adsbygoogle-status") !== "done"
-              ) {
-                (window.adsbygoogle = window.adsbygoogle || []).push({});
-              }
-            } catch (error) {
-              console.error("AdSense error:", error);
-            }
-          } else {
-            console.warn("Ad slot has zero width, skipping ad initialization.");
-          }
-        }
-      };
-      loadAd(leftAdRef);
-      loadAd(rightAdRef);
+  // Breadcrumb taxonomy variables
+  const categoryName =
+    assetDetails?.sub_category?.category?.name ||
+    relatedAssetsData?.data?.category?.name ||
+    "Sketchup 3D models";
+  const categoryId =
+    assetDetails?.sub_category?.category?.id ||
+    relatedAssetsData?.data?.category?.id ||
+    "1";
+  const subCategoryName =
+    assetDetails?.sub_category?.name ||
+    relatedAssetsData?.data?.name ||
+    "3D Models";
+  const subCategoryId =
+    assetDetails?.sub_category?.id ||
+    assetDetails?.sub_category_id ||
+    relatedAssetsData?.data?.id ||
+    "";
+
+  // Formatted file size
+  const formattedSize = formatAssetSize(assetDetails);
+
+  // Shader filter style
+  const shaderFilterStyle = useMemo(() => {
+    if (shaderMode === "clay") {
+      return { filter: "grayscale(100%) contrast(115%) brightness(110%)" };
     }
-  }, [showAds]);
+    if (shaderMode === "wireframe") {
+      return { filter: "invert(90%) hue-rotate(180deg) contrast(170%)" };
+    }
+    return { filter: "none" };
+  }, [shaderMode]);
 
-  const getOriginalImageUrl = (imagePath) => {
-    return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
-  };
-
-  // Filter related assets (exclude current asset and show 6 random assets)
-  const relatedAssets =
-    relatedAssetsData?.data?.assets
-      ?.filter((asset) => asset.id !== assetDetails?.id)
-      ?.sort(() => Math.random() - 0.5) // Random shuffle
-      ?.slice(0, 6) || [];
+  const activeImage = displayImages[activeImageIndex] || displayImages[0];
 
   return (
-    <div className="">
-      <div className="bg-secondary py-3 md:py-5">
-        <div className="flex justify-center items-center relative px-2 md:px-4">
-          {showAds && (
-            <div className="hidden xl:block w-32 lg:w-40 h-[400px] lg:h-[500px] mr-2 lg:mr-4">
-              <ins
-                ref={leftAdRef}
-                className="adsbygoogle"
-                style={{ display: "block", width: "100%", height: "100%" }}
-                data-ad-client="ca-pub-5557791257949251"
-                data-ad-slot="2445550536"
-                data-ad-format="vertical"
-                data-full-width-responsive="false"
-              ></ins>
-            </div>
-          )}
+    <div className="w-full min-h-screen text-fg font-sans pt-6 sm:pt-10 pb-20 px-4 sm:px-6 md:px-[0.5in] relative overflow-hidden bg-transparent">
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none animate-fadeIn">
+          <div className="px-4 py-2.5 rounded-xl text-xs font-mono bg-surface-raised border border-line text-fg shadow-2xl flex items-center gap-2 pointer-events-auto">
+            <span
+              className={`w-2 h-2 rounded-full ${
+                toast.type === "success" ? "bg-action" : "bg-action/60"
+              }`}
+            />
+            <span>{toast.message}</span>
+          </div>
+        </div>
+      )}
 
-          {/* Main Swiper */}
-          <div className="w-full max-w-6xl xl:max-w-[1147px]">
-            <Swiper
-              style={{
-                "--swiper-navigation-color": "#fff",
-                "--swiper-pagination-color": "#fff",
-              }}
-              loop={true}
-              spaceBetween={10}
-              thumbs={{ swiper: thumbsSwiper }}
-              modules={[FreeMode, Navigation, Thumbs]}
-              className="mySwiper2"
+      {/* Main 1600px Max-width Container */}
+      <div className="max-w-[1600px] mx-auto space-y-8 sm:space-y-10">
+        
+        {/* 1. TOP BREADCRUMB BAR */}
+        <div className="flex flex-wrap items-center justify-between gap-4 text-xs pb-1">
+          {/* Left: Monospace Breadcrumbs */}
+          <nav aria-label="Breadcrumb" className="flex items-center gap-2 font-mono text-fg-secondary">
+            <Link href="/" className="hover:text-action transition-colors">
+              Home
+            </Link>
+            <span className="text-line-control">/</span>
+            <Link
+              href={`/${slugify(categoryName)}-${categoryId}`}
+              className="hover:text-action transition-colors truncate max-w-[150px] sm:max-w-none"
             >
-              {assetDetails?.images?.map((image) => (
-                <SwiperSlide key={image?.id}>
-                  <Image
-                    src={getOptimizedImageUrl(
-                      getOriginalImageUrl(image?.image),
-                    )}
-                    alt={
-                      image?.alt?.trim() || assetDetails?.name || "Asset Image"
-                    }
-                    height={1600}
-                    width={1600}
-                    className="w-full h-[200px] sm:h-[300px] md:h-[400px] lg:h-[500px] xl:h-[578px] object-cover rounded-md"
-                  />
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
+              {categoryName}
+            </Link>
+            <span className="text-line-control">/</span>
+            <Link
+              href={`/${slugify(categoryName)}-${categoryId}/${slugify(subCategoryName)}-${subCategoryId}`}
+              className="hover:text-action transition-colors truncate max-w-[170px] sm:max-w-none"
+            >
+              {subCategoryName}
+            </Link>
+            <span className="text-line-control">/</span>
+            <span className="text-fg font-medium truncate max-w-[220px] sm:max-w-none">
+              {assetDetails?.name}
+            </span>
+          </nav>
 
-          {showAds && (
-            <div className="hidden xl:block w-32 lg:w-40 h-[400px] lg:h-[500px] ml-2 lg:ml-4">
-              <ins
-                ref={rightAdRef}
-                className="adsbygoogle"
-                style={{ display: "block", width: "100%", height: "100%" }}
-                data-ad-client="ca-pub-5557791257949251"
-                data-ad-slot="2445550536"
-                data-ad-format="vertical"
-                data-full-width-responsive="false"
-              ></ins>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="bg-primary py-5">
-        <div className="md:w-[60%] mx-auto">
-          <Swiper
-            onSwiper={setThumbsSwiper}
-            loop={true}
-            breakpoints={{
-              0: { slidesPerView: 3 },
-              520: { slidesPerView: 3 },
-              768: { slidesPerView: 5 },
-              1000: { slidesPerView: 5 },
-              1100: { slidesPerView: 6 },
-            }}
-            freeMode={true}
-            watchSlidesProgress={true}
-            modules={[FreeMode, Navigation, Thumbs]}
-            className="mySwiper"
+          {/* Right: Back to Models Button */}
+          <Link
+            href={`/${slugify(categoryName)}-${categoryId}/${slugify(subCategoryName)}-${subCategoryId}`}
+            className="inline-flex items-center gap-1.5 bg-surface hover:bg-surface-raised border border-line hover:border-action/40 text-fg-secondary hover:text-fg rounded-lg px-3.5 py-1.5 text-xs font-mono transition-all shadow-sm"
           >
-            {assetDetails?.images?.map((image) => (
-              <SwiperSlide key={image?.id}>
-                <Image
-                  src={getOptimizedImageUrl(getOriginalImageUrl(image?.image))}
-                  alt={image?.alt?.trim() || assetDetails?.name || "Thumbnail"}
-                  height={150}
-                  width={150}
-                  className="md:w-28 w-20 mx-auto h-auto rounded-md"
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
+            <FiArrowLeft className="w-3.5 h-3.5 text-action" />
+            <span>Back to {subCategoryName}</span>
+          </Link>
         </div>
-      </div>
 
-      <CategoryAds />
+        {/* 2. TOP LEADERBOARD AD BANNER */}
+        <ResponsiveBannerAd className="mb-2" />
 
-      <div className="bg-secondary py-5 text-white px-5">
-        <div className="flex flex-col md:flex-row items-center md:justify-center gap-6">
-          {/* Left: Asset Details */}
-          <div className="md:flex-1 md:text-left text-center">
-            <div className="flex items-center gap-2 md:justify-start justify-center">
-              <p className="font-semibold text-sm">Name - </p>
-              <h1 className="text-sm font-medium flex items-center gap-2">
-                <span>{assetDetails?.name}</span>
-                {assetDetails?.access_type === "paid" && (
-                  <span className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm flex items-center gap-1 border border-purple-400/30">
-                    <span>💎</span> PRO
-                  </span>
-                )}
-              </h1>
-            </div>
-            <p className="text-sm">
-              <span className="font-semibold">Size - </span>
-              <span className="text-xs">
-                {assetDetails?.size && String(assetDetails.size).trim() !== ""
-                  ? assetDetails.size
-                  : assetDetails?.file?.file_size
-                    ? `${(Number(assetDetails.file.file_size) / (1024 * 1024)).toFixed(2)} MB`
-                    : "—"}
-              </span>
-            </p>
-            <p className="text-sm">
-              <span className="font-semibold">Resolution - </span>
-              <span className="text-xs">{assetDetails?.resolution}</span>
-            </p>
-            <div className="text-sm max-w-md">
-              <span className="font-semibold">Short Description - </span>
-              {assetDetails?.short_description ? (
-                <div
-                  className="text-xs inline-block text-slate-300 [&_p]:inline [&_ul]:list-disc [&_ul]:ml-4 [&_ol]:list-decimal [&_ol]:ml-4 [&_a]:text-blue-400 [&_a]:underline"
-                  dangerouslySetInnerHTML={{
-                    __html: assetDetails.short_description,
-                  }}
-                />
-              ) : (
-                <span className="text-xs text-slate-400">—</span>
-              )}
-            </div>
-          </div>
+        {/* 3. MAIN 12-COLUMN ASYMMETRIC SPLIT */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-          {/* Center: Action / Download Button */}
-          {assetDetails?.id && (
-            <div className="w-64 flex flex-col items-center">
-              {assetDetails?.access_type === "paid" ? (
-                isPatron ? (
-                  /* Case 1: Active Patron */
+          {/* ============================================================== */}
+          {/* A. LEFT COLUMN (lg:col-span-8): Viewport & Specifications Sheet */}
+          {/* ============================================================== */}
+          <div className="lg:col-span-8 flex flex-col gap-5">
+
+            {/* 3D Viewport Stage Container */}
+            <div className="bg-surface/50 border border-line rounded-2xl overflow-hidden shadow-2xl relative">
+              
+              {/* Top Floating Controls & Badges */}
+              <div className="absolute top-4 inset-x-4 z-20 flex items-center justify-between pointer-events-none">
+                
+                {/* Top-Left Floating Control Bar (Shader modes + ruler) */}
+                <div className="bg-surface-raised/90 backdrop-blur-md border border-line p-1 rounded-xl flex items-center gap-1 shadow-lg pointer-events-auto">
+                  {/* Beauty Mode */}
                   <button
                     type="button"
-                    onClick={handleDownload}
-                    className="w-full font-semibold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 active:scale-95 text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 shadow-purple-500/30 cursor-pointer flex items-center justify-center gap-2"
+                    onClick={() => {
+                      setShaderMode("beauty");
+                      showToast("Shader mode: Realistic Beauty PBR");
+                    }}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-mono font-medium transition-all ${
+                      shaderMode === "beauty"
+                        ? "bg-fg text-canvas shadow-sm font-semibold"
+                        : "text-fg-secondary hover:text-fg hover:bg-surface/60"
+                    }`}
                   >
-                    <span>💎</span> PRO DOWNLOAD
+                    Beauty
                   </button>
-                ) : isAuthenticated ? (
-                  /* Case 2: Logged in, but not an active patron */
-                  <div className="w-full flex flex-col items-center">
+
+                  {/* Clay Mode */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShaderMode("clay");
+                      showToast("Shader mode: Clay Studio AO");
+                    }}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-mono font-medium transition-all ${
+                      shaderMode === "clay"
+                        ? "bg-fg text-canvas shadow-sm font-semibold"
+                        : "text-fg-secondary hover:text-fg hover:bg-surface/60"
+                    }`}
+                  >
+                    Clay
+                  </button>
+
+                  {/* Wireframe Mode */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShaderMode("wireframe");
+                      showToast("Shader mode: Wireframe Topology");
+                    }}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-mono font-medium transition-all ${
+                      shaderMode === "wireframe"
+                        ? "bg-fg text-canvas shadow-sm font-semibold"
+                        : "text-fg-secondary hover:text-fg hover:bg-surface/60"
+                    }`}
+                  >
+                    Wireframe
+                  </button>
+                </div>
+
+                {/* Top-Right Floating Status Badges */}
+                <div className="flex items-center gap-2 pointer-events-auto">
+                  {assetDetails?.access_type === "paid" ? (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-mono font-semibold bg-extension-tintBg text-extension border border-extension-tintLine">
+                      <span>💎</span> PRO ASSET
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-mono font-semibold bg-action-tintBg text-action border border-action-tintLine">
+                      <span className="w-1.5 h-1.5 rounded-full bg-action animate-pulse" />
+                      FREE ASSET
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Main Canvas Stage */}
+              <div
+                className={`aspect-[16/10] sm:aspect-[16/9] bg-gradient-to-b from-surface/20 to-canvas/80 flex items-center justify-center p-8 relative overflow-hidden select-none group/canvas ${
+                  zoomLevel > 1 ? (isDragging ? "cursor-grabbing" : "cursor-grab") : ""
+                }`}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                {/* Subtle radial center glow */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(79,219,134,0.06)_0%,transparent_70%)] pointer-events-none" />
+
+                {/* Blurred Floor Shadow (only visible at 1x for crisp CAD render) */}
+                <div
+                  className={`absolute bottom-12 w-3/4 h-8 bg-black/80 blur-xl rounded-full transform scale-y-50 pointer-events-none transition-opacity duration-300 ${
+                    zoomLevel > 1 ? "opacity-0" : "opacity-100"
+                  }`}
+                />
+
+                {/* Left Navigation Arrow */}
+                {displayImages.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={handlePrevAngle}
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/60 hover:bg-black/90 text-white/80 hover:text-white border border-white/15 backdrop-blur-md flex items-center justify-center transition-all shadow-xl hover:scale-110 active:scale-95 cursor-pointer"
+                    aria-label="Previous camera angle"
+                    title="Previous Angle (← key)"
+                  >
+                    <FiChevronLeft className="w-5 h-5" />
+                  </button>
+                )}
+
+                {/* Right Navigation Arrow */}
+                {displayImages.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={handleNextAngle}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/60 hover:bg-black/90 text-white/80 hover:text-white border border-white/15 backdrop-blur-md flex items-center justify-center transition-all shadow-xl hover:scale-110 active:scale-95 cursor-pointer"
+                    aria-label="Next camera angle"
+                    title="Next Angle (→ key)"
+                  >
+                    <FiChevronRight className="w-5 h-5" />
+                  </button>
+                )}
+
+                {/* Stage Zoom & Fullscreen Toolbar */}
+                <div className="absolute bottom-4 right-4 z-20 flex items-center gap-1.5 bg-black/70 backdrop-blur-md border border-white/15 rounded-lg p-1 shadow-2xl">
+                  {/* Zoom Out */}
+                  <button
+                    type="button"
+                    onClick={() => handleZoomChange(-0.5)}
+                    disabled={zoomLevel <= 1}
+                    className="p-1.5 rounded-md text-fg-secondary hover:text-fg hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+                    title="Zoom Out"
+                  >
+                    <FiZoomOut className="w-4 h-4" />
+                  </button>
+
+                  {/* Zoom Percentage */}
+                  <span className="text-[11px] font-mono px-1.5 text-fg min-w-[42px] text-center select-none font-medium">
+                    {Math.round(zoomLevel * 100)}%
+                  </span>
+
+                  {/* Zoom In */}
+                  <button
+                    type="button"
+                    onClick={() => handleZoomChange(0.5)}
+                    disabled={zoomLevel >= 3}
+                    className="p-1.5 rounded-md text-fg-secondary hover:text-fg hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+                    title="Zoom In"
+                  >
+                    <FiZoomIn className="w-4 h-4" />
+                  </button>
+
+                  {/* Reset Zoom */}
+                  {zoomLevel > 1 && (
+                    <button
+                      type="button"
+                      onClick={handleResetZoom}
+                      className="p-1.5 rounded-md text-fg-secondary hover:text-fg hover:bg-white/10 transition-colors cursor-pointer"
+                      title="Reset Zoom"
+                    >
+                      <FiRotateCcw className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+
+                  <div className="w-px h-4 bg-white/20 my-auto mx-0.5" />
+
+                  {/* Fullscreen Inspect Button */}
+                  <button
+                    type="button"
+                    onClick={() => setIsFullscreen(true)}
+                    className="p-1.5 rounded-md text-fg-secondary hover:text-action hover:bg-white/10 transition-colors cursor-pointer"
+                    title="Fullscreen Lightbox Inspection"
+                  >
+                    <FiMaximize className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Model Render Image Container with Zoom & Pan Transforms */}
+                <div
+                  className="relative z-10 w-full h-full flex items-center justify-center pointer-events-none"
+                  style={{
+                    transform: `scale(${zoomLevel}) translate(${panPosition.x / zoomLevel}px, ${panPosition.y / zoomLevel}px)`,
+                    transition: isDragging ? "none" : "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                  }}
+                >
+                  <Image
+                    src={getOptimizedImageUrl(getOriginalImageUrl(activeImage?.image))}
+                    alt={activeImage?.alt?.trim() || assetDetails?.name || "3D Model Render"}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 65vw"
+                    priority
+                    loading="eager"
+                    style={shaderFilterStyle}
+                    className="object-contain p-4 drop-shadow-[0_16px_36px_rgba(0,0,0,0.85)] select-none"
+                  />
+                </div>
+              </div>
+
+              {/* Bottom Angle Carousel */}
+              <div className="p-3 bg-surface/70 border-t border-line flex items-center gap-2">
+                <span className="text-[10px] font-mono uppercase text-fg-secondary/70 mr-1 hidden sm:inline">
+                  Camera:
+                </span>
+                {displayImages.slice(0, 5).map((img, idx) => (
+                  <button
+                    key={img?.id || idx}
+                    type="button"
+                    onClick={() => {
+                      setActiveImageIndex(idx);
+                      showToast(`Switched to Camera Angle #${idx + 1}`);
+                    }}
+                    className={`w-12 h-9 rounded overflow-hidden border-2 transition-all hover:scale-105 relative bg-canvas ${
+                      activeImageIndex === idx
+                        ? "border-action shadow-md"
+                        : "border-line hover:border-line-control"
+                    }`}
+                    title={img?.alt || `Angle #${idx + 1}`}
+                  >
+                    <Image
+                      src={getOptimizedImageUrl(getOriginalImageUrl(img?.image))}
+                      alt={img?.alt || `Angle #${idx + 1}`}
+                      fill
+                      sizes="48px"
+                      className="object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Model Description & Specifications Card */}
+            {assetDetails?.short_description && (
+              <div className="bg-surface/30 backdrop-blur-2xl rounded-panel border border-white/[0.08] p-6 sm:p-7 shadow-2xl shadow-black/40 overflow-hidden relative space-y-3.5">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] via-transparent to-action/[0.02] pointer-events-none" />
+                {/* Header */}
+                <div className="flex items-center justify-between pb-3.5 border-b border-white/[0.08] relative z-10">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-action" />
+                    <h2 className="text-xs font-mono uppercase tracking-wider text-action font-semibold flex items-center gap-2">
+                      <FiFileText className="w-3.5 h-3.5" />
+                      Model Description
+                    </h2>
+                  </div>
+                  <span className="text-[10px] font-mono text-fg-secondary/70 uppercase">
+                    Overview
+                  </span>
+                </div>
+
+                {/* Body Content */}
+                <div
+                  className="text-sm text-fg-secondary leading-relaxed font-sans prose prose-invert max-w-none [&_p]:mb-2.5 [&_a]:text-action hover:[&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_strong]:text-fg [&_b]:text-fg [&_h1]:text-fg [&_h2]:text-fg [&_h3]:text-fg relative z-10"
+                  dangerouslySetInnerHTML={{
+                    __html: sanitizeHtml(assetDetails.short_description),
+                  }}
+                />
+              </div>
+            )}
+
+          </div>
+
+          {/* ============================================================== */}
+          {/* B. RIGHT COLUMN (Sticky Download Hub - lg:col-span-4)           */}
+          {/* ============================================================== */}
+          <div className="lg:col-span-4 flex flex-col gap-6 sticky top-24">
+
+            {/* Primary Download Card */}
+            <div className="bg-surface/30 backdrop-blur-2xl rounded-panel border border-white/[0.08] p-6 sm:p-7 shadow-2xl shadow-black/40 overflow-hidden relative">
+              
+              {/* Subtle Specular Sheen & Glass Refraction */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] via-transparent to-action/[0.02] pointer-events-none" />
+              <div className="absolute -top-24 -right-24 w-72 h-72 bg-action/[0.06] rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-action/[0.04] rounded-full blur-3xl pointer-events-none" />
+
+              {/* Top Meta Row */}
+              <div className="flex items-center justify-between text-xs font-mono text-fg-secondary pb-3.5 border-b border-white/[0.08] relative z-10">
+                <span className="glass-panel px-3 py-1 rounded-full text-xs text-fg-secondary border border-white/10">
+                  ASSET #{assetDetails?.id || "SKP"}
+                </span>
+                {assetDetails?.access_type === "paid" && (
+                  <span className="glass-panel px-3 py-1 rounded-full text-xs text-extension border border-extension-tintLine bg-extension-tintBg/80 font-medium">
+                    💎 Patreon PRO
+                  </span>
+                )}
+              </div>
+
+              {/* Product Title */}
+              <div className="mt-5 relative z-10">
+                <h1 className="text-2xl sm:text-3xl font-bold text-fg tracking-tight font-sans">
+                  {assetDetails?.name}
+                </h1>
+              </div>
+
+              {/* 3-Row Technical Summary Stack */}
+              <div className="mt-5 pt-4 border-t border-white/[0.08] space-y-2.5 font-mono text-xs relative z-10">
+                {/* Row 1: Size */}
+                <div className="bg-white/[0.03] backdrop-blur-md border border-white/[0.08] py-2.5 px-3.5 rounded-xl flex items-center justify-between hover:bg-white/[0.05] transition-colors">
+                  <div className="flex items-center gap-2 text-fg-secondary">
+                    <FiHardDrive className="w-3.5 h-3.5 text-action" />
+                    <span>Size</span>
+                  </div>
+                  <span className="font-bold text-fg">{formattedSize}</span>
+                </div>
+
+                {/* Row 2: Resolution */}
+                <div className="bg-white/[0.03] backdrop-blur-md border border-white/[0.08] py-2.5 px-3.5 rounded-xl flex items-center justify-between hover:bg-white/[0.05] transition-colors">
+                  <div className="flex items-center gap-2 text-fg-secondary">
+                    <FiLayers className="w-3.5 h-3.5 text-action" />
+                    <span>Resolution</span>
+                  </div>
+                  <span className="font-bold text-action">
+                    {assetDetails?.resolution || "4K PBR (Seamless)"}
+                  </span>
+                </div>
+
+                {/* Row 3: Format */}
+                <div className="bg-white/[0.03] backdrop-blur-md border border-white/[0.08] py-2.5 px-3.5 rounded-xl flex items-center justify-between hover:bg-white/[0.05] transition-colors">
+                  <div className="flex items-center gap-2 text-fg-secondary">
+                    <FiBox className="w-3.5 h-3.5 text-action" />
+                    <span>Format</span>
+                  </div>
+                  <span className="font-bold text-fg">.SKP Native / Universal</span>
+                </div>
+              </div>
+
+              {/* Render Engine Compatibility Badges */}
+              <div className="mt-4 relative z-10">
+                <span className="block text-[10px] font-mono uppercase tracking-wider text-fg-secondary/70 mb-1.5">
+                  TESTED &amp; CALIBRATED FOR
+                </span>
+                <div className="flex flex-wrap gap-1.5 text-xs font-mono">
+                  <span className="glass-panel px-2.5 py-1 rounded-lg text-fg-secondary border border-white/10 text-xs font-mono bg-white/[0.02]">
+                    V-Ray 6/7
+                  </span>
+                  <span className="glass-panel px-2.5 py-1 rounded-lg text-fg-secondary border border-white/10 text-xs font-mono bg-white/[0.02]">
+                    Enscape 4.0+
+                  </span>
+                  <span className="glass-panel px-2.5 py-1 rounded-lg text-fg-secondary border border-white/10 text-xs font-mono bg-white/[0.02]">
+                    D5 Render
+                  </span>
+                  <span className="glass-panel px-2.5 py-1 rounded-lg text-fg-secondary border border-white/10 text-xs font-mono bg-white/[0.02]">
+                    Lumion 3D
+                  </span>
+                </div>
+              </div>
+
+              {/* Primary Download CTA Button */}
+              <div className="mt-6 pt-2 space-y-2 relative z-10">
+                {assetDetails?.access_type === "paid" ? (
+                  isPatron ? (
+                    <button
+                      type="button"
+                      onClick={handleDownload}
+                      disabled={isDownloading}
+                      className="w-full bg-gradient-to-r from-extension to-action hover:brightness-110 active:scale-[0.99] text-canvas font-semibold text-sm py-3.5 px-4 rounded-xl shadow-lg shadow-extension/10 flex items-center justify-center gap-2 transition-all cursor-pointer font-sans"
+                    >
+                      <FiDownload className="w-4 h-4" />
+                      <span>{isDownloading ? "Downloading..." : "Download PRO .SKP Model"}</span>
+                    </button>
+                  ) : isAuthenticated ? (
                     <button
                       type="button"
                       onClick={() => setShowModal(true)}
-                      className="w-full font-semibold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 active:scale-95 text-white bg-[#FF424D] hover:bg-[#E63A42] shadow-red-500/20 cursor-pointer flex items-center justify-center gap-2"
+                      className="w-full bg-[#FF424D] hover:bg-[#E63A42] active:scale-[0.99] text-white font-semibold text-sm py-3.5 px-4 rounded-xl shadow-lg shadow-red-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer font-sans"
                     >
-                      <svg
-                        className="w-4 h-4"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M15.386.524c-4.764 0-8.64 3.876-8.64 8.64 0 4.75 3.876 8.613 8.64 8.613 4.75 0 8.614-3.864 8.614-8.613C24 4.4 20.136.524 15.386.524M.003 23.537h4.22V.524H.003" />
                       </svg>
-                      SUBSCRIBE TO UNLOCK
+                      <span>Subscribe on Patreon to Unlock</span>
                     </button>
-                    <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
-                      <span className="truncate max-w-[140px]">
-                        {user?.email || "Free Account"}
-                      </span>
-                      <span>•</span>
-                      <button
-                        type="button"
-                        onClick={logout}
-                        className="hover:text-red-400 underline cursor-pointer"
-                      >
-                        Log out
-                      </button>
-                    </div>
-                  </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setShowModal(true)}
+                      className="w-full bg-[#FF424D] hover:bg-[#E63A42] active:scale-[0.99] text-white font-semibold text-sm py-3.5 px-4 rounded-xl shadow-lg shadow-red-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer font-sans"
+                    >
+                      <FiLock className="w-4 h-4" />
+                      <span>Unlock with Patreon</span>
+                    </button>
+                  )
                 ) : (
-                  /* Case 3: Not logged in */
                   <button
                     type="button"
-                    onClick={() => setShowModal(true)}
-                    className="w-full font-semibold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 active:scale-95 text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 hover:from-purple-700 hover:to-indigo-700 shadow-purple-500/30 cursor-pointer flex items-center justify-center gap-2"
+                    onClick={handleDownload}
+                    disabled={isDownloading}
+                    className="w-full bg-action hover:bg-action-hover active:bg-action-pressed text-canvas font-semibold text-sm py-3.5 px-4 rounded-xl shadow-lg shadow-action/20 flex items-center justify-center gap-2 transition-all cursor-pointer font-sans"
                   >
-                    <span>🔒</span> UNLOCK WITH PATREON
+                    <FiDownload className="w-4 h-4" />
+                    <span>{isDownloading ? "Downloading..." : "Download"}</span>
                   </button>
-                )
-              ) : (
-                /* Free asset */
-                <button
-                  type="button"
-                  onClick={handleDownload}
-                  className="w-full font-semibold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 active:scale-95 text-white bg-[#379960] hover:bg-[#3c634c] shadow-emerald-500/20 cursor-pointer"
-                >
-                  DOWNLOAD
-                </button>
-              )}
+                )}
+              </div>
             </div>
-          )}
-          {/* Right spacer for centering balance */}
-          <div className="hidden md:block md:flex-1"></div>
+
+            {/* 3D Asset License & Model Guarantee Card (Separates Download from Ad) */}
+            <div className="bg-surface/30 backdrop-blur-2xl border border-white/[0.08] rounded-panel p-4 sm:p-5 shadow-xl relative space-y-3">
+              <div className="flex items-center justify-between pb-2.5 border-b border-white/[0.08]">
+                <div className="flex items-center gap-2">
+                  <FiShield className="w-4 h-4 text-action" />
+                  <span className="text-xs font-mono uppercase tracking-wider text-fg font-semibold">
+                    License &amp; Geometry
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono text-action bg-action-tintBg border border-action-tintLine px-2 py-0.5 rounded-full">
+                  Verified .SKP
+                </span>
+              </div>
+
+              <div className="space-y-2 text-xs font-mono text-fg-secondary">
+                <div className="flex items-start gap-2">
+                  <FiCheckCircle className="w-3.5 h-3.5 text-action shrink-0 mt-0.5" />
+                  <span>
+                    <strong className="text-fg font-medium">Commercial &amp; Personal Renders:</strong> Royalty-free for client projects.
+                  </span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <FiCheckCircle className="w-3.5 h-3.5 text-action shrink-0 mt-0.5" />
+                  <span>
+                    <strong className="text-fg font-medium">Clean 3D Topology:</strong> 1:1 real-world scale, origin-centered axis.
+                  </span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <FiCheckCircle className="w-3.5 h-3.5 text-action shrink-0 mt-0.5" />
+                  <span>
+                    <strong className="text-fg font-medium">Native SketchUp:</strong> Fully compatible with SketchUp 2017–2026.
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Rail In-Feed AdSense */}
+            <InFeedAd />
+
+          </div>
         </div>
 
-        {/* Related Assets Section */}
+        {/* 4. MID-CONTENT HORIZONTAL AD BANNER */}
+        <ResponsiveBannerAd className="mt-8" />
+
+        {/* 5. RELATED ASSETS & MATCHING FURNITURE SECTION */}
         {relatedAssets.length > 0 && (
-          <div className="mt-12 px-4 md:px-0">
-            <h2 className="text-xl md:text-2xl font-bold text-white mb-6 md:mb-8 text-center">
-              Related Assets
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-3 lg:gap-4 px-2 md:px-0">
-              {relatedAssets.map((asset) => (
-                <div
-                  key={asset.id}
-                  className="group cursor-pointer mx-auto max-w-[300px]"
-                >
-                  <div className="relative overflow-hidden rounded-lg mb-2 aspect-square bg-gray-800">
-                    {asset?.access_type === "paid" && (
-                      <span className="absolute top-1.5 right-1.5 z-10 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-[9px] font-bold px-2 py-0.5 rounded-full shadow border border-purple-400/30 flex items-center gap-0.5">
-                        <span>💎</span> PRO
-                      </span>
-                    )}
-                    <Link
-                      href={`/${slugify(relatedAssetsData?.data?.category?.name)}/${slugify(relatedAssetsData?.data?.name)}/${slugify(asset?.name)}-${asset?.id}`}
-                      className="block w-full h-full"
-                    >
-                      {asset?.cover && (
-                        <Image
-                          src={getOptimizedImageUrl(
-                            getOriginalImageUrl(asset?.cover),
-                          )}
-                          height={300}
-                          width={300}
-                          alt={
-                            asset?.cover_alt?.trim() ||
-                            asset?.name ||
-                            "Asset image"
-                          }
-                          className="w-full h-full object-cover transform transition-all duration-300 group-hover:scale-105 group-hover:brightness-110"
-                        />
-                      )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    </Link>
-                  </div>
-                  <p className="text-white text-center text-xs sm:text-sm font-medium line-clamp-2 group-hover:text-blue-400 transition-colors duration-200">
-                    <Link
-                      href={`/${slugify(relatedAssetsData?.data?.category?.name)}/${slugify(relatedAssetsData?.data?.name)}/${slugify(asset?.name)}-${asset?.id}`}
-                      className="block w-full"
-                    >
-                      {asset?.name}
-                    </Link>
-                  </p>
-                </div>
-              ))}
+          <div className="mt-12 sm:mt-16 pt-8 sm:pt-10 border-t border-line space-y-6">
+            {/* Header */}
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-base sm:text-lg font-bold text-fg tracking-tight font-sans">
+                Related Assets
+              </h2>
+              <Link
+                href={`/${slugify(categoryName)}-${categoryId}/${slugify(subCategoryName)}-${subCategoryId}`}
+                className="text-xs font-mono text-action hover:text-action-hover transition-colors flex items-center gap-1 font-medium"
+              >
+                <span>View All {subCategoryName}</span>
+                <span>&rarr;</span>
+              </Link>
+            </div>
+
+            {/* 6-Column Grid: 5 Models + 1 Native In-Feed Ad at Card #3 */}
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3.5">
+              
+              {/* Card #1 */}
+              {relatedAssets[0] && (
+                <RelatedAssetCard
+                  asset={relatedAssets[0]}
+                  categoryName={categoryName}
+                  subCategoryName={subCategoryName}
+                  getOriginalImageUrl={getOriginalImageUrl}
+                  onDownloadClick={showToast}
+                />
+              )}
+
+              {/* Card #2 */}
+              {relatedAssets[1] && (
+                <RelatedAssetCard
+                  asset={relatedAssets[1]}
+                  categoryName={categoryName}
+                  subCategoryName={subCategoryName}
+                  getOriginalImageUrl={getOriginalImageUrl}
+                  onDownloadClick={showToast}
+                />
+              )}
+
+              {/* Card #3: OFFICIAL EXTENSION PROMOTION CARD */}
+              <ExtensionPromoCard />
+
+              {/* Card #4 */}
+              {relatedAssets[2] && (
+                <RelatedAssetCard
+                  asset={relatedAssets[2]}
+                  categoryName={categoryName}
+                  subCategoryName={subCategoryName}
+                  getOriginalImageUrl={getOriginalImageUrl}
+                  onDownloadClick={showToast}
+                />
+              )}
+
+              {/* Card #5 */}
+              {relatedAssets[3] && (
+                <RelatedAssetCard
+                  asset={relatedAssets[3]}
+                  categoryName={categoryName}
+                  subCategoryName={subCategoryName}
+                  getOriginalImageUrl={getOriginalImageUrl}
+                  onDownloadClick={showToast}
+                />
+              )}
+
+              {/* Card #6 */}
+              {relatedAssets[4] && (
+                <RelatedAssetCard
+                  asset={relatedAssets[4]}
+                  categoryName={categoryName}
+                  subCategoryName={subCategoryName}
+                  getOriginalImageUrl={getOriginalImageUrl}
+                  onDownloadClick={showToast}
+                />
+              )}
+
             </div>
           </div>
         )}
-      </div>
-      <CategoryAds />
 
-      {/* Patreon Access Modal (Restored from old Pro section) */}
+      </div>
+
+      {/* Patreon Access Modal */}
       {showModal && (
         <div
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-canvas/80 backdrop-blur-md flex items-center justify-center z-50 p-4"
           onClick={() => setShowModal(false)}
         >
           <div
-            className="bg-gray-900 p-6 md:p-8 rounded-xl max-w-md w-full mx-4 border border-gray-700 shadow-2xl relative"
+            className="bg-surface/95 backdrop-blur-2xl border border-line rounded-panel p-6 sm:p-8 max-w-md w-full mx-4 shadow-2xl relative text-fg overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white text-xl font-bold transition cursor-pointer"
+              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-surface-raised hover:bg-surface text-fg-secondary hover:text-fg border border-line flex items-center justify-center transition-colors cursor-pointer text-sm font-mono z-10"
+              aria-label="Close modal"
             >
               ✕
             </button>
 
-            <h2 className="text-2xl font-bold mb-3 text-white flex items-center gap-2">
-              <span>💎</span>
-              {isAuthenticated ? "Become a Patron" : "Premium Access Required"}
-            </h2>
+            <div className="relative z-10 space-y-4">
+              <div className="inline-flex items-center gap-2 rounded-full border border-extension-tintLine bg-extension-tintBg px-3 py-1 font-mono text-xs text-extension">
+                <span>💎</span>
+                <span>Patreon Pro Asset</span>
+              </div>
 
-            <p className="mb-5 text-gray-300 text-sm leading-relaxed">
-              {isAuthenticated
-                ? "Your account is not linked to an active Patreon subscription. Subscribe now to unlock this model and all premium 3D assets!"
-                : "To access our premium 3D models, please login with Patreon. Your support helps us create more amazing assets!"}
-            </p>
+              <h2 className="text-2xl font-semibold tracking-tight-h2 font-sans text-fg">
+                {isAuthenticated ? "Become an Active Patron" : "Unlock with Patreon"}
+              </h2>
 
-            <div className="bg-gray-800/70 rounded-lg p-4 mb-6 border border-gray-700/50">
-              <h3 className="font-semibold text-xs uppercase tracking-wider mb-2.5 text-purple-300">
-                What you get with PRO:
-              </h3>
-              <ul className="text-xs text-gray-300 space-y-1.5">
-                <li className="flex items-center gap-2">
-                  <span className="text-emerald-400 font-bold">✓</span> Access
-                  to 1500+ premium 3D models
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-emerald-400 font-bold">✓</span> Direct
-                  download & SketchUp compatibility
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-emerald-400 font-bold">✓</span> 100+ new
-                  models added every month
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="text-emerald-400 font-bold">✓</span> Priority
-                  model requests & support
-                </li>
-              </ul>
-            </div>
+              <p className="text-xs sm:text-sm text-fg-secondary leading-relaxed">
+                {isAuthenticated
+                  ? "Your account is not linked to an active Patreon subscription. Subscribe now to unlock this model and all premium 3D assets!"
+                  : "To access our premium 3D models, please login with your Patreon account. Your membership supports new daily SketchUp uploads."}
+              </p>
 
-            <div className="flex flex-col space-y-3">
-              {isAuthenticated ? (
-                <a
-                  href="https://www.patreon.com/sketchshaper"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full bg-[#FF424D] hover:bg-[#E63A42] text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-red-500/20"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
+              <div className="rounded-xl border border-line bg-canvas/50 p-4 space-y-2.5">
+                <h3 className="font-mono text-xs uppercase tracking-wider text-action font-semibold">
+                  What PRO Members Receive:
+                </h3>
+                <ul className="text-xs font-mono text-fg-secondary space-y-2">
+                  <li className="flex items-center gap-2">
+                    <span className="text-action font-bold">✓</span> Direct .SKP download for all PRO models
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-action font-bold">✓</span> SketchUp native layers and clean textures
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-action font-bold">✓</span> Ad-free experience across the platform
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-action font-bold">✓</span> Priority model requests &amp; fast support
+                  </li>
+                </ul>
+              </div>
+
+              <div className="pt-2 flex flex-col space-y-2.5">
+                {isAuthenticated ? (
+                  <a
+                    href="https://www.patreon.com/sketchshaper"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full bg-[#FF424D] hover:bg-[#E63A42] text-white font-mono text-xs uppercase tracking-wider font-semibold py-3.5 px-6 rounded-full flex items-center justify-center gap-2 transition-all shadow-lg"
                   >
-                    <path d="M15.386.524c-4.764 0-8.64 3.876-8.64 8.64 0 4.75 3.876 8.613 8.64 8.613 4.75 0 8.614-3.864 8.614-8.613C24 4.4 20.136.524 15.386.524M.003 23.537h4.22V.524H.003" />
-                  </svg>
-                  Subscribe on Patreon
-                </a>
-              ) : (
+                    <span>Subscribe on Patreon</span>
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowModal(false);
+                      login(
+                        typeof window !== "undefined"
+                          ? window.location.pathname
+                          : undefined
+                      );
+                    }}
+                    className="w-full bg-[#FF424D] hover:bg-[#E63A42] text-white font-mono text-xs uppercase tracking-wider font-semibold py-3.5 px-6 rounded-full flex items-center justify-center gap-2 transition-all shadow-lg cursor-pointer"
+                  >
+                    <span>Login with Patreon</span>
+                  </button>
+                )}
+
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowModal(false);
-                    login(
-                      typeof window !== "undefined"
-                        ? window.location.pathname
-                        : undefined,
-                    );
-                  }}
-                  className="w-full bg-[#FF424D] hover:bg-[#E63A42] text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-red-500/20 cursor-pointer"
+                  onClick={() => setShowModal(false)}
+                  className="text-fg-secondary hover:text-fg text-xs font-mono py-2 transition-colors cursor-pointer text-center"
                 >
-                  <svg
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M15.386.524c-4.764 0-8.64 3.876-8.64 8.64 0 4.75 3.876 8.613 8.64 8.613 4.75 0 8.614-3.864 8.614-8.613C24 4.4 20.136.524 15.386.524M.003 23.537h4.22V.524H.003" />
-                  </svg>
-                  Login with Patreon
+                  Close
                 </button>
-              )}
+
+                {isAuthenticated && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowModal(false);
+                      logout();
+                    }}
+                    className="text-fg-secondary/60 hover:text-danger text-xs font-mono transition-colors cursor-pointer text-center"
+                  >
+                    Log out / Switch account
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 6. FULLSCREEN HIGH-RES LIGHTBOX MODAL */}
+      {isFullscreen && (
+        <div className="fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl flex flex-col justify-between p-4 sm:p-6 select-none">
+          {/* Top Header */}
+          <div className="flex items-center justify-between pb-3 border-b border-white/10 relative z-30">
+            <div className="flex items-center gap-3 min-w-0">
+              <h3 className="text-sm font-semibold text-fg truncate font-sans max-w-xs sm:max-w-md">
+                {assetDetails?.name}
+              </h3>
+              <span className="px-2 py-0.5 rounded text-[11px] font-mono bg-white/10 text-fg-secondary shrink-0">
+                Angle {activeImageIndex + 1} of {displayImages.length}
+              </span>
+            </div>
+
+            {/* Shaders + Close Button */}
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:flex items-center gap-1 bg-surface/60 border border-line rounded-lg p-1">
+                {["beauty", "clay", "wireframe"].map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => setShaderMode(mode)}
+                    className={`px-2.5 py-1 rounded text-xs font-mono uppercase capitalize transition-all cursor-pointer ${
+                      shaderMode === mode
+                        ? "bg-fg text-canvas font-semibold shadow-sm"
+                        : "text-fg-secondary hover:text-fg"
+                    }`}
+                  >
+                    {mode}
+                  </button>
+                ))}
+              </div>
 
               <button
                 type="button"
-                onClick={() => setShowModal(false)}
-                className="text-gray-400 hover:text-white text-xs font-medium py-2 transition-colors cursor-pointer"
+                onClick={() => {
+                  setIsFullscreen(false);
+                  setZoomLevel(1);
+                  setPanPosition({ x: 0, y: 0 });
+                }}
+                className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-fg transition-all cursor-pointer"
+                aria-label="Close fullscreen"
+                title="Close (Esc)"
               >
-                Maybe later
+                <FiX className="w-5 h-5" />
               </button>
+            </div>
+          </div>
 
-              {isAuthenticated && (
+          {/* Fullscreen Canvas Body */}
+          <div
+            className={`flex-1 relative flex items-center justify-center overflow-hidden my-4 ${
+              zoomLevel > 1 ? (isDragging ? "cursor-grabbing" : "cursor-grab") : ""
+            }`}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
+            {/* Fullscreen Left Arrow */}
+            {displayImages.length > 1 && (
+              <button
+                type="button"
+                onClick={handlePrevAngle}
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-black/70 hover:bg-black/95 text-white border border-white/20 backdrop-blur-md flex items-center justify-center transition-all shadow-2xl hover:scale-110 active:scale-95 cursor-pointer"
+                aria-label="Previous angle"
+                title="Previous Angle (← key)"
+              >
+                <FiChevronLeft className="w-6 h-6" />
+              </button>
+            )}
+
+            {/* Fullscreen Right Arrow */}
+            {displayImages.length > 1 && (
+              <button
+                type="button"
+                onClick={handleNextAngle}
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-black/70 hover:bg-black/95 text-white border border-white/20 backdrop-blur-md flex items-center justify-center transition-all shadow-2xl hover:scale-110 active:scale-95 cursor-pointer"
+                aria-label="Next angle"
+                title="Next Angle (→ key)"
+              >
+                <FiChevronRight className="w-6 h-6" />
+              </button>
+            )}
+
+            {/* High-Res Image Transform Stage */}
+            <div
+              className="relative z-10 w-full h-full flex items-center justify-center pointer-events-none"
+              style={{
+                transform: `scale(${zoomLevel}) translate(${panPosition.x / zoomLevel}px, ${panPosition.y / zoomLevel}px)`,
+                transition: isDragging ? "none" : "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+            >
+              <Image
+                src={getOriginalImageUrl(activeImage?.image)}
+                alt={activeImage?.alt?.trim() || assetDetails?.name || "3D Model Render"}
+                fill
+                sizes="100vw"
+                style={shaderFilterStyle}
+                className="object-contain p-6 drop-shadow-[0_20px_48px_rgba(0,0,0,0.9)] select-none"
+              />
+            </div>
+          </div>
+
+          {/* Bottom Toolbar & Carousel */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-3 border-t border-white/10 relative z-30">
+            {/* Angle Thumbnails */}
+            <div className="flex items-center gap-2 overflow-x-auto max-w-full pb-1">
+              {displayImages.map((img, idx) => (
                 <button
+                  key={img?.id || idx}
                   type="button"
                   onClick={() => {
-                    setShowModal(false);
-                    logout();
+                    setActiveImageIndex(idx);
+                    setZoomLevel(1);
+                    setPanPosition({ x: 0, y: 0 });
                   }}
-                  className="text-gray-500 hover:text-red-400 text-xs transition-colors cursor-pointer"
+                  className={`w-14 h-10 rounded overflow-hidden border-2 transition-all relative shrink-0 cursor-pointer ${
+                    activeImageIndex === idx
+                      ? "border-action shadow-lg scale-105"
+                      : "border-white/20 hover:border-white/50 opacity-60 hover:opacity-100"
+                  }`}
                 >
-                  Log out / Switch account
+                  <Image
+                    src={getOptimizedImageUrl(getOriginalImageUrl(img?.image))}
+                    alt={`Angle #${idx + 1}`}
+                    fill
+                    sizes="56px"
+                    className="object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+
+            {/* Zoom Controls */}
+            <div className="flex items-center gap-2 bg-black/60 border border-white/15 rounded-lg p-1.5 shadow-xl shrink-0">
+              <button
+                type="button"
+                onClick={() => handleZoomChange(-0.5)}
+                disabled={zoomLevel <= 1}
+                className="p-1.5 rounded text-fg-secondary hover:text-fg hover:bg-white/10 disabled:opacity-30 transition-colors cursor-pointer"
+                title="Zoom Out"
+              >
+                <FiZoomOut className="w-4 h-4" />
+              </button>
+              <span className="text-xs font-mono px-2 text-fg min-w-[48px] text-center font-medium">
+                {Math.round(zoomLevel * 100)}%
+              </span>
+              <button
+                type="button"
+                onClick={() => handleZoomChange(0.5)}
+                disabled={zoomLevel >= 3}
+                className="p-1.5 rounded text-fg-secondary hover:text-fg hover:bg-white/10 disabled:opacity-30 transition-colors cursor-pointer"
+                title="Zoom In"
+              >
+                <FiZoomIn className="w-4 h-4" />
+              </button>
+              {zoomLevel > 1 && (
+                <button
+                  type="button"
+                  onClick={handleResetZoom}
+                  className="p-1.5 rounded text-fg-secondary hover:text-fg hover:bg-white/10 transition-colors cursor-pointer"
+                  title="Reset Zoom"
+                >
+                  <FiRotateCcw className="w-3.5 h-3.5" />
                 </button>
               )}
             </div>
@@ -499,5 +1146,142 @@ const SubCategoryDetails = ({ assetDetails }) => {
     </div>
   );
 };
+
+// Sub-component for Extension Promotion Card inside Related Assets
+function ExtensionPromoCard() {
+  return (
+    <article className="bg-surface border border-line hover:border-action/50 rounded-xl overflow-hidden flex flex-col justify-between group transition-all duration-300 shadow-md hover:shadow-xl relative">
+      <div>
+        <Link
+          href="/extension"
+          className="aspect-[4/3] w-full bg-canvas/60 overflow-hidden relative flex flex-col items-center justify-center p-2.5 block group-hover:bg-canvas/80 transition-colors"
+        >
+          {/* Subtle Ambient Radial Glow */}
+          <div className="absolute w-32 h-32 rounded-full bg-action/15 blur-2xl pointer-events-none group-hover:bg-action/25 transition-all duration-500" />
+
+          {/* Centered Extension Icon / Visual */}
+          <div className="relative z-10 w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-action/10 border border-action/30 flex items-center justify-center text-action shadow-lg shadow-action/10 group-hover:scale-110 group-hover:border-action/60 transition-transform duration-300">
+            <FiZap className="w-6 h-6 sm:w-7 sm:h-7 fill-action/20" />
+          </div>
+
+          {/* Top-Left Pricing Badge (matching Asset Card PRO/Free badge) */}
+          <div className="absolute top-2 left-2 z-10 pointer-events-none">
+            <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-action-tintBg text-action border border-action-tintLine shadow-sm flex items-center gap-1">
+              <span>⚡</span> PLUGIN
+            </span>
+          </div>
+
+          {/* Top-Right Version Chip */}
+          <div className="absolute top-2 right-2 z-10 pointer-events-none">
+            <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-white/5 text-fg-secondary/80 border border-white/10 shadow-sm">
+              v1.5.0
+            </span>
+          </div>
+        </Link>
+
+        {/* Info Block (matches title + subtitle spacing of models) */}
+        <div className="p-2.5">
+          <Link href="/extension" className="block group">
+            <h3
+              className="text-xs font-semibold text-fg truncate group-hover:text-action transition-colors font-sans"
+              title="SketchShaper Extension for SketchUp"
+            >
+              SketchShaper Plugin
+            </h3>
+            <p className="text-[10px] text-fg-secondary truncate mt-0.5 font-mono">
+              Direct SketchUp Library
+            </p>
+          </Link>
+        </div>
+      </div>
+
+      {/* Bottom CTA Button (matches Inspect Model button) */}
+      <div className="p-2.5 pt-0">
+        <Link
+          href="/extension"
+          className="w-full block text-center bg-action/10 hover:bg-action text-action hover:text-canvas border border-action/30 hover:border-action text-[11px] font-mono font-medium py-1.5 rounded-lg transition-all shadow-sm"
+        >
+          Free Extension &rarr;
+        </Link>
+      </div>
+    </article>
+  );
+}
+
+// Sub-component for individual Related Asset Cards
+function RelatedAssetCard({
+  asset,
+  categoryName,
+  subCategoryName,
+  getOriginalImageUrl,
+  onDownloadClick,
+}) {
+  const assetSize = formatAssetSize(asset);
+
+  const href = `/${slugify(categoryName)}/${slugify(subCategoryName)}/${slugify(asset?.name)}-${asset?.id}`;
+
+  return (
+    <article className="bg-surface border border-line hover:border-action/40 rounded-xl overflow-hidden flex flex-col justify-between group transition-all duration-300 shadow-md hover:shadow-xl">
+      <div>
+        <Link
+          href={href}
+          className="aspect-[4/3] w-full bg-canvas/40 overflow-hidden relative flex items-center justify-center p-2.5 block"
+        >
+          {asset?.cover ? (
+            <Image
+              src={getOptimizedImageUrl(getOriginalImageUrl(asset.cover))}
+              alt={asset?.cover_alt?.trim() || asset?.name || "Asset image"}
+              fill
+              loading="lazy"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16.6vw"
+              className="object-contain p-2 group-hover:scale-[1.15] transition-transform duration-500 ease-out drop-shadow-[0_6px_14px_rgba(0,0,0,0.65)]"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-fg-secondary/40 font-mono text-[10px]">
+              .SKP
+            </div>
+          )}
+
+          {/* Top-Left Pricing Badge */}
+          <div className="absolute top-2 left-2 z-10 pointer-events-none">
+            {asset?.access_type === "paid" ? (
+              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-extension-tintBg text-extension border border-extension-tintLine flex items-center gap-1 shadow-sm">
+                <span>💎</span> PRO
+              </span>
+            ) : (
+              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-action-tintBg text-action border border-action-tintLine shadow-sm">
+                Free
+              </span>
+            )}
+          </div>
+        </Link>
+
+        {/* Info */}
+        <div className="p-2.5">
+          <Link href={href} className="block group">
+            <h3
+              className="text-xs font-medium text-fg truncate group-hover:text-action transition-colors font-sans"
+              title={asset?.name}
+            >
+              {asset?.name}
+            </h3>
+            <p className="text-[10px] text-fg-secondary truncate mt-0.5 font-mono">
+              {assetSize}
+            </p>
+          </Link>
+        </div>
+      </div>
+
+      <div className="p-2.5 pt-0">
+        <Link
+          href={href}
+          className="w-full block text-center bg-surface-raised hover:bg-surface border border-line text-fg text-[11px] font-mono py-1.5 rounded-lg transition-colors"
+        >
+          Inspect Model &rarr;
+        </Link>
+      </div>
+    </article>
+  );
+}
 
 export default SubCategoryDetails;

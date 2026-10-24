@@ -1,13 +1,27 @@
 import getData from "@/utils/getData";
 import slugify from "@/utils/slugify";
 
-// Revalidate sitemap dynamically every 1 hour
-export const revalidate = 3600;
+// Revalidate sitemap dynamically every 24 hours
+export const revalidate = 86400;
 
 function parseDate(dateValue, fallback) {
   if (!dateValue) return fallback;
   const d = new Date(dateValue);
   return isNaN(d.getTime()) ? fallback : d;
+}
+
+function toAbsoluteImageUrl(imagePath) {
+  if (!imagePath || typeof imagePath !== "string") return null;
+  const trimmed = imagePath.trim();
+  if (!trimmed || trimmed === "-") return null;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+
+  const base =
+    process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE ||
+    "https://api.sketchshaper.com/api/uploads/";
+  const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+  const cleanPath = trimmed.startsWith("/") ? trimmed.slice(1) : trimmed;
+  return `${normalizedBase}${cleanPath}`;
 }
 
 export default async function sitemap() {
@@ -47,6 +61,12 @@ export default async function sitemap() {
       priority: 0.6,
     },
     {
+      url: `${baseUrl}/rbzconverter`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
       url: `${baseUrl}/license`,
       lastModified: now,
       changeFrequency: "monthly",
@@ -69,11 +89,11 @@ export default async function sitemap() {
   // Fetch dynamic content in parallel with resilient fallbacks
   const [categoriesRes, subCategoriesRes, assetsRes, blogsRes, pagesRes] =
     await Promise.allSettled([
-      getData("categories", { next: { revalidate: 3600 } }),
-      getData("sub-categories", { next: { revalidate: 3600 } }),
-      getData("assets", { next: { revalidate: 3600 } }),
-      getData("blogs", { next: { revalidate: 3600 } }),
-      getData("pages", { next: { revalidate: 3600 } }),
+      getData("categories", { next: { revalidate: 86400 } }),
+      getData("sub-categories", { next: { revalidate: 86400 } }),
+      getData("assets", { timeout: 60000, next: { revalidate: 86400 } }),
+      getData("blogs", { next: { revalidate: 86400 } }),
+      getData("pages", { next: { revalidate: 86400 } }),
     ]);
 
   const categories =
@@ -113,11 +133,13 @@ export default async function sitemap() {
   // 1. Categories: /category-slug-{id}
   for (const cat of categories) {
     if (!cat?.name || !cat?.id) continue;
+    const catImage = toAbsoluteImageUrl(cat.image);
     dynamicRoutes.push({
       url: `${baseUrl}/${slugify(cat.name)}-${cat.id}`,
       lastModified: parseDate(cat.updated_at || cat.created_at, now),
       changeFrequency: "daily",
       priority: 0.9,
+      images: catImage ? [catImage] : undefined,
     });
   }
 
@@ -127,11 +149,13 @@ export default async function sitemap() {
     const parentCategory = sub.category || categoryMap.get(sub.category_id);
     if (!parentCategory?.name) continue;
 
+    const subImage = toAbsoluteImageUrl(sub.image);
     dynamicRoutes.push({
       url: `${baseUrl}/${slugify(parentCategory.name)}-${parentCategory.id}/${slugify(sub.name)}-${sub.id}`,
       lastModified: parseDate(sub.updated_at || sub.created_at, now),
       changeFrequency: "daily",
       priority: 0.85,
+      images: subImage ? [subImage] : undefined,
     });
   }
 
@@ -143,22 +167,44 @@ export default async function sitemap() {
       sub?.category || (sub ? categoryMap.get(sub.category_id) : null);
     if (!cat?.name || !sub?.name) continue;
 
+    const assetImages = [];
+    const coverImg = toAbsoluteImageUrl(asset.cover);
+    if (coverImg) assetImages.push(coverImg);
+
+    if (Array.isArray(asset.images)) {
+      for (const imgItem of asset.images) {
+        const extraImg = toAbsoluteImageUrl(imgItem?.image);
+        if (extraImg && !assetImages.includes(extraImg)) {
+          assetImages.push(extraImg);
+        }
+      }
+    }
+
     dynamicRoutes.push({
-      url: `${baseUrl}/${slugify(cat.name)}/${slugify(sub.name)}/${slugify(asset.name)}-${asset.id}`,
+      url: `${baseUrl}/${slugify(cat.name)}-${cat.id}/${slugify(sub.name)}-${sub.id}/${slugify(asset.name)}-${asset.id}`,
       lastModified: parseDate(asset.updated_at || asset.created_at, now),
       changeFrequency: "weekly",
       priority: 0.9,
+      images: assetImages.length > 0 ? assetImages : undefined,
     });
   }
 
   // 4. Blogs: /blog/blog-slug-{id}
   for (const blog of blogs) {
     if (!blog?.title || !blog?.id) continue;
+
+    const blogImages = [];
+    const mainImg = toAbsoluteImageUrl(blog.image);
+    if (mainImg) blogImages.push(mainImg);
+    const bgImg = toAbsoluteImageUrl(blog.bgImage);
+    if (bgImg && !blogImages.includes(bgImg)) blogImages.push(bgImg);
+
     dynamicRoutes.push({
       url: `${baseUrl}/blog/${slugify(blog.title)}-${blog.id}`,
       lastModified: parseDate(blog.updated_at || blog.created_at, now),
       changeFrequency: "weekly",
       priority: 0.8,
+      images: blogImages.length > 0 ? blogImages : undefined,
     });
   }
 
@@ -174,11 +220,13 @@ export default async function sitemap() {
     if (!page?.slug || !page?.id) continue;
     if (reservedSlugs.has(page.slug)) continue;
 
+    const pageCover = toAbsoluteImageUrl(page.cover);
     dynamicRoutes.push({
       url: `${baseUrl}/pages/${page.slug}-${page.id}`,
       lastModified: parseDate(page.updated_at || page.created_at, now),
       changeFrequency: "monthly",
       priority: 0.6,
+      images: pageCover ? [pageCover] : undefined,
     });
   }
 

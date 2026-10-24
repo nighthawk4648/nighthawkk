@@ -1,10 +1,11 @@
 const allowedTags = new Set([
-  "p", "br", "strong", "b", "em", "i", "u", "s", "a", "ul", "ol", "li",
+  "p", "br", "hr", "strong", "b", "em", "i", "u", "s", "sub", "sup", "mark", "a", "ul", "ol", "li",
   "h1", "h2", "h3", "h4", "h5", "h6", "blockquote", "code", "pre",
-  "img", "span", "div", "table", "thead", "tbody", "tfoot", "tr", "th", "td"
+  "img", "span", "div", "table", "thead", "tbody", "tfoot", "tr", "th", "td",
+  "details", "summary", "section"
 ]);
 
-const allowedAttributes = new Set(["href", "target", "rel", "src", "alt", "title", "class", "id"]);
+const allowedAttributes = new Set(["href", "target", "rel", "src", "alt", "title", "class", "id", "style", "width", "height"]);
 
 const decodeHtmlEntities = (input) => {
   if (!input) return "";
@@ -18,7 +19,7 @@ const decodeHtmlEntities = (input) => {
     .replace(/&#39;/gi, "'");
 };
 
-const sanitizeAttributes = (attributeString) => {
+const sanitizeAttributes = (attributeString, tagName = "") => {
   if (!attributeString) return "";
 
   const allowed = [];
@@ -38,6 +39,57 @@ const sanitizeAttributes = (attributeString) => {
       if (!isSafeUrl) continue;
     }
 
+    if (name === "class") {
+      const filteredClasses = value
+        .split(/\s+/)
+        .filter((c) => Boolean(c) && !/^mso/i.test(c));
+
+      if (filteredClasses.length === 0) continue;
+      allowed.push(`class="${filteredClasses.join(" ").replace(/"/g, "&quot;")}"`);
+      continue;
+    }
+
+    if (name === "style") {
+      // Disallow dangerous expressions or javascript inside CSS styles
+      if (/javascript:|expression\(|behavior:|url\(/i.test(value)) continue;
+
+      const declarations = value.split(";");
+      const cleanDeclarations = [];
+
+      for (const decl of declarations) {
+        const trimmed = decl.trim();
+        if (!trimmed) continue;
+        const colonIdx = trimmed.indexOf(":");
+        if (colonIdx === -1) continue;
+
+        const prop = trimmed.slice(0, colonIdx).trim().toLowerCase();
+        const val = trimmed.slice(colonIdx + 1).trim().toLowerCase();
+
+        // Strip text-indent
+        if (prop === "text-indent") continue;
+
+        // Strip margin and margin-* (all variants), EXCEPT allow margin on <img> tags (e.g. margin: 0 auto)
+        if (prop === "margin" || prop.startsWith("margin-")) {
+          if (tagName === "img") {
+            cleanDeclarations.push(trimmed);
+          }
+          continue;
+        }
+
+        // Strip any mso-* property
+        if (prop.startsWith("mso-")) continue;
+
+        // Strip text-align: justify
+        if (prop === "text-align" && val.startsWith("justify")) continue;
+
+        cleanDeclarations.push(trimmed);
+      }
+
+      if (cleanDeclarations.length === 0) continue;
+      allowed.push(`style="${cleanDeclarations.join("; ").replace(/"/g, "&quot;")}"`);
+      continue;
+    }
+
     allowed.push(`${name}="${value.replace(/"/g, "&quot;")}"`);
   }
 
@@ -49,6 +101,7 @@ export function sanitizeHtml(html) {
 
   const decodedHtml = decodeHtmlEntities(html);
   const withoutUnsafeTags = decodedHtml
+    .replace(/<!--[\s\S]*?-->/g, "")
     .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
     .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
     .replace(/<(iframe|object|embed|link|meta)[^>]*>/gi, "");
@@ -60,7 +113,7 @@ export function sanitizeHtml(html) {
       return "";
     }
 
-    const sanitizedAttributes = sanitizeAttributes(attributeString);
+    const sanitizedAttributes = sanitizeAttributes(attributeString, normalizedTag);
 
     return opener === "</" ? `</${normalizedTag}>` : `<${normalizedTag}${sanitizedAttributes}>`;
   });

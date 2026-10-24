@@ -4,18 +4,13 @@
 //   };
 
 
-import { format } from "date-fns";
-
 export function formatDate(isoString) {
   if (!isoString) return "N/A";
   const date = new Date(isoString);
   if (isNaN(date.getTime())) return "N/A";
-  return format(date, "MMMM d, yyyy");
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
 }
-
-
-// import { format } from "date-fns";
-
-// export function formatDate(isoString) {
-//   return format(new Date(isoString), "MMMM d, yyyy 'at' h:mm a");
-// }

@@ -1,259 +1,30 @@
 "use client";
-import slugify from "@/utils/slugify";
-import Image from "next/image";
-import Link from "next/link";
-import React, { useState, useRef, useEffect } from "react";
-import all_sub_cat_image from "../../../../public/assets/sub_category/all.png";
-import { getOptimizedImageUrl } from "@/utils/cloudinary";
-import { HorizontalBanner } from "@/components/Shared/GoogleAdsense/HorizontalBanner";
-import { CategoryAds } from "@/components/Shared/GoogleAdsense/categoryads";
 
-const SubCategory = ({ subCategoriesByCategoryId }) => {
-  const [searchTerm, setSearchTerm] = useState("");
+import React from "react";
+import CatalogLayout from "@/components/Catalog/CatalogLayout";
 
-  // Collect all assets from all subcategories with parent names attached
-  const allAssets =
-    subCategoriesByCategoryId?.data?.sub_categories?.flatMap((subCategory) =>
-      (subCategory?.assets || []).map((asset) => ({
-        ...asset,
-        sub_category_name: subCategory?.name,
-        category_name: subCategoriesByCategoryId?.data?.name,
-      })),
-    ) || [];
-
-  // Filter assets based on search term
-  const filteredAssets = allAssets.filter(
-    (asset) =>
-      asset &&
-      asset.name &&
-      typeof asset.name === "string" &&
-      asset.name.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
-
-  const getOriginalImageUrl = (imagePath) => {
-    return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
-  };
-
+const SubCategory = ({
+  subCategoriesByCategoryId,
+  serverAssets = null,
+  currentPage = 1,
+  totalPages = 1,
+  totalCount = 0,
+  activeFilters = { search: "", access: "all", sort: "newest" },
+  basePath = "",
+}) => {
   return (
-    <div>
-      {/* Header */}
-      <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black py-2">
-        <h1 className="text-white font-semibold text-2xl text-center">
-          {subCategoriesByCategoryId?.data?.name}
-        </h1>
-      </div>
-
-      {/* Subcategory Grid */}
-      <div className="grid md:grid-cols-8 grid-cols-2 gap-4 bg-gradient-to-br from-gray-900 via-gray-900 to-black py-8 px-4 border-b-2 border-gray-500">
-        {/* All Button */}
-        <div className="cursor-pointer transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg hover:shadow-purple-600/40 rounded-md overflow-hidden">
-          <Link
-            href={`/${slugify(subCategoriesByCategoryId?.data?.name)}-${subCategoriesByCategoryId?.data?.id}`}
-          >
-            <Image
-              src={all_sub_cat_image}
-              height={400}
-              width={500}
-              alt="all subcategories"
-              className="w-full h-28 object-cover"
-            />
-            <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black py-1">
-              <p className="text-white font-semibold text-sm text-center">
-                All
-              </p>
-            </div>
-          </Link>
-        </div>
-
-        {/* Dynamic Subcategories */}
-        {subCategoriesByCategoryId?.data?.sub_categories?.map((subCategory) => (
-          <div
-            className="cursor-pointer transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg hover:shadow-purple-600/40 rounded-md overflow-hidden"
-            key={subCategory?.id}
-          >
-            <Link
-              href={`/${slugify(subCategoriesByCategoryId?.data?.name)}-${subCategoriesByCategoryId?.data?.id}/${slugify(subCategory?.name)}-${subCategory?.id}`}
-            >
-              {subCategory?.image && (
-                <Image
-                  src={getOptimizedImageUrl(
-                    getOriginalImageUrl(subCategory?.image),
-                  )}
-                  height={400}
-                  width={500}
-                  alt={subCategory?.name}
-                  className="w-full h-28 object-cover"
-                />
-              )}
-              <div className="bg-gradient-to-br from-gray-900 via-gray-900 to-black py-1">
-                <h2 className="text-white font-semibold text-sm text-center">
-                  {subCategory?.name}
-                </h2>
-              </div>
-            </Link>
-          </div>
-        ))}
-      </div>
-
-      {/* Banner Ad */}
-      <CategoryAds />
-
-      {/* Assets Section with Search */}
-      <div className="bg-primary py-8">
-        {/* Search Bar */}
-        <div className="mb-8 px-4">
-          <div className="max-w-2xl mx-auto">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search assets by name..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-3 pl-10 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:bg-white/20 transition-all"
-              />
-              <svg
-                className="absolute left-3 top-3.5 w-5 h-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-            </div>
-            {searchTerm && (
-              <p className="text-sm text-gray-400 mt-2 text-center">
-                Found {filteredAssets.length}{" "}
-                {filteredAssets.length === 1 ? "asset" : "assets"} matching "
-                {searchTerm}"
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Search Results */}
-        {searchTerm ? (
-          filteredAssets.length > 0 ? (
-            <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4 px-4">
-              {filteredAssets.map((asset) => (
-                <div key={asset?.id}>
-                  <div className="lg:w-[300px] md:w-[200px] w-full lg:h-[308px] md:h-[200px] h-auto mx-auto mb-5 relative overflow-hidden rounded-lg group">
-                    {asset?.access_type === "paid" && (
-                      <span className="absolute top-2 right-2 z-10 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1 backdrop-blur-sm border border-purple-400/30">
-                        <span>💎</span> PRO
-                      </span>
-                    )}
-                    <Link
-                      href={`/${slugify(asset?.category_name || subCategoriesByCategoryId?.data?.name)}/${slugify(asset?.sub_category_name || "sub")}/${slugify(asset?.name)}-${asset?.id}`}
-                    >
-                      {asset?.cover && (
-                        <Image
-                          src={getOptimizedImageUrl(
-                            getOriginalImageUrl(asset?.cover),
-                          )}
-                          height={400}
-                          width={400}
-                          alt={
-                            asset?.cover_alt?.trim() ||
-                            asset?.name ||
-                            "Asset image"
-                          }
-                          className="transform transition-transform duration-1000 group-hover:scale-125"
-                          style={{ transformOrigin: "center" }}
-                        />
-                      )}
-                    </Link>
-                  </div>
-
-                  <p className="text-white text-center font-semibold mt-2">
-                    <Link
-                      href={`/${slugify(asset?.category_name || subCategoriesByCategoryId?.data?.name)}/${slugify(asset?.sub_category_name || "sub")}/${slugify(asset?.name)}-${asset?.id}`}
-                    >
-                      {asset?.name}
-                    </Link>
-                  </p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-400 text-lg">
-                No assets found matching "{searchTerm}"
-              </p>
-              <p className="text-gray-500 text-sm mt-2">
-                Try adjusting your search terms
-              </p>
-            </div>
-          )
-        ) : (
-          /* All Subcategory Assets + Horizontal Banner after every slice */
-          subCategoriesByCategoryId?.data?.sub_categories?.map(
-            (subCategoryItem) => {
-              const sortedAssets = subCategoryItem?.assets
-                ?.slice()
-                ?.sort((a, b) => b.id - a.id);
-
-              return (
-                <div key={subCategoryItem?.id}>
-                  {/* Asset Grid */}
-                  <div className="grid lg:grid-cols-4 md:grid-cols-3 grid-cols-2 gap-4 px-4 mb-8">
-                    {sortedAssets?.map((asset) => (
-                      <div key={asset?.id}>
-                        <div className="lg:w-[300px] md:w-[200px] w-full lg:h-[308px] md:h-[200px] h-auto mx-auto mb-5 relative overflow-hidden rounded-lg group">
-                          {asset?.access_type === "paid" && (
-                            <span className="absolute top-2 right-2 z-10 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-lg flex items-center gap-1 backdrop-blur-sm border border-purple-400/30">
-                              <span>💎</span> PRO
-                            </span>
-                          )}
-                          <Link
-                            href={`/${slugify(subCategoriesByCategoryId?.data?.name)}/${slugify(subCategoryItem?.name)}/${slugify(asset?.name)}-${asset?.id}`}
-                          >
-                            {asset?.cover && (
-                              <Image
-                                src={getOptimizedImageUrl(
-                                  getOriginalImageUrl(asset?.cover),
-                                )}
-                                height={400}
-                                width={400}
-                                alt={
-                                  asset?.cover_alt?.trim() ||
-                                  asset?.name ||
-                                  "Asset image"
-                                }
-                                className="transform transition-transform duration-1000 group-hover:scale-125"
-                                style={{ transformOrigin: "center" }}
-                              />
-                            )}
-                          </Link>
-                        </div>
-
-                        <p className="text-white text-center font-semibold mt-2">
-                          <Link
-                            href={`/${slugify(subCategoriesByCategoryId?.data?.name)}/${slugify(subCategoryItem?.name)}/${slugify(asset?.name)}-${asset?.id}`}
-                          >
-                            {asset?.name}
-                          </Link>
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Horizontal banner after each slice */}
-                  <HorizontalBanner />
-                </div>
-              );
-            },
-          )
-        )}
-        <p className="text-white text-center mt-2 px-4 py-2 text-sm font-medium">
-          {subCategoriesByCategoryId?.data?.short_description}
-        </p>
-      </div>
-    </div>
+    <CatalogLayout
+      activeCategoryId={subCategoriesByCategoryId?.data?.id}
+      activeSubCategoryId={null}
+      initialCategoryData={subCategoriesByCategoryId}
+      initialSubCategoryData={null}
+      serverAssets={serverAssets}
+      page={currentPage}
+      totalPages={totalPages}
+      totalCount={totalCount}
+      activeFilters={activeFilters}
+      basePath={basePath}
+    />
   );
 };
 

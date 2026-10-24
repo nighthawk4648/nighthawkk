@@ -1,11 +1,111 @@
 import Extension from './extension';
+import getData from '@/utils/getData';
 
 export const metadata = {
-    title: 'SketchShaper Plugin – All-in-One 3D Model Library for SketchUp',
-    description: 'SketchShaper brings a powerful cloud library of 1500+ SketchUp-ready 3D models directly inside SketchUp. downloads. Fast, clean, professional.',
-    keywords: 'SketchUp plugin, 3D models, 3D library, SketchUp extension, architectural visualization, 3D assets, SketchUp tools, 3D modeling, free 3D models, SketchUp warehouse alternative, cloud 3D library, professional 3D assets',
+  title: 'SketchShaper Plugin for SketchUp – Free 3D Model Library & PBR Textures',
+  description:
+    'Download the official SketchShaper SketchUp extension (.rbz). Stream 1,500+ curated 3D architectural models and calibrated PBR textures directly into SketchUp 2022-2026. 100% free, fast, and lightweight.',
+  keywords:
+    'SketchUp plugin, SketchUp extension, 3D model library, download rbz, SketchUp 2024 plugins, SketchUp 2025 plugins, SketchUp 2026 plugins, architectural visualization, free 3D models SketchUp, PBR textures SketchUp, 3D warehouse alternative, Enscape models, V-Ray SketchUp assets',
+  openGraph: {
+    title: 'SketchShaper Plugin for SketchUp – Free 3D Model Library & PBR Textures',
+    description:
+      'Stream 1,500+ curated 3D architectural models and calibrated PBR textures directly inside SketchUp without switching tabs.',
+    type: 'website',
+    images: [
+      {
+        url: 'https://res.cloudinary.com/dn0rgr930/image/upload/v1770007276/v1_wdzv0h.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'SketchShaper Plugin for SketchUp',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SketchShaper Plugin for SketchUp',
+    description:
+      'Stream 1,500+ curated 3D architectural models and calibrated PBR textures directly inside SketchUp.',
+    images: ['https://res.cloudinary.com/dn0rgr930/image/upload/v1770007276/v1_wdzv0h.jpg'],
+  },
 };
 
-export default function Page() {
-    return <Extension />;
+const extensionFaqs = [
+  {
+    q: 'Which SketchUp versions are compatible?',
+    a: 'SketchShaper is natively engineered and verified for SketchUp 2022, 2023, 2024, 2025, and 2026 across both Windows (10/11 64-bit) and macOS (including Apple Silicon M1, M2, M3, and M4 chips).',
+  },
+  {
+    q: 'How do I install the .rbz extension file in SketchUp?',
+    a: 'Do not unzip or extract the .rbz file. In SketchUp, go to Extensions > Extension Manager (or Window > Extension Manager in older releases), click "Install Extension" at the bottom, select "sketchshaper-1.5.0.rbz", and click Open. The toolbar docks automatically.',
+  },
+  {
+    q: 'Are the 3D models and textures free for commercial rendering?',
+    a: 'Yes. All assets inserted through the SketchShaper extension come with full commercial visualization rights. You can use them in client presentations, architectural competitions, and commercial renders with zero licensing fees or attribution required.',
+  },
+  {
+    q: 'Does the extension slow down SketchUp startup time or viewport FPS?',
+    a: 'Not at all. The extension uses a lightweight Ruby wrapper (<5MB) that streams models and PBR textures on demand from cloud endpoints. It has zero measurable impact on SketchUp viewport frame rates or startup times.',
+  },
+  {
+    q: 'Which render engines are supported for materials and models?',
+    a: 'All SketchUp models and PBR materials work seamlessly with native SketchUp display, V-Ray, Enscape, Lumion, Twinmotion, D5 Render, and Thea Render out of the box.',
+  },
+  {
+    q: 'Do I need an account or subscription to download?',
+    a: 'No registration or subscription is required. SketchShaper is 100% free forever. You can download the .rbz bundle directly and start inserting 3D models immediately without signing in.',
+  },
+];
+
+export default async function Page() {
+  const downloadData = await getData('extension-downloads/MyExtension');
+
+  const faqStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: extensionFaqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.a,
+      },
+    })),
+  };
+
+  const softwareStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: 'SketchShaper Extension for SketchUp',
+    operatingSystem: 'Windows 10/11 64-bit, macOS 12+ (Apple Silicon & Intel)',
+    applicationCategory: 'DesignApplication',
+    softwareVersion: '1.5.0',
+    fileFormat: 'application/x-ruby-zip (.rbz)',
+    downloadUrl: 'https://sketchshaper.com/assets/rbz/sketchshaper-1.5.0.rbz',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    description:
+      'Native SketchUp extension providing direct in-viewport streaming of 1,500+ curated 3D architectural models and calibrated PBR textures into SketchUp 2022-2026.',
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(faqStructuredData),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(softwareStructuredData),
+        }}
+      />
+      <Extension initialData={downloadData} />
+    </>
+  );
 }

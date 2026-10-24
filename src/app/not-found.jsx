@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FiHome, FiGrid } from "react-icons/fi";
 
 export const metadata = {
   title: "404 - Page Not Found | SketchShaper",
@@ -11,35 +12,47 @@ export const metadata = {
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-950 via-gray-900 to-black px-4 text-white">
-      <div className="text-center max-w-2xl mx-auto py-12">
-        <h1 className="text-8xl sm:text-9xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 mb-4 tracking-tight">
+    <div className="min-h-[80vh] flex items-center justify-center bg-canvas px-4 py-16 text-fg">
+      <div className="relative max-w-xl w-full mx-auto p-8 sm:p-12 rounded-[28px] bg-surface/80 border border-line shadow-2xl backdrop-blur-md text-center">
+        {/* Subtle decorative CAD grid glow */}
+        <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-40 h-40 bg-action/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-raised border border-line text-xs font-mono text-fg-secondary mb-6">
+          <span className="w-1.5 h-1.5 rounded-full bg-danger animate-pulse" />
+          HTTP 404 &bull; RESOURCE_NOT_FOUND
+        </div>
+
+        <h1 className="text-7xl sm:text-8xl font-mono font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-action via-action to-action-pressed mb-4">
           404
         </h1>
-        <h2 className="text-2xl sm:text-3xl font-semibold text-gray-100 mb-3">
-          Page Not Found
+
+        <h2 className="text-2xl sm:text-3xl font-sans font-semibold text-fg tracking-tight mb-3">
+          Coordinate Not Found
         </h2>
-        <p className="text-base sm:text-lg text-gray-400 mb-8 max-w-md mx-auto">
-          Sorry, the page you are looking for doesn't exist, was moved, or has
-          been removed.
+
+        <p className="text-sm sm:text-base text-fg-secondary leading-relaxed mb-8 max-w-md mx-auto">
+          The 3D model, page, or category you requested does not exist or has been relocated to another coordinate in our library.
         </p>
-        <div className="flex gap-4 justify-center flex-wrap">
+
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link
             href="/"
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors font-medium shadow-lg shadow-blue-500/20"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-action hover:bg-action-hover active:bg-action-pressed text-canvas font-semibold text-sm transition-all shadow-lg shadow-action/15 hover:scale-105"
           >
-            Go to Homepage
+            <FiHome className="w-4 h-4" />
+            <span>Return to Homepage</span>
           </Link>
           <Link
             href="/gallery"
-            className="px-6 py-3 bg-gray-800 text-gray-200 rounded-lg hover:bg-gray-700 border border-gray-700 transition-colors font-medium"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-surface-raised hover:bg-surface border border-line hover:border-line-control text-fg hover:text-action font-medium text-sm transition-all"
           >
-            Browse Gallery
+            <FiGrid className="w-4 h-4" />
+            <span>Browse 3D Models</span>
           </Link>
         </div>
 
-        <div className="mt-12 text-sm text-gray-500">
-          <p>Need help? Contact support or browse our 3D library.</p>
+        <div className="mt-8 pt-6 border-t border-line/60 text-xs text-fg-secondary/70 font-mono">
+          Looking for a specific asset? Try searching directly from the search bar above.
         </div>
       </div>
     </div>

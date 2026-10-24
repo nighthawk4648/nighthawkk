@@ -1,13 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
-
-  // Optimize fonts to reduce CLS
-  optimizeFonts: false,
+  experimental: {
+    cpus: 1,
+  },
 
   images: {
-    unoptimized: false,
+    loader: "custom",
+    loaderFile: "./src/utils/cloudinaryLoader.js",
     remotePatterns: [
       {
         protocol: "https",

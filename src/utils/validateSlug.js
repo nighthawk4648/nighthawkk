@@ -1,9 +1,12 @@
+import { cache } from "react";
 import getData from "@/utils/getData";
 import slugify from "@/utils/slugify";
 
 /**
  * Shared URL slug validation functions.
  * Ensures only the ONE correct URL renders a page — all others get 404.
+ * Wrapped in React cache() so generateMetadata and Page share the exact
+ * same in-memory promise within a single request cycle.
  */
 
 const isValidRouteParam = (param) => {
@@ -18,23 +21,26 @@ const isValidRouteParam = (param) => {
 };
 
 // ─── Category page: /category-slug-{id} ────────────────────────────
-export async function validateCategory(categoryParam) {
+export const validateCategory = cache(async (categoryParam) => {
   if (!isValidRouteParam(categoryParam)) return null;
 
   const categoryId = categoryParam?.split("-").slice(-1)?.[0];
   if (!categoryId) return null;
 
-  const categoryData = await getData(`categories/${categoryId}`);
+  const categoryData = await getData(`categories/${categoryId}`, {
+    tags: ["categories", `category-${categoryId}`],
+    revalidate: 300,
+  });
   if (!categoryData?.data) return null;
 
   const expectedSlug = `${slugify(categoryData.data.name)}-${categoryData.data.id}`;
   if (categoryParam !== expectedSlug) return null;
 
   return categoryData;
-}
+});
 
 // ─── SubCategory page: /category-slug-{id}/subcategory-slug-{id} ───
-export async function validateSubCategory(categoryParam, subCategoryParam) {
+export const validateSubCategory = cache(async (categoryParam, subCategoryParam) => {
   if (!isValidRouteParam(categoryParam) || !isValidRouteParam(subCategoryParam))
     return null;
 
@@ -44,22 +50,25 @@ export async function validateSubCategory(categoryParam, subCategoryParam) {
   const subCategoryId = subCategoryParam?.split("-").slice(-1)?.[0];
   if (!subCategoryId) return null;
 
-  const subCategoryData = await getData(`sub-categories/${subCategoryId}`);
+  const subCategoryData = await getData(`sub-categories/${subCategoryId}`, {
+    tags: ["sub-categories", `subcategory-${subCategoryId}`],
+    revalidate: 300,
+  });
   if (!subCategoryData?.data) return null;
 
   const expectedSlug = `${slugify(subCategoryData.data.name)}-${subCategoryData.data.id}`;
   if (subCategoryParam !== expectedSlug) return null;
 
   return { categoryData, subCategoryData };
-}
+});
 
 // ─── Asset page: /category-slug/subcategory-slug/asset-slug-{id} ───
 // Tolerant validation: accepts pure slugs (category/subcategory) and ID-suffixed slugs
-export async function validateAsset(
+export const validateAsset = cache(async (
   categoryParam,
   subCategoryParam,
   assetParam,
-) {
+) => {
   if (
     !isValidRouteParam(categoryParam) ||
     !isValidRouteParam(subCategoryParam) ||
@@ -70,8 +79,11 @@ export async function validateAsset(
   const assetId = assetParam?.split("-").slice(-1)?.[0];
   if (!assetId || isNaN(Number(assetId))) return null;
 
-  // Fetch asset fresh from database (no stale cache delay)
-  const assetData = await getData(`assets/${assetId}`, { cache: "no-store" });
+  // Tagged caching with 5-minute TTL: deduplicates across metadata & page
+  const assetData = await getData(`assets/${assetId}`, {
+    tags: ["assets", `asset-${assetId}`],
+    revalidate: 300,
+  });
   if (!assetData?.data) return null;
 
   // Validate asset slug
@@ -86,7 +98,10 @@ export async function validateAsset(
   if (!category && assetData.data.sub_category_id) {
     const subCategoryData = await getData(
       `sub-categories/${assetData.data.sub_category_id}`,
-      { cache: "no-store" },
+      {
+        tags: ["sub-categories", `subcategory-${assetData.data.sub_category_id}`],
+        revalidate: 300,
+      },
     );
     if (subCategoryData?.data) {
       subCategory = subCategoryData.data;
@@ -119,7 +134,7 @@ export async function validateAsset(
   }
 
   return assetData;
-}
+});
 
 // ─── Not-found metadata helper ─────────────────────────────────────
 export const notFoundMeta = {

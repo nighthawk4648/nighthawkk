@@ -1,3 +1,5 @@
+"use client";
+
 import { FaExclamationTriangle } from "react-icons/fa";
 
 export const ErrorFallback = () => {
