@@ -6,14 +6,6 @@ import { sanitizeHtml, stripHtml } from "@/utils/sanitizeHtml";
 import { ErrorFallback } from "@/components/Shared/ErrorFallback/ErrorFallback";
 
 const getPrivacyPage = cache(async () => {
-  // 1. Try direct page ID 3
-  const res = await getData("pages/3", {
-    tags: ["pages", "page-3"],
-    revalidate: 300,
-  });
-  if (res?.data) return res.data;
-
-  // 2. Fallback: query all pages and find by slug/title
   const allPages = await getData("pages", {
     tags: ["pages"],
     revalidate: 300,

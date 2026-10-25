@@ -88,7 +88,8 @@ export default function SupportDesk() {
 
     try {
       const backendUrl =
-        process.env.NEXT_PUBLIC_BACKEND_BASE_URL || "http://localhost:5000/api";
+        process.env.NEXT_PUBLIC_BACKEND_BASE_URL ||
+        "https://api.sketchshaper.com/api";
       const response = await fetch(`${backendUrl}/contact`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
