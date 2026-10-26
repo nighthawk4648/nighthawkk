@@ -30,8 +30,12 @@ export default function cloudinaryLoader({ src, width, quality }) {
     fullUrl = `${base}${src}`.replace(/([^:]\/)\/{2,}/g, "$1");
   }
 
-  // 4. If Cloudinary is not configured, stream origin URL with width query
-  if (!hasValidCloudName) {
+  // 4. If Cloudinary is not configured or URL is local (localhost/127.0.0.1), stream origin URL with width query
+  if (
+    !hasValidCloudName ||
+    fullUrl.includes("localhost") ||
+    fullUrl.includes("127.0.0.1")
+  ) {
     const separator = fullUrl.includes("?") ? "&" : "?";
     return `${fullUrl}${separator}w=${width}`;
   }

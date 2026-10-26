@@ -39,7 +39,12 @@ export function getOptimizedImageUrl(originalUrl, { width = 1200, quality = 80 }
     ? originalUrl
     : getOriginalImageUrl(originalUrl);
 
-  if (!hasValidCloudName) {
+  // If Cloudinary is not configured or URL is local (localhost/127.0.0.1), return direct URL
+  if (
+    !hasValidCloudName ||
+    normalizedUrl.includes("localhost") ||
+    normalizedUrl.includes("127.0.0.1")
+  ) {
     return normalizedUrl;
   }
 

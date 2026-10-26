@@ -97,19 +97,19 @@ export default function Navbar({
 
   const topCategories = sortedCategories.slice(0, 6);
 
-  // Morabo sofa metadata (Asset ID 89: /sketchup-3d-models/sofa/morabo-sofa-89)
-  const MORABO_SOFA = {
-    id: 89,
-    name: "Morabo sofa",
-    cover: "cover-1727340867375.png",
+  // Featured Sofa metadata (Asset ID 247: /sketchup-3d-models/sofa/stockholm-sundhamn-beige-sofa-by-ikea-247)
+  const STOCKHOLM_SOFA = {
+    id: 247,
+    name: "Stockholm Sundhamn beige sofa by ikea",
+    cover: "cover-1757323725958.png",
     access_type: "free",
     size: "Native .SKP",
     categoryName: "Sketchup 3D models",
     subCategoryName: "Sofa",
-    href: "/sketchup-3d-models/sofa/morabo-sofa-89",
+    href: "/sketchup-3d-models/sofa/stockholm-sundhamn-beige-sofa-by-ikea-247",
   };
 
-  // Safely resolve the featured asset (specifically prioritizing Morabo sofa ID 89)
+  // Safely resolve the featured asset (specifically prioritizing Stockholm sofa ID 247)
   let featuredAsset = null;
   let featuredCategory = null;
   let featuredSubCategory = null;
@@ -118,9 +118,9 @@ export default function Navbar({
     if (Array.isArray(cat?.sub_categories) && cat.sub_categories.length > 0) {
       for (const sub of cat.sub_categories) {
         if (Array.isArray(sub?.assets) && sub.assets.length > 0) {
-          const match89 = sub.assets.find((a) => a.id === 89);
-          if (match89) {
-            featuredAsset = match89;
+          const match247 = sub.assets.find((a) => a.id === 247);
+          if (match247) {
+            featuredAsset = match247;
             featuredCategory = cat;
             featuredSubCategory = sub;
             break;
@@ -135,9 +135,9 @@ export default function Navbar({
   if (!featuredAsset && Array.isArray(subCategories) && subCategories.length > 0) {
     for (const sub of subCategories) {
       if (Array.isArray(sub?.assets) && sub.assets.length > 0) {
-        const match89 = sub.assets.find((a) => a.id === 89);
-        if (match89) {
-          featuredAsset = match89;
+        const match247 = sub.assets.find((a) => a.id === 247);
+        if (match247) {
+          featuredAsset = match247;
           featuredSubCategory = sub;
           featuredCategory =
             sub.category ||
@@ -151,20 +151,20 @@ export default function Navbar({
     }
   }
 
-  // Resolved metadata with guaranteed Morabo sofa presentation
-  const featuredCover = featuredAsset?.cover || MORABO_SOFA.cover;
-  const featuredName = featuredAsset?.name || MORABO_SOFA.name;
+  // Resolved metadata with guaranteed Stockholm sofa presentation
+  const featuredCover = featuredAsset?.cover || STOCKHOLM_SOFA.cover;
+  const featuredName = featuredAsset?.name || STOCKHOLM_SOFA.name;
   const featuredCategoryName =
-    featuredCategory?.name || MORABO_SOFA.categoryName;
+    featuredCategory?.name || STOCKHOLM_SOFA.categoryName;
   const featuredSubCategoryName =
-    featuredSubCategory?.name || MORABO_SOFA.subCategoryName;
+    featuredSubCategory?.name || STOCKHOLM_SOFA.subCategoryName;
   const featuredAccessType =
-    featuredAsset?.access_type || MORABO_SOFA.access_type;
-  const featuredSize = formatAssetSize(featuredAsset);
+    featuredAsset?.access_type || STOCKHOLM_SOFA.access_type;
+  const featuredSize = formatAssetSize(featuredAsset) || STOCKHOLM_SOFA.size;
   const featuredAssetHref =
     featuredAsset && featuredCategory && featuredSubCategory
       ? `/${slugify(featuredCategory.name)}/${slugify(featuredSubCategory.name)}/${slugify(featuredAsset.name)}-${featuredAsset.id}`
-      : MORABO_SOFA.href;
+      : STOCKHOLM_SOFA.href;
 
   return (
     <>
@@ -286,10 +286,7 @@ export default function Navbar({
                             );
                           })}
                         </div>
-                        <div className="mt-4 pt-4 border-t border-line flex justify-between items-center text-xs">
-                          <span className="text-fg-secondary">
-                            All models are SketchUp native (.skp)
-                          </span>
+                        <div className="mt-4 pt-4 border-t border-line flex justify-end items-center text-xs">
                           <Link
                             href="/#categories"
                             onClick={() => setIsBrowseOpen(false)}
@@ -318,6 +315,7 @@ export default function Navbar({
                                 )}
                                 alt={featuredName}
                                 fill
+                                sizes="(max-width: 768px) 100vw, 320px"
                                 className="object-cover group-hover:scale-105 transition-transform duration-300"
                               />
                             ) : (
@@ -332,19 +330,6 @@ export default function Navbar({
                                 ? "PRO"
                                 : "Free"}
                             </span>
-                          </div>
-                          <div className="p-3">
-                            <div className="text-sm font-medium text-fg group-hover:text-action transition-colors truncate">
-                              {featuredName}
-                            </div>
-                            <div className="text-xs text-fg-secondary font-mono mt-0.5 truncate">
-                              {featuredCategoryName}
-                              {featuredSubCategoryName
-                                ? ` • ${featuredSubCategoryName}`
-                                : ""}
-                              {" • "}
-                              {featuredSize}
-                            </div>
                           </div>
                         </Link>
                       </div>
