@@ -121,7 +121,7 @@ export default function HeroSection({
           {/* Quiet "Try:" Category Hints */}
           <div className="flex items-center gap-2 text-xs text-fg-secondary font-mono flex-wrap">
             <span>Try:</span>
-            {["Sofa", "Lights", "Decoration"].map((term, idx) => (
+            {["Sofa", "Chair", "Table"].map((term, idx) => (
               <React.Fragment key={term}>
                 {idx > 0 && <span>&bull;</span>}
                 <button

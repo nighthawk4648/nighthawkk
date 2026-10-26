@@ -29,6 +29,7 @@ const Innovative = ({ innovatives = [] }) => {
                 src={bgUrl}
                 alt={innovative?.title || "SketchShaper Highlight"}
                 fill
+                sizes="100vw"
                 className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 priority={index === 0}
               />
@@ -44,8 +45,10 @@ const Innovative = ({ innovatives = [] }) => {
               </h2>
 
               <p className="text-sm sm:text-base lg:text-lg text-fg-secondary leading-relaxed font-sans max-w-xl">
-                {innovative?.description ||
-                  "Premium quality 3D models and textures for your projects."}
+                {innovative?.short_description && innovative.short_description.trim() !== "-"
+                  ? innovative.short_description
+                  : innovative?.description ||
+                    "Premium quality 3D models and textures for your projects."}
               </p>
             </div>
           </div>

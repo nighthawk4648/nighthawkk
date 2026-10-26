@@ -62,16 +62,24 @@ export async function GET(request) {
       slug: `/${slugify(item.name)}-${item.id}`,
     }));
 
+    // Known category fallbacks
+    const KNOWN_CATEGORIES = new Map([
+      [3, "Sketchup 3D models"],
+      [4, "Textures"],
+      [5, "Sketchup plugins"],
+    ]);
+
     // Map categories for ID/name lookup
     const catLookup = new Map(rawCategories.map((c) => [c.id, c.name]));
 
     // Project subCategories: max 5
     const subCategory = rawSubCategories.slice(0, 5).map((item) => {
-      const catId = item?.category?.id || item?.category_id;
+      const catId = item?.category?.id || item?.category_id || 3;
       const catName =
         item?.category?.name ||
-        (catId ? catLookup.get(catId) : null) ||
-        "models";
+        catLookup.get(catId) ||
+        KNOWN_CATEGORIES.get(Number(catId)) ||
+        "Sketchup 3D models";
       const catSlug = catId ? `${slugify(catName)}-${catId}` : slugify(catName);
       const subCatSlug = `${slugify(item.name)}-${item.id}`;
 

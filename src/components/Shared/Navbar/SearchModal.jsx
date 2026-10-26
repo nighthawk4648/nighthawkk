@@ -302,7 +302,7 @@ export default function SearchModal({
                               sub.slug ||
                                 (sub.category
                                   ? `/${slugify(sub.category.name)}-${sub.category.id}/${slugify(sub.name)}-${sub.id}`
-                                  : `/${slugify(sub.category_name || "models")}-${sub.category_id || ""}/${slugify(sub.name)}-${sub.id}`)
+                                  : `/${slugify(sub.category_name || "Sketchup 3D models")}-${sub.category_id || 3}/${slugify(sub.name)}-${sub.id}`)
                             )
                           }
                           className="flex items-center justify-between p-2 rounded-lg hover:bg-surface-raised cursor-pointer group border border-line/60"
@@ -343,8 +343,8 @@ export default function SearchModal({
                     ]).slice(0, 5)
                   : [
                       { title: "Sofa", query: "Sofa" },
-                      { title: "Lights", query: "Lights" },
-                      { title: "Decoration", query: "Decoration" },
+                      { title: "Chair", query: "Chair" },
+                      { title: "Table", query: "Table" },
                     ]
                 ).map((item, idx) => (
                   <div

@@ -1,8 +1,9 @@
 "use client";
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getOptimizedImageUrl } from "@/utils/cloudinary";
+import cloudinaryLoader from "@/utils/cloudinaryLoader";
 import useSWR from "swr";
 import { fetcher } from "@/utils/swrFetcher";
 import slugify from "@/utils/slugify";
@@ -14,7 +15,6 @@ import {
   FiLayers,
   FiLock,
   FiArrowLeft,
-  FiExternalLink,
   FiFileText,
   FiChevronLeft,
   FiChevronRight,
@@ -26,6 +26,7 @@ import {
   FiShield,
   FiCheckCircle,
   FiZap,
+  FiLoader,
 } from "react-icons/fi";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import InFeedAd from "@/components/Shared/GoogleAdsense/InFeedAd";
@@ -37,6 +38,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
   const [showModal, setShowModal] = useState(false);
   const [shaderMode, setShaderMode] = useState("beauty"); // "beauty" | "clay" | "wireframe"
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isAngleLoading, setIsAngleLoading] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [panPosition, setPanPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -99,20 +101,70 @@ const SubCategoryDetails = ({ assetDetails }) => {
         ];
   }, [assetDetails]);
 
-  // Camera angle navigation (Left / Right)
-  const handlePrevAngle = (e) => {
-    e?.stopPropagation();
-    setActiveImageIndex((prev) => (prev > 0 ? prev - 1 : displayImages.length - 1));
+  // Unified angle switching handler with loading state and zoom reset
+  const switchAngle = (newIndex) => {
+    if (newIndex === activeImageIndex || newIndex < 0 || newIndex >= displayImages.length) return;
+    setIsAngleLoading(true);
+    setActiveImageIndex(newIndex);
     setZoomLevel(1);
     setPanPosition({ x: 0, y: 0 });
   };
 
+  // Camera angle navigation (Left / Right)
+  const handlePrevAngle = (e) => {
+    e?.stopPropagation();
+    const prevIdx = activeImageIndex > 0 ? activeImageIndex - 1 : displayImages.length - 1;
+    switchAngle(prevIdx);
+  };
+
   const handleNextAngle = (e) => {
     e?.stopPropagation();
-    setActiveImageIndex((prev) => (prev < displayImages.length - 1 ? prev + 1 : 0));
-    setZoomLevel(1);
-    setPanPosition({ x: 0, y: 0 });
+    const nextIdx = activeImageIndex < displayImages.length - 1 ? activeImageIndex + 1 : 0;
+    switchAngle(nextIdx);
   };
+
+  // Idle-Time Background Preloader for remaining camera angles (Choice 4 - Hybrid)
+  useEffect(() => {
+    if (typeof window === "undefined" || displayImages.length <= 1) return;
+
+    const preloadRemainingAngles = () => {
+      const screenWidth = window.innerWidth;
+      const targetWidth = screenWidth < 640 ? 640 : screenWidth < 1024 ? 828 : 1080;
+
+      displayImages.slice(1).forEach((item) => {
+        if (!item?.image) return;
+        const rawUrl = getOriginalImageUrl(item.image);
+        if (!rawUrl) return;
+
+        // Use custom Cloudinary loader format to mirror Next.js <Image> request
+        const optimizedUrl = cloudinaryLoader({
+          src: rawUrl,
+          width: targetWidth,
+          quality: 75,
+        });
+
+        const preloadedImg = new window.Image();
+        preloadedImg.src = optimizedUrl;
+      });
+    };
+
+    if ("requestIdleCallback" in window) {
+      const idleHandle = window.requestIdleCallback(preloadRemainingAngles, { timeout: 2500 });
+      return () => window.cancelIdleCallback(idleHandle);
+    } else {
+      const timer = setTimeout(preloadRemainingAngles, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [displayImages]);
+
+  // Safety fallback: dismiss loading pill if network hangs
+  useEffect(() => {
+    if (!isAngleLoading) return;
+    const safetyTimer = setTimeout(() => {
+      setIsAngleLoading(false);
+    }, 3500);
+    return () => clearTimeout(safetyTimer);
+  }, [isAngleLoading, activeImageIndex]);
 
   // Zoom handlers (1x to 3x)
   const handleZoomChange = (delta) => {
@@ -175,11 +227,19 @@ const SubCategoryDetails = ({ assetDetails }) => {
     const handleKeyDown = (e) => {
       if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
       if (e.key === "ArrowLeft") {
-        setActiveImageIndex((prev) => (prev > 0 ? prev - 1 : displayImages.length - 1));
+        setActiveImageIndex((prev) => {
+          const newIdx = prev > 0 ? prev - 1 : displayImages.length - 1;
+          if (newIdx !== prev) setIsAngleLoading(true);
+          return newIdx;
+        });
         setZoomLevel(1);
         setPanPosition({ x: 0, y: 0 });
       } else if (e.key === "ArrowRight") {
-        setActiveImageIndex((prev) => (prev < displayImages.length - 1 ? prev + 1 : 0));
+        setActiveImageIndex((prev) => {
+          const newIdx = prev < displayImages.length - 1 ? prev + 1 : 0;
+          if (newIdx !== prev) setIsAngleLoading(true);
+          return newIdx;
+        });
         setZoomLevel(1);
         setPanPosition({ x: 0, y: 0 });
       } else if (e.key === "Escape") {
@@ -201,7 +261,6 @@ const SubCategoryDetails = ({ assetDetails }) => {
     }
 
     setIsDownloading(true);
-    showToast("Preparing .SKP package...", "info");
 
     const tokenQuery =
       assetDetails?.access_type === "paid" && token ? `?token=${token}` : "";
@@ -217,7 +276,6 @@ const SubCategoryDetails = ({ assetDetails }) => {
     setTimeout(() => {
       document.body.removeChild(a);
       setIsDownloading(false);
-      showToast(`Downloaded: ${assetDetails.name}.skp`, "success");
     }, 1200);
   };
 
@@ -345,17 +403,17 @@ const SubCategoryDetails = ({ assetDetails }) => {
             {/* 3D Viewport Stage Container */}
             <div className="bg-surface/50 border border-line rounded-2xl overflow-hidden shadow-2xl relative">
               
-              {/* Top Floating Controls & Badges */}
-              <div className="absolute top-4 inset-x-4 z-20 flex items-center justify-between pointer-events-none">
+              {/* Top Floating Controls */}
+              <div className="absolute top-4 inset-x-4 z-20 flex items-center justify-start pointer-events-none">
                 
-                {/* Top-Left Floating Control Bar (Shader modes + ruler) */}
+                {/* Top-Left Floating Control Bar (Shader modes) */}
                 <div className="bg-surface-raised/90 backdrop-blur-md border border-line p-1 rounded-xl flex items-center gap-1 shadow-lg pointer-events-auto">
-                  {/* Beauty Mode */}
+                  {/* Render Mode */}
                   <button
                     type="button"
                     onClick={() => {
                       setShaderMode("beauty");
-                      showToast("Shader mode: Realistic Beauty PBR");
+                      showToast("Mode: Render");
                     }}
                     className={`px-2.5 py-1 rounded-lg text-xs font-mono font-medium transition-all ${
                       shaderMode === "beauty"
@@ -363,15 +421,15 @@ const SubCategoryDetails = ({ assetDetails }) => {
                         : "text-fg-secondary hover:text-fg hover:bg-surface/60"
                     }`}
                   >
-                    Beauty
+                    Render
                   </button>
 
-                  {/* Clay Mode */}
+                  {/* Viewport Mode */}
                   <button
                     type="button"
                     onClick={() => {
                       setShaderMode("clay");
-                      showToast("Shader mode: Clay Studio AO");
+                      showToast("Mode: Viewport");
                     }}
                     className={`px-2.5 py-1 rounded-lg text-xs font-mono font-medium transition-all ${
                       shaderMode === "clay"
@@ -379,7 +437,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
                         : "text-fg-secondary hover:text-fg hover:bg-surface/60"
                     }`}
                   >
-                    Clay
+                    Viewport
                   </button>
 
                   {/* Wireframe Mode */}
@@ -387,7 +445,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
                     type="button"
                     onClick={() => {
                       setShaderMode("wireframe");
-                      showToast("Shader mode: Wireframe Topology");
+                      showToast("Mode: Wireframe");
                     }}
                     className={`px-2.5 py-1 rounded-lg text-xs font-mono font-medium transition-all ${
                       shaderMode === "wireframe"
@@ -398,25 +456,11 @@ const SubCategoryDetails = ({ assetDetails }) => {
                     Wireframe
                   </button>
                 </div>
-
-                {/* Top-Right Floating Status Badges */}
-                <div className="flex items-center gap-2 pointer-events-auto">
-                  {assetDetails?.access_type === "paid" ? (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-mono font-semibold bg-extension-tintBg text-extension border border-extension-tintLine">
-                      <span>💎</span> PRO ASSET
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-mono font-semibold bg-action-tintBg text-action border border-action-tintLine">
-                      <span className="w-1.5 h-1.5 rounded-full bg-action animate-pulse" />
-                      FREE ASSET
-                    </span>
-                  )}
-                </div>
               </div>
 
               {/* Main Canvas Stage */}
               <div
-                className={`aspect-[16/10] sm:aspect-[16/9] bg-gradient-to-b from-surface/20 to-canvas/80 flex items-center justify-center p-8 relative overflow-hidden select-none group/canvas ${
+                className={`aspect-[16/10] sm:aspect-[16/9] bg-gradient-to-b from-surface/20 to-canvas/80 flex items-center justify-center relative overflow-hidden select-none group/canvas ${
                   zoomLevel > 1 ? (isDragging ? "cursor-grabbing" : "cursor-grab") : ""
                 }`}
                 onMouseDown={handleMouseDown}
@@ -526,16 +570,31 @@ const SubCategoryDetails = ({ assetDetails }) => {
                   }}
                 >
                   <Image
-                    src={getOptimizedImageUrl(getOriginalImageUrl(activeImage?.image))}
+                    key={activeImage?.image || activeImageIndex}
+                    src={getOriginalImageUrl(activeImage?.image)}
                     alt={activeImage?.alt?.trim() || assetDetails?.name || "3D Model Render"}
                     fill
                     sizes="(max-width: 1024px) 100vw, 65vw"
                     priority
                     loading="eager"
+                    onLoad={() => setIsAngleLoading(false)}
+                    onError={() => setIsAngleLoading(false)}
                     style={shaderFilterStyle}
-                    className="object-contain p-4 drop-shadow-[0_16px_36px_rgba(0,0,0,0.85)] select-none"
+                    className={`object-contain drop-shadow-[0_16px_36px_rgba(0,0,0,0.85)] select-none transition-all duration-300 ${
+                      isAngleLoading ? "opacity-30 scale-[0.98]" : "opacity-100 scale-100"
+                    }`}
                   />
                 </div>
+
+                {/* Angle Switching Loading Pill Indicator */}
+                {isAngleLoading && (
+                  <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
+                    <div className="bg-black/75 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/15 shadow-2xl flex items-center gap-2 text-xs font-mono text-fg animate-in fade-in duration-150">
+                      <FiLoader className="w-3.5 h-3.5 animate-spin text-action" />
+                      <span>Loading angle...</span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Bottom Angle Carousel */}
@@ -548,8 +607,10 @@ const SubCategoryDetails = ({ assetDetails }) => {
                     key={img?.id || idx}
                     type="button"
                     onClick={() => {
-                      setActiveImageIndex(idx);
-                      showToast(`Switched to Camera Angle #${idx + 1}`);
+                      if (activeImageIndex !== idx) {
+                        switchAngle(idx);
+                        showToast(`Switched to Camera Angle #${idx + 1}`);
+                      }
                     }}
                     className={`w-12 h-9 rounded overflow-hidden border-2 transition-all hover:scale-105 relative bg-canvas ${
                       activeImageIndex === idx
@@ -618,9 +679,13 @@ const SubCategoryDetails = ({ assetDetails }) => {
                 <span className="glass-panel px-3 py-1 rounded-full text-xs text-fg-secondary border border-white/10">
                   ASSET #{assetDetails?.id || "SKP"}
                 </span>
-                {assetDetails?.access_type === "paid" && (
-                  <span className="glass-panel px-3 py-1 rounded-full text-xs text-extension border border-extension-tintLine bg-extension-tintBg/80 font-medium">
-                    💎 Patreon PRO
+                {assetDetails?.access_type === "paid" ? (
+                  <span className="glass-panel px-3 py-1 rounded-full text-xs font-semibold text-extension border border-extension-tintLine bg-extension-tintBg/80 font-mono">
+                    PRO
+                  </span>
+                ) : (
+                  <span className="glass-panel px-3 py-1 rounded-full text-xs font-semibold text-action border border-action-tintLine bg-action-tintBg font-mono">
+                    FREE
                   </span>
                 )}
               </div>
@@ -986,18 +1051,22 @@ const SubCategoryDetails = ({ assetDetails }) => {
             {/* Shaders + Close Button */}
             <div className="flex items-center gap-3">
               <div className="hidden sm:flex items-center gap-1 bg-surface/60 border border-line rounded-lg p-1">
-                {["beauty", "clay", "wireframe"].map((mode) => (
+                {[
+                  { id: "beauty", label: "Render" },
+                  { id: "clay", label: "Viewport" },
+                  { id: "wireframe", label: "Wireframe" },
+                ].map(({ id, label }) => (
                   <button
-                    key={mode}
+                    key={id}
                     type="button"
-                    onClick={() => setShaderMode(mode)}
-                    className={`px-2.5 py-1 rounded text-xs font-mono uppercase capitalize transition-all cursor-pointer ${
-                      shaderMode === mode
+                    onClick={() => setShaderMode(id)}
+                    className={`px-2.5 py-1 rounded text-xs font-mono transition-all cursor-pointer ${
+                      shaderMode === id
                         ? "bg-fg text-canvas font-semibold shadow-sm"
                         : "text-fg-secondary hover:text-fg"
                     }`}
                   >
-                    {mode}
+                    {label}
                   </button>
                 ))}
               </div>
@@ -1066,14 +1135,29 @@ const SubCategoryDetails = ({ assetDetails }) => {
               }}
             >
               <Image
+                key={activeImage?.image || activeImageIndex}
                 src={getOriginalImageUrl(activeImage?.image)}
                 alt={activeImage?.alt?.trim() || assetDetails?.name || "3D Model Render"}
                 fill
                 sizes="100vw"
+                onLoad={() => setIsAngleLoading(false)}
+                onError={() => setIsAngleLoading(false)}
                 style={shaderFilterStyle}
-                className="object-contain p-6 drop-shadow-[0_20px_48px_rgba(0,0,0,0.9)] select-none"
+                className={`object-contain p-6 drop-shadow-[0_20px_48px_rgba(0,0,0,0.9)] select-none transition-all duration-300 ${
+                  isAngleLoading ? "opacity-30 scale-[0.98]" : "opacity-100 scale-100"
+                }`}
               />
             </div>
+
+            {/* Lightbox Angle Loading Pill Indicator */}
+            {isAngleLoading && (
+              <div className="absolute inset-0 z-30 flex items-center justify-center pointer-events-none">
+                <div className="bg-black/75 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/15 shadow-2xl flex items-center gap-2 text-xs font-mono text-fg animate-in fade-in duration-150">
+                  <FiLoader className="w-3.5 h-3.5 animate-spin text-action" />
+                  <span>Loading angle...</span>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Bottom Toolbar & Carousel */}
@@ -1085,9 +1169,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
                   key={img?.id || idx}
                   type="button"
                   onClick={() => {
-                    setActiveImageIndex(idx);
-                    setZoomLevel(1);
-                    setPanPosition({ x: 0, y: 0 });
+                    switchAngle(idx);
                   }}
                   className={`w-14 h-10 rounded overflow-hidden border-2 transition-all relative shrink-0 cursor-pointer ${
                     activeImageIndex === idx
@@ -1154,7 +1236,7 @@ function ExtensionPromoCard() {
       <div>
         <Link
           href="/extension"
-          className="aspect-[4/3] w-full bg-canvas/60 overflow-hidden relative flex flex-col items-center justify-center p-2.5 block group-hover:bg-canvas/80 transition-colors"
+          className="aspect-[4/3] w-full bg-canvas/60 overflow-hidden relative flex flex-col items-center justify-center p-2.5 group-hover:bg-canvas/80 transition-colors"
         >
           {/* Subtle Ambient Radial Glow */}
           <div className="absolute w-32 h-32 rounded-full bg-action/15 blur-2xl pointer-events-none group-hover:bg-action/25 transition-all duration-500" />
@@ -1225,7 +1307,7 @@ function RelatedAssetCard({
       <div>
         <Link
           href={href}
-          className="aspect-[4/3] w-full bg-canvas/40 overflow-hidden relative flex items-center justify-center p-2.5 block"
+          className="aspect-[4/3] w-full bg-canvas/40 overflow-hidden relative flex items-center justify-center p-2.5"
         >
           {asset?.cover ? (
             <Image
