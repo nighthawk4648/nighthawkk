@@ -53,17 +53,17 @@ export default function ExtensionBanner({ initialDownloads = 0 }) {
     <>
       <section
         id="extension"
-        className="py-16 sm:py-20 px-4 md:px-[0.5in] w-full text-fg"
+        className="py-6 sm:py-16 lg:py-20 px-4 md:px-[0.5in] w-full text-fg"
       >
-        <div className="bg-surface/30 backdrop-blur-2xl rounded-panel border border-white/[0.08] p-8 sm:p-12 shadow-2xl shadow-black/40 overflow-hidden relative">
+        <div className="bg-surface/30 backdrop-blur-2xl rounded-2xl sm:rounded-panel border border-white/[0.08] p-5 sm:p-10 lg:p-12 shadow-2xl shadow-black/40 overflow-hidden relative">
           {/* Subtle Specular Sheen & Glass Refraction */}
           <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] via-transparent to-action/[0.02] pointer-events-none" />
           <div className="absolute -top-24 -right-24 w-96 h-96 bg-action/[0.06] rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-action/[0.04] rounded-full blur-3xl pointer-events-none" />
 
-          <div className="grid grid-cols-1 lg:grid-cols-[1.618fr_1fr] gap-10 lg:gap-14 items-center relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.618fr_1fr] gap-6 sm:gap-10 lg:gap-14 items-center relative z-10">
             {/* Left Major Column: Extension Demo Frame */}
-            <div className="aspect-[16/9] w-full rounded-[20px] overflow-hidden border border-white/10 bg-canvas/80 relative group shadow-inner backdrop-blur-sm">
+            <div className="aspect-[16/9] w-full rounded-xl sm:rounded-[20px] overflow-hidden border border-white/10 bg-canvas/80 relative group shadow-inner backdrop-blur-sm">
               <img
                 src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80"
                 alt="SketchUp Extension in-app interface viewport"
@@ -74,9 +74,9 @@ export default function ExtensionBanner({ initialDownloads = 0 }) {
                   type="button"
                   onClick={() => setIsVideoOpen(true)}
                   aria-label="Watch extension demo video"
-                  className="w-16 h-16 rounded-full glass-panel flex items-center justify-center border border-action/40 text-action hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-lg pointer-events-auto"
+                  className="w-12 h-12 sm:w-16 sm:h-16 rounded-full glass-panel flex items-center justify-center border border-action/40 text-action hover:scale-110 active:scale-95 transition-all cursor-pointer shadow-lg pointer-events-auto"
                 >
-                  <svg className="w-6 h-6 fill-current ml-1" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6 fill-current ml-0.5 sm:ml-1" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z" />
                   </svg>
                 </button>
@@ -85,40 +85,40 @@ export default function ExtensionBanner({ initialDownloads = 0 }) {
 
             {/* Right Minor Column: Copy & Green Accent CTA */}
             <div className="flex flex-col items-start">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight-h2 text-fg mb-3 font-sans">
+              <h2 className="text-xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-fg mb-2 sm:mb-3 font-sans">
                 Use the library inside SketchUp.
               </h2>
 
-              <p className="text-fg-secondary text-sm sm:text-base leading-relaxed mb-6 font-sans">
+              <p className="text-fg-secondary text-xs sm:text-base leading-relaxed mb-4 sm:mb-6 font-sans">
                 Browse and insert SketchShaper models without leaving SketchUp.
                 Free extension. Free assets.
               </p>
 
               {/* Metadata Chips */}
-              <div className="flex flex-wrap gap-2 mb-8 font-mono">
-                <span className="glass-panel px-3 py-1 rounded-full text-xs text-fg-secondary border border-white/10">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-5 sm:mb-8 font-mono">
+                <span className="glass-panel px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[11px] sm:text-xs text-fg-secondary border border-white/10">
                   v1.5.0
                 </span>
-                <span className="glass-panel px-3 py-1 rounded-full text-xs text-fg-secondary border border-white/10">
+                <span className="glass-panel px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[11px] sm:text-xs text-fg-secondary border border-white/10">
                   SketchUp 2022 &ndash; 2026
                 </span>
-                <span className="glass-panel px-3 py-1 rounded-full text-xs text-action border border-action-tintLine bg-action-tintBg/80">
+                <span className="glass-panel px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[11px] sm:text-xs text-action border border-action-tintLine bg-action-tintBg/80">
                   {downloadCount.toLocaleString()}+ downloads
                 </span>
               </div>
 
               {/* Green Solid Action Button */}
-              <div className="flex items-center gap-4 flex-wrap">
+              <div className="flex items-center gap-3.5 sm:gap-4 flex-wrap">
                 <button
                   type="button"
                   onClick={handleDownload}
                   disabled={isDownloading}
-                  className="px-6 py-3 rounded-full text-sm font-semibold bg-action hover:bg-action-hover active:bg-action-pressed text-canvas transition-all shadow-lg shadow-action/10 font-sans cursor-pointer flex items-center gap-2"
+                  className="px-5 py-2.5 sm:px-6 sm:py-3 rounded-full text-xs sm:text-sm font-semibold bg-action hover:bg-action-hover active:bg-action-pressed text-canvas transition-all shadow-lg shadow-action/10 font-sans cursor-pointer flex items-center gap-2"
                 >
                   {isDownloading ? (
                     <>
                       <svg
-                        className="animate-spin h-4 w-4 text-canvas"
+                        className="animate-spin h-3.5 w-3.5 sm:h-4 sm:w-4 text-canvas"
                         viewBox="0 0 24 24"
                         fill="none"
                       >
@@ -144,7 +144,7 @@ export default function ExtensionBanner({ initialDownloads = 0 }) {
                 </button>
                 <Link
                   href="/extension"
-                  className="text-sm font-medium text-fg-secondary hover:text-fg transition-colors font-sans"
+                  className="text-xs sm:text-sm font-medium text-fg-secondary hover:text-fg transition-colors font-sans"
                 >
                   How to install &rarr;
                 </Link>

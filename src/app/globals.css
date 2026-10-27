@@ -161,6 +161,31 @@ body::after {
 }
 
 /* Seamless Infinite Marquee */
+@keyframes marquee-forward {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+@keyframes marquee-reverse {
+  0% { transform: translate3d(-50%, 0, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+.animate-marquee-left {
+  animation: marquee-forward 30s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee-right {
+  animation: marquee-reverse 30s linear infinite;
+  will-change: transform;
+}
+
+.pause-hover:hover,
+.pause-hover:active {
+  animation-play-state: paused;
+}
+
 @keyframes marquee {
   0% { transform: translate3d(0, 0, 0); }
   100% { transform: translate3d(-100%, 0, 0); }

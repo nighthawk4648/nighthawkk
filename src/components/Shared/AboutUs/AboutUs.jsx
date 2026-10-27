@@ -15,27 +15,27 @@ const AboutUs = ({ aboutUs }) => {
     : null;
 
   return (
-    <section className="w-full px-4 md:px-[0.5in] py-16 sm:py-24 border-t border-line text-fg relative overflow-hidden">
+    <section className="w-full px-4 md:px-[0.5in] py-8 sm:py-20 lg:py-24 border-t border-line text-fg relative overflow-hidden">
       <div className="max-w-4xl mx-auto relative z-10 text-center">
         {/* Title */}
         {aboutUs?.title && (
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight text-fg font-sans mb-6">
+          <h2 className="text-xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-fg font-sans mb-2.5 sm:mb-6">
             {aboutUs.title}
           </h2>
         )}
 
         {/* Short Description */}
         {aboutUs?.short_description && (
-          <p className="text-base sm:text-lg text-fg-secondary max-w-2xl mx-auto leading-relaxed mb-8 font-sans">
+          <p className="text-xs sm:text-base lg:text-lg text-fg-secondary max-w-2xl mx-auto leading-relaxed mb-5 sm:mb-8 font-sans">
             {aboutUs.short_description}
           </p>
         )}
 
         {/* Rich HTML Content - Open Editorial Statement */}
         {aboutUs?.content && (
-          <div className="mt-8 pt-8 border-t border-line/60 text-left max-w-3xl mx-auto">
+          <div className="mt-5 pt-5 sm:mt-8 sm:pt-8 border-t border-line/60 text-left max-w-3xl mx-auto">
             <div
-              className="prose prose-invert max-w-none text-fg-secondary text-sm sm:text-base leading-relaxed prose-headings:text-fg prose-headings:font-sans prose-headings:tracking-tight prose-a:text-action prose-a:underline hover:prose-a:text-action-hover prose-strong:text-fg prose-strong:font-medium"
+              className="prose prose-invert max-w-none text-fg-secondary text-xs sm:text-base leading-relaxed prose-headings:text-fg prose-headings:font-sans prose-headings:tracking-tight prose-a:text-action prose-a:underline hover:prose-a:text-action-hover prose-strong:text-fg prose-strong:font-medium"
               dangerouslySetInnerHTML={{ __html: sanitizeHtml(aboutUs.content) }}
             />
           </div>

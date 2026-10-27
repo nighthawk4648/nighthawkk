@@ -33,6 +33,7 @@ export default function Navbar({
 
   const browseRef = useRef(null);
   const userMenuRef = useRef(null);
+  const headerRef = useRef(null);
 
   // Idle preload of search modal bundle chunk (zero initial bundle bloat)
   useEffect(() => {
@@ -68,7 +69,7 @@ export default function Navbar({
     };
   }, []);
 
-  // Close flyouts on click outside
+  // Close flyouts and mobile drawer on click/tap outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (browseRef.current && !browseRef.current.contains(e.target)) {
@@ -77,10 +78,17 @@ export default function Navbar({
       if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
         setIsUserMenuOpen(false);
       }
+      if (headerRef.current && !headerRef.current.contains(e.target)) {
+        setIsMobileMenuOpen(false);
+      }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside, { passive: true });
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
   }, []);
 
   const getOriginalImageUrl = (imagePath) => {
@@ -169,14 +177,48 @@ export default function Navbar({
   return (
     <>
       {/* Sticky Floating Header Nav (Full-bleed fluid with 0.5in side margin) */}
-      <header className="sticky top-4 z-40 px-4 md:px-[0.5in] w-full transition-all duration-200 mb-4 sm:mb-6">
-        <div className="glass-panel h-14 rounded-full px-6 flex items-center justify-between shadow-2xl relative border border-line w-full">
-          {/* Left: Wordmark & Navigation */}
-          <div className="flex items-center gap-8">
+      <header
+        ref={headerRef}
+        className="sticky top-4 z-40 px-4 md:px-[0.5in] w-full transition-all duration-200 mb-4 sm:mb-6"
+      >
+        <div className="glass-panel h-14 rounded-full px-3.5 sm:px-6 flex items-center justify-between shadow-2xl relative border border-line w-full">
+          {/* Left: Hamburger (Mobile) + Wordmark & Desktop Navigation */}
+          <div className="flex items-center gap-2.5 sm:gap-4 md:gap-8 min-w-0">
+            {/* Mobile Drawer Hamburger Button */}
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle menu"
+              className="md:hidden w-9 h-9 rounded-full flex items-center justify-center text-fg-secondary hover:text-fg hover:bg-surface-raised transition-colors shrink-0 cursor-pointer"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                {isMobileMenuOpen ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                )}
+              </svg>
+            </button>
+
             {/* Wordmark */}
             <Link
               href="/"
-              className="flex items-center text-xl font-medium tracking-tight-brand select-none group font-sans"
+              className="flex items-center text-lg sm:text-xl font-medium tracking-tight-brand select-none group font-sans shrink-0"
             >
               <span className="text-fg group-hover:text-fg/90 transition-colors">
                 Sketch
@@ -353,13 +395,12 @@ export default function Navbar({
             </nav>
           </div>
 
-          {/* Right: Extension pill, Patreon control */}
+          {/* Right: Extension pill (desktop), Patreon control */}
           <div className="flex items-center gap-2 sm:gap-3">
-
-            {/* Extension Pill (Action green tint, bolt icon, links to /extension) */}
+            {/* Extension Pill (Action green tint, bolt icon, links to /extension) - desktop only */}
             <Link
               href="/extension"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium bg-action-tintBg text-action-tintFg border border-action-tintLine hover:bg-action/20 transition-all font-mono"
+              className="hidden md:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium bg-action-tintBg text-action-tintFg border border-action-tintLine hover:bg-action/20 transition-all font-mono"
             >
               <svg
                 className="w-3.5 h-3.5 text-action fill-current"
@@ -455,43 +496,12 @@ export default function Navbar({
                 </button>
               )}
             </div>
-
-            {/* Mobile Drawer Hamburger Button */}
-            <button
-              type="button"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label="Toggle menu"
-              className="md:hidden w-9 h-9 rounded-full flex items-center justify-center text-fg-secondary hover:text-fg hover:bg-surface-raised transition-colors"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                {isMobileMenuOpen ? (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                ) : (
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                )}
-              </svg>
-            </button>
           </div>
         </div>
 
         {/* Mobile Slide-down Drawer */}
         {isMobileMenuOpen && (
-          <div className="md:hidden mt-2 !bg-surface/95 backdrop-blur-2xl rounded-card p-5 border border-line shadow-2xl text-fg space-y-4">
+          <div className="md:hidden mt-2 !bg-surface/95 backdrop-blur-2xl rounded-card p-5 border border-line shadow-2xl text-fg space-y-4 max-h-[calc(100vh-5.5rem)] overflow-y-auto">
             {/* Mobile Search Button */}
             <button
               type="button"

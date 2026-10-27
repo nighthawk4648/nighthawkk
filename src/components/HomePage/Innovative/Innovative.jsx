@@ -12,7 +12,7 @@ const Innovative = ({ innovatives = [] }) => {
   };
 
   return (
-    <section className="w-full px-4 md:px-[0.5in] py-8 sm:py-12 space-y-8">
+    <section className="w-full px-4 md:px-[0.5in] py-4 sm:py-8 lg:py-12 space-y-4 sm:space-y-8">
       {innovatives.map((innovative, index) => {
         const bgUrl = innovative?.bgImg
           ? getOptimizedImageUrl(getOriginalImageUrl(innovative.bgImg))
@@ -21,7 +21,7 @@ const Innovative = ({ innovatives = [] }) => {
         return (
           <div
             key={innovative?.id ?? index}
-            className="relative w-full min-h-[360px] sm:min-h-[420px] rounded-panel overflow-hidden border border-line bg-surface shadow-2xl flex flex-col justify-center items-center text-center p-6 sm:p-12 group"
+            className="relative w-full min-h-[160px] sm:min-h-[300px] lg:min-h-[360px] rounded-2xl sm:rounded-panel overflow-hidden border border-line bg-surface shadow-xl flex flex-col justify-center items-center text-center p-4 sm:p-8 lg:p-12 group"
           >
             {/* Background Image */}
             {bgUrl && (
@@ -40,11 +40,11 @@ const Innovative = ({ innovatives = [] }) => {
 
             {/* Centered Content */}
             <div className="relative z-20 max-w-2xl mx-auto flex flex-col items-center">
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight-title text-fg font-sans mb-4">
+              <h2 className="text-xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-fg font-sans mb-1.5 sm:mb-3">
                 {innovative?.title || "SketchShaper"}
               </h2>
 
-              <p className="text-sm sm:text-base lg:text-lg text-fg-secondary leading-relaxed font-sans max-w-xl">
+              <p className="text-xs sm:text-sm lg:text-base text-fg-secondary leading-relaxed font-sans max-w-xl line-clamp-3 sm:line-clamp-none">
                 {innovative?.short_description && innovative.short_description.trim() !== "-"
                   ? innovative.short_description
                   : innovative?.description ||
