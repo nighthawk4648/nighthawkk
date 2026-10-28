@@ -242,7 +242,7 @@ const BlogsPage = ({ initialData = null }) => {
                 <BlogHorizontalAd
                   slot="2114378043"
                   className="!my-0"
-                  minHeight="min-h-[110px] sm:min-h-[125px]"
+                  minHeight="min-h-[250px] sm:min-h-[125px]"
                 />
 
                 {/* 3. Second Compact Article */}

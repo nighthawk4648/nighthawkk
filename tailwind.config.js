@@ -9,8 +9,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Geist', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        mono: ['Geist Mono', 'JetBrains Mono', 'monospace'],
+        sans: ['var(--font-geist-sans)', 'Geist', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        mono: ['var(--font-geist-mono)', 'Geist Mono', 'JetBrains Mono', 'monospace'],
       },
       colors: {
         primary: '#141414',

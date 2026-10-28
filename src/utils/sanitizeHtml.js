@@ -79,9 +79,6 @@ const sanitizeAttributes = (attributeString, tagName = "") => {
         // Strip any mso-* property
         if (prop.startsWith("mso-")) continue;
 
-        // Strip text-align: justify
-        if (prop === "text-align" && val.startsWith("justify")) continue;
-
         cleanDeclarations.push(trimmed);
       }
 

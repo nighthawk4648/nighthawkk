@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { getOptimizedImageUrl } from "@/utils/cloudinary";
@@ -18,6 +18,8 @@ import {
   FiFileText,
   FiChevronLeft,
   FiChevronRight,
+  FiChevronDown,
+  FiChevronUp,
   FiZoomIn,
   FiZoomOut,
   FiMaximize,
@@ -46,12 +48,21 @@ const SubCategoryDetails = ({ assetDetails }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [toast, setToast] = useState(null);
+  const [isDescExpanded, setIsDescExpanded] = useState(false);
+  const [isLongDesc, setIsLongDesc] = useState(false);
+  const descRef = useRef(null);
 
   const { token, user, login, logout } = usePatreonAuth();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (descRef.current) {
+      setIsLongDesc(descRef.current.scrollHeight > 160);
+    }
+  }, [assetDetails?.short_description]);
 
   const isAuthenticated = mounted && !!token && !!user;
   const isPatron = isAuthenticated && !!user?.is_active_patron;
@@ -633,7 +644,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
 
             {/* Model Description & Specifications Card */}
             {assetDetails?.short_description && (
-              <div className="bg-surface/30 backdrop-blur-2xl rounded-panel border border-white/[0.08] p-6 sm:p-7 shadow-2xl shadow-black/40 overflow-hidden relative space-y-3.5">
+              <div className="bg-surface/30 backdrop-blur-2xl rounded-panel border border-white/[0.08] p-5 sm:p-7 shadow-2xl shadow-black/40 overflow-hidden relative space-y-3.5">
                 <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] via-transparent to-action/[0.02] pointer-events-none" />
                 {/* Header */}
                 <div className="flex items-center justify-between pb-3.5 border-b border-white/[0.08] relative z-10">
@@ -649,13 +660,44 @@ const SubCategoryDetails = ({ assetDetails }) => {
                   </span>
                 </div>
 
-                {/* Body Content */}
-                <div
-                  className="text-sm text-fg-secondary leading-relaxed font-sans prose prose-invert max-w-none [&_p]:mb-2.5 [&_a]:text-action hover:[&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_strong]:text-fg [&_b]:text-fg [&_h1]:text-fg [&_h2]:text-fg [&_h3]:text-fg relative z-10"
-                  dangerouslySetInnerHTML={{
-                    __html: sanitizeHtml(assetDetails.short_description),
-                  }}
-                />
+                {/* Body Content with Collapsible Container */}
+                <div className="relative z-10">
+                  <div
+                    ref={descRef}
+                    className={`text-sm text-fg-secondary leading-relaxed font-sans prose prose-invert max-w-none [&_p]:mb-2.5 [&_a]:text-action hover:[&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_strong]:text-fg [&_b]:text-fg [&_h1]:text-fg [&_h2]:text-fg [&_h3]:text-fg transition-all duration-300 ${
+                      !isDescExpanded && isLongDesc
+                        ? "max-h-[140px] overflow-hidden sm:max-h-none sm:overflow-visible"
+                        : "max-h-none"
+                    }`}
+                    dangerouslySetInnerHTML={{
+                      __html: sanitizeHtml(assetDetails.short_description),
+                    }}
+                  />
+
+                  {/* Gradient Fade Overlay on Mobile when Collapsed */}
+                  {!isDescExpanded && isLongDesc && (
+                    <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#111317]/95 via-[#111317]/60 to-transparent pointer-events-none sm:hidden" />
+                  )}
+                </div>
+
+                {/* See More / See Less Toggle Button (Phone Only) */}
+                {isLongDesc && (
+                  <div className="pt-1 sm:hidden relative z-10">
+                    <button
+                      type="button"
+                      onClick={() => setIsDescExpanded((prev) => !prev)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/10 border border-white/10 text-xs font-mono font-medium text-action transition-all cursor-pointer active:scale-95"
+                      aria-expanded={isDescExpanded}
+                    >
+                      <span>{isDescExpanded ? "See less" : "See more"}</span>
+                      {isDescExpanded ? (
+                        <FiChevronUp className="w-3.5 h-3.5" />
+                      ) : (
+                        <FiChevronDown className="w-3.5 h-3.5" />
+                      )}
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -947,7 +989,6 @@ const SubCategoryDetails = ({ assetDetails }) => {
 
             <div className="relative z-10 space-y-4">
               <div className="inline-flex items-center gap-2 rounded-full border border-extension-tintLine bg-extension-tintBg px-3 py-1 font-mono text-xs text-extension">
-                <span>💎</span>
                 <span>Patreon Pro Asset</span>
               </div>
 
@@ -1327,8 +1368,8 @@ function RelatedAssetCard({
           {/* Top-Left Pricing Badge */}
           <div className="absolute top-2 left-2 z-10 pointer-events-none">
             {asset?.access_type === "paid" ? (
-              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-extension-tintBg text-extension border border-extension-tintLine flex items-center gap-1 shadow-sm">
-                <span>💎</span> PRO
+              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-extension-tintBg text-extension border border-extension-tintLine shadow-sm">
+                PRO
               </span>
             ) : (
               <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-action-tintBg text-action border border-action-tintLine shadow-sm">

@@ -426,8 +426,11 @@ const BlogDetailPage = async ({ params }) => {
                 </figure>
               )}
 
+              {/* Bottom In-Article Horizontal Ad */}
+              <BlogHorizontalAd slot="2114378043" className="mt-10 !mb-8" />
+
               {/* Bottom Footer CTA in Frosted Glass Card */}
-              <footer className="mt-14 p-6 sm:p-8 rounded-card border border-white/[0.08] bg-surface/30 backdrop-blur-2xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 relative overflow-hidden">
+              <footer className="mt-8 p-6 sm:p-8 rounded-card border border-white/[0.08] bg-surface/30 backdrop-blur-2xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] via-transparent to-action/[0.02] pointer-events-none" />
                 <div className="relative z-10">
                   <h4 className="text-fg font-semibold text-base">

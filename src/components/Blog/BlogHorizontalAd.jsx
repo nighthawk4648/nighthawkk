@@ -7,7 +7,7 @@ import { usePatreonAuth } from "@/contexts/PatreonAuthContext";
 export default function BlogHorizontalAd({
   slot = "2114378043",
   className = "",
-  minHeight = "min-h-[90px] sm:min-h-[120px]",
+  minHeight = "min-h-[250px] sm:min-h-[120px]",
   fallback = null,
 }) {
   const { user, isAuthenticated, loading } = usePatreonAuth();

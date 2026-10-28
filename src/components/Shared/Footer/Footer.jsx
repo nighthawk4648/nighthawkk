@@ -66,34 +66,26 @@ const Footer = ({ categories = [], footerPages = [], socials = [] }) => {
   return (
     <footer className="w-full border-t border-line text-fg transition-colors">
       {/* Main Footer Content */}
-      <div className="w-full px-4 md:px-[0.5in] py-8 sm:py-16">
-        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-[1.3fr_1fr_1fr] gap-8 lg:gap-14">
-          {/* 1. Brand, Direct Contact & Socials (No bio description) */}
-          <div className="flex flex-col items-start space-y-3.5 w-full">
-            <Link
-              href="/"
-              className="flex items-center text-xl sm:text-2xl font-medium tracking-tight-brand select-none group font-sans"
-            >
-              <span className="text-fg group-hover:text-fg/90 transition-colors">
-                Sketch
-              </span>
-              <span className="text-action">shaper</span>
-            </Link>
-
-            {/* Email on left, Socials aligned to the right utilizing empty horizontal space */}
-            <div className="flex items-center justify-between gap-3 w-full flex-wrap pt-0.5">
-              <a
-                href="mailto:sketchshaper@gmail.com"
-                className="flex items-center gap-2 text-xs sm:text-sm text-fg-secondary hover:text-action transition-colors group font-sans"
+      <div className="w-full px-4 md:px-[0.5in] py-16 sm:py-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-14">
+          {/* 1. Brand & Bio */}
+          <div className="flex flex-col justify-between h-full items-start">
+            <div>
+              <Link
+                href="/"
+                className="flex items-center text-xl sm:text-2xl font-medium tracking-tight-brand select-none group font-sans mb-4"
               >
-                <span className="text-action group-hover:scale-110 transition-transform flex-shrink-0">
-                  {icons.email}
+                <span className="text-fg group-hover:text-fg/90 transition-colors">
+                  Sketch
                 </span>
-                <span className="truncate">sketchshaper@gmail.com</span>
-              </a>
+                <span className="text-action">shaper</span>
+              </Link>
+              <p className="text-sm text-fg-secondary leading-relaxed mb-6 font-sans max-w-sm">
+                A curated cloud library of 1000+ textures and SketchUp-ready 3D models crafted by architectural visualization experts.
+              </p>
 
-              {/* Social Media Circular Links on the right */}
-              <div className="flex items-center gap-2">
+              {/* Social Media Circular Links */}
+              <div className="flex flex-wrap items-center gap-2.5">
                 {socials?.map((social) => {
                   if (!social?.url) return null;
                   return (
@@ -103,7 +95,7 @@ const Footer = ({ categories = [], footerPages = [], socials = [] }) => {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={social?.name || "Social link"}
-                      className="w-8 h-8 rounded-full bg-surface border border-line flex items-center justify-center text-fg-secondary hover:text-canvas hover:bg-action hover:border-action transition-all duration-200 transform hover:scale-105 shadow-sm"
+                      className="w-9 h-9 rounded-full bg-surface border border-line flex items-center justify-center text-fg-secondary hover:text-canvas hover:bg-action hover:border-action transition-all duration-200 transform hover:scale-105 shadow-sm"
                     >
                       {getSocialIcon(social?.name)}
                     </Link>
@@ -111,75 +103,85 @@ const Footer = ({ categories = [], footerPages = [], socials = [] }) => {
                 })}
               </div>
             </div>
+
+            {/* Copyright integrated on the left side */}
+            <div className="mt-8 font-mono text-xs text-fg-secondary/60">
+              &copy; {new Date().getFullYear()} SketchShaper. All rights reserved.
+            </div>
           </div>
 
-          {/* 2 & 3. Navigation Columns: Side-by-side (grid-cols-2) on mobile -> Separate columns on desktop */}
-          <div className="grid grid-cols-2 gap-6 sm:contents">
-            {/* Library Assets */}
-            <div>
-              <span className="text-xs font-mono font-semibold uppercase tracking-wider text-fg-secondary block mb-3 sm:mb-4">
-                Library Assets
-              </span>
-              <ul className="space-y-2 font-sans">
-                {categories?.map((category) => (
-                  <li key={category?.id}>
+          {/* 2. Library Assets */}
+          <div>
+            <span className="text-lg font-mono font-bold uppercase tracking-wider text-fg-secondary block mb-4">
+              Library Assets
+            </span>
+            <ul className="space-y-2.5 font-sans">
+              {categories?.map((category) => (
+                <li key={category?.id}>
+                  <Link
+                    href={`/${slugify(category?.name)}-${category?.id}`}
+                    className="text-sm text-fg-secondary hover:text-action transition-colors inline-block"
+                  >
+                    {category?.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* 3. Company & Legal */}
+          <div>
+            <span className="text-lg font-mono font-bold uppercase tracking-wider text-fg-secondary block mb-4">
+              Company & Legal
+            </span>
+            <ul className="space-y-2.5 font-sans">
+              {footerPages?.map((footerPage) => {
+                if (!footerPage?.slug) return null;
+
+                const customRoutes = {
+                  "about-us": "/about-us",
+                  license: "/license",
+                  privacy: "/privacy",
+                  "terms-and-conditions": "/terms-and-conditions",
+                  blogs: "/blog",
+                  blog: "/blog",
+                };
+
+                const href =
+                  customRoutes[footerPage.slug] ||
+                  `/pages/${footerPage.slug}-${footerPage.id}`;
+
+                return (
+                  <li key={footerPage.id}>
                     <Link
-                      href={`/${slugify(category?.name)}-${category?.id}`}
-                      className="text-xs sm:text-sm text-fg-secondary hover:text-action transition-colors inline-block"
+                      href={href}
+                      className="text-sm text-fg-secondary hover:text-action transition-colors inline-block"
                     >
-                      {category?.name}
+                      {footerPage.title}
                     </Link>
                   </li>
-                ))}
-              </ul>
-            </div>
+                );
+              })}
+            </ul>
+          </div>
 
-            {/* Company & Legal */}
-            <div>
-              <span className="text-xs font-mono font-semibold uppercase tracking-wider text-fg-secondary block mb-3 sm:mb-4">
-                Company & Legal
-              </span>
-              <ul className="space-y-2 font-sans">
-                {footerPages?.map((footerPage) => {
-                  if (!footerPage?.slug) return null;
-
-                  const customRoutes = {
-                    "about-us": "/about-us",
-                    license: "/license",
-                    privacy: "/privacy",
-                    "terms-and-conditions": "/terms-and-conditions",
-                    blogs: "/blog",
-                    blog: "/blog",
-                  };
-
-                  const href =
-                    customRoutes[footerPage.slug] ||
-                    `/pages/${footerPage.slug}-${footerPage.id}`;
-
-                  return (
-                    <li key={footerPage.id}>
-                      <Link
-                        href={href}
-                        className="text-xs sm:text-sm text-fg-secondary hover:text-action transition-colors inline-block"
-                      >
-                        {footerPage.title}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
+          {/* 4. Studio Contact */}
+          <div>
+            <span className="text-lg font-mono font-bold uppercase tracking-wider text-fg-secondary block mb-4">
+              Contact Studio
+            </span>
+            <div className="space-y-3.5 font-sans">
+              <a
+                href="mailto:sketchshaper@gmail.com"
+                className="flex items-center gap-3 text-sm text-fg-secondary hover:text-action transition-colors group"
+              >
+                <span className="text-action group-hover:scale-110 transition-transform flex-shrink-0">
+                  {icons.email}
+                </span>
+                <span className="truncate">sketchshaper@gmail.com</span>
+              </a>
             </div>
           </div>
-        </div>
-
-        {/* Dedicated Bottom Copyright Bar */}
-        <div className="mt-8 sm:mt-12 pt-5 border-t border-line/60 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-mono text-fg-secondary/60">
-          <span>
-            &copy; {new Date().getFullYear()} SketchShaper. All rights reserved.
-          </span>
-          <span className="text-[11px] text-fg-secondary/40 hidden sm:inline">
-            Architectural Component Cloud
-          </span>
         </div>
       </div>
     </footer>

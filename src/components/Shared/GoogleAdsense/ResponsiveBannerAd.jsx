@@ -12,7 +12,7 @@ export default function ResponsiveBannerAd({
       slot={slot}
       format="auto"
       fullWidthResponsive={true}
-      minHeight="min-h-[90px] sm:min-h-[100px]"
+      minHeight="min-h-[250px] sm:min-h-[100px]"
       className={className}
       adTest={adTest}
     />

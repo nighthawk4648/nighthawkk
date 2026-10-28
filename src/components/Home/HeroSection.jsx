@@ -189,6 +189,8 @@ export default function HeroSection({
                 alt={currentSlide.name || "Curated scene"}
                 fill
                 priority
+                fetchPriority="high"
+                loading="eager"
                 sizes="(max-width: 1024px) 100vw, 60vw"
                 className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
               />

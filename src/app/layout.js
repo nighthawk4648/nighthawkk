@@ -6,11 +6,19 @@ import "./globals.css";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { ErrorFallback } from "@/components/Shared/ErrorFallback/ErrorFallback";
 import Providers from "@/components/Providers";
+import localFont from "next/font/local";
 
-const inter = {
-  className: "font-sans",
-  variable: "--font-inter",
-};
+const geistSans = localFont({
+  src: "../../public/fonts/geist-latin.woff2",
+  variable: "--font-geist-sans",
+  display: "swap",
+});
+
+const geistMono = localFont({
+  src: "../../public/fonts/geist-mono-latin.woff2",
+  variable: "--font-geist-mono",
+  display: "swap",
+});
 
 let applicationSettingsCache = null;
 let applicationSettingsCacheTimestamp = 0;
@@ -71,8 +79,8 @@ export default async function RootLayout({ children }) {
   // Only show full-screen error if the primary backend connection completely failed
   if (!categories && !subCategories) {
     return (
-      <html lang="en" className={`${inter.variable} antialiased font-sans`}>
-        <body className="antialiased font-sans">
+      <html lang="en" className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}>
+        <body className={`${geistSans.className} antialiased font-sans`}>
           <ErrorFallback />
         </body>
       </html>
@@ -80,16 +88,10 @@ export default async function RootLayout({ children }) {
   }
 
   return (
-    <html lang="en" className={`${inter.variable} antialiased font-sans`}>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap"
-          rel="stylesheet"
-        />
-        <link rel="preconnect" href="https://api.sketchshaper.com" />
-        <link rel="preconnect" href="https://res.cloudinary.com" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+        <link rel="preconnect" href="https://fundingchoicesmessages.google.com" />
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
         <script
           async
@@ -97,7 +99,7 @@ export default async function RootLayout({ children }) {
           crossOrigin="anonymous"
         ></script>
       </head>
-      <body className={inter.className}>
+      <body className={geistSans.className}>
         <Providers>
           <Navbar
             categories={categories?.data || []}

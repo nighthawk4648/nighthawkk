@@ -1,4 +1,4 @@
-export const ITEMS_PER_PAGE = 22;
+export const ITEMS_PER_PAGE = 21;
 
 export function parsePageParam(rawPage) {
   if (!rawPage) return 1;

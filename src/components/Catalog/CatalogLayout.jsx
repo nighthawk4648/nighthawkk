@@ -11,6 +11,7 @@ import slugify from "@/utils/slugify";
 import {
   FiSearch,
   FiChevronDown,
+  FiChevronUp,
   FiChevronRight,
   FiChevronLeft,
   FiPackage,
@@ -40,8 +41,8 @@ export default function CatalogLayout({
   const searchInputRef = useRef(null);
   const catalogTopRef = useRef(null);
 
-  // Pagination Configuration
-  const ITEMS_PER_PAGE = 22;
+  // Pagination Configuration (21 models + 3 in-grid ads = 24 total cards)
+  const ITEMS_PER_PAGE = 21;
 
   const isServerDriven = serverAssets !== null;
 
@@ -50,12 +51,18 @@ export default function CatalogLayout({
     activeFilters.search || "",
   );
   const [expandedCategories, setExpandedCategories] = useState({});
-  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isOverviewExpanded, setIsOverviewExpanded] = useState(false);
+  const [isLongDescription, setIsLongDescription] = useState(false);
+  const descriptionRef = useRef(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    setIsOverviewExpanded(false);
+  }, [activeCategoryId, activeSubCategoryId]);
 
   useEffect(() => {
     setSearchInputValue(activeFilters.search || "");
@@ -81,16 +88,14 @@ export default function CatalogLayout({
   const { data: allCategoriesData } = useSWR(
     `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/categories`,
     fetcher,
-    { revalidateOnFocus: false, revalidateOnReconnect: false }
+    { revalidateOnFocus: false, revalidateOnReconnect: false },
   );
 
   const categories = useMemo(() => {
     const list =
       allCategoriesData?.data ||
       (initialCategoryData?.data ? [initialCategoryData.data] : []);
-    return [...list].sort(
-      (a, b) => (Number(a.id) || 0) - (Number(b.id) || 0),
-    );
+    return [...list].sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
   }, [allCategoriesData, initialCategoryData]);
 
   // Total count of all assets across all categories and subcategories
@@ -127,7 +132,8 @@ export default function CatalogLayout({
 
   const getOriginalImageUrl = (imagePath) => {
     if (!imagePath) return "";
-    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) return imagePath;
+    if (imagePath.startsWith("http://") || imagePath.startsWith("https://"))
+      return imagePath;
     return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE || ""}${imagePath}`;
   };
 
@@ -152,7 +158,7 @@ export default function CatalogLayout({
           ...a,
           category_name: catName,
           sub_category_name: sub.name,
-        }))
+        })),
       );
     }
 
@@ -163,13 +169,22 @@ export default function CatalogLayout({
           ...a,
           category_name: cat.name,
           sub_category_name: sub.name,
-        }))
-      )
+        })),
+      ),
     );
-  }, [isServerDriven, activeCategoryId, activeSubCategoryId, initialCategoryData, initialSubCategoryData, categories]);
+  }, [
+    isServerDriven,
+    activeCategoryId,
+    activeSubCategoryId,
+    initialCategoryData,
+    initialSubCategoryData,
+    categories,
+  ]);
 
   // Display derivations: models to render, active page, total pages, and total count
-  const displayAssets = isServerDriven ? (serverAssets || []) : rawAssets.slice(0, ITEMS_PER_PAGE);
+  const displayAssets = isServerDriven
+    ? serverAssets || []
+    : rawAssets.slice(0, ITEMS_PER_PAGE);
   const displayPage = page || 1;
   const displayTotalPages = isServerDriven
     ? (serverTotalPages ?? 0)
@@ -181,19 +196,24 @@ export default function CatalogLayout({
   const hasActiveFilters = Boolean(
     (activeFilters.search && activeFilters.search.trim()) ||
     (activeFilters.access && activeFilters.access !== "all") ||
-    (activeFilters.sort && activeFilters.sort !== "newest")
+    (activeFilters.sort && activeFilters.sort !== "newest"),
   );
 
   // Current active labels for breadcrumbs
   const currentCategory = useMemo(() => {
-    return categories.find((c) => Number(c.id) === Number(activeCategoryId)) || initialCategoryData?.data;
+    return (
+      categories.find((c) => Number(c.id) === Number(activeCategoryId)) ||
+      initialCategoryData?.data
+    );
   }, [categories, activeCategoryId, initialCategoryData]);
 
   const currentSubCategory = useMemo(() => {
     if (!currentCategory?.sub_categories) return initialSubCategoryData?.data;
-    return currentCategory.sub_categories.find(
-      (s) => Number(s.id) === Number(activeSubCategoryId)
-    ) || initialSubCategoryData?.data;
+    return (
+      currentCategory.sub_categories.find(
+        (s) => Number(s.id) === Number(activeSubCategoryId),
+      ) || initialSubCategoryData?.data
+    );
   }, [currentCategory, activeSubCategoryId, initialSubCategoryData]);
 
   // Active admin panel description (Category or SubCategory short_description)
@@ -205,7 +225,19 @@ export default function CatalogLayout({
       return currentCategory.short_description;
     }
     return null;
-  }, [activeSubCategoryId, currentSubCategory, activeCategoryId, currentCategory]);
+  }, [
+    activeSubCategoryId,
+    currentSubCategory,
+    activeCategoryId,
+    currentCategory,
+  ]);
+
+  // Measure description element height to conditionally enable mobile see more toggle
+  useEffect(() => {
+    if (descriptionRef.current) {
+      setIsLongDescription(descriptionRef.current.scrollHeight > 160);
+    }
+  }, [activeDescription]);
 
   // Build full query string for pagination links and filter navigations
   const buildUrl = (targetPage, filterOverrides = {}) => {
@@ -246,7 +278,7 @@ export default function CatalogLayout({
       basePath ||
       (typeof window !== "undefined" ? window.location.pathname : "");
 
-    return qs ? `${base}?${qs}` : (base || "/");
+    return qs ? `${base}?${qs}` : base || "/";
   };
 
   const handleSearchSubmit = (e) => {
@@ -284,11 +316,11 @@ export default function CatalogLayout({
       [2, 12, 18], // Pattern 1: Spaced 10 and 6 assets apart (Desktop cols: 3, 2, 1)
       [4, 10, 16], // Pattern 2: Spaced 6 and 6 assets apart (Desktop cols: 1, 0, 3)
       [5, 11, 17], // Pattern 3: Spaced 6 and 6 assets apart (Desktop cols: 2, 1, 0)
-      [3, 9, 19],  // Pattern 4: Spaced 6 and 10 assets apart (Desktop cols: 0, 3, 2)
-      [4, 10, 20], // Pattern 5: Spaced 6 and 10 assets apart (Desktop cols: 1, 0, 3)
+      [3, 9, 19], // Pattern 4: Spaced 6 and 10 assets apart (Desktop cols: 0, 3, 2)
+      [4, 10, 18], // Pattern 5: Spaced 6 and 8 assets apart (Desktop cols: 1, 0, 3)
       [3, 13, 19], // Pattern 6: Spaced 10 and 6 assets apart (Desktop cols: 0, 3, 2)
     ],
-    []
+    [],
   );
 
   // Organic, non-overlapping staggered in-grid ad positions shuffled per page
@@ -334,7 +366,7 @@ export default function CatalogLayout({
           displayTotalPages - 3,
           displayTotalPages - 2,
           displayTotalPages - 1,
-          displayTotalPages
+          displayTotalPages,
         );
       } else {
         pills.push(
@@ -344,7 +376,7 @@ export default function CatalogLayout({
           displayPage,
           displayPage + 1,
           "...",
-          displayTotalPages
+          displayTotalPages,
         );
       }
     }
@@ -380,7 +412,150 @@ export default function CatalogLayout({
     });
   };
 
-  // Reusable Sidebar Content
+  // Category Tree Accordion (Shared by desktop sidebar and mobile bottom sheet)
+  const renderCategoryTree = (onItemClick = null) => (
+    <div className="space-y-1">
+      {/* All Assets Row */}
+      <Link
+        href="/sketchup-3d-models-3"
+        onClick={() => onItemClick?.()}
+        className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${
+          !activeCategoryId && !activeSubCategoryId
+            ? "bg-white/10 text-fg font-semibold shadow-inner"
+            : "text-fg-secondary hover:text-fg hover:bg-white/[0.04]"
+        }`}
+      >
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className="w-7 h-7 rounded-md bg-action-tintBg border border-action-tintLine flex items-center justify-center text-xs font-mono text-action shrink-0 shadow-sm">
+            ★
+          </div>
+          <span className="truncate font-sans font-medium">All Assets</span>
+        </div>
+        <span className="text-xs font-mono text-fg-secondary shrink-0 ml-1">
+          {totalCatalogAssetsCount}
+        </span>
+      </Link>
+
+      {/* Dynamic Categories */}
+      {categories.map((cat) => {
+        const isCatActive = Number(cat.id) === Number(activeCategoryId);
+        const isExpanded = !!expandedCategories[cat.id];
+        const subCount = cat.sub_categories?.length || 0;
+        const assetCount =
+          cat.sub_categories?.reduce(
+            (sum, s) => sum + (s.assets?.length || 0),
+            0,
+          ) || 0;
+
+        return (
+          <div key={cat.id} className="space-y-0.5">
+            <div
+              className={`flex items-center justify-between px-2.5 py-2 rounded-lg text-sm transition-all group ${
+                isCatActive && !activeSubCategoryId
+                  ? "bg-white/10 text-fg font-semibold shadow-inner"
+                  : "text-fg-secondary hover:text-fg hover:bg-white/[0.04]"
+              }`}
+            >
+              <Link
+                href={`/${slugify(cat.name)}-${cat.id}`}
+                onClick={() => onItemClick?.()}
+                className="flex items-center gap-2.5 min-w-0 flex-1"
+              >
+                <div className="w-7 h-7 rounded-md overflow-hidden bg-canvas/60 border border-white/10 shrink-0 relative flex items-center justify-center shadow-sm">
+                  {cat.image ? (
+                    <Image
+                      src={getOptimizedImageUrl(getOriginalImageUrl(cat.image))}
+                      alt={cat.name}
+                      fill
+                      sizes="28px"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <span className="text-[10px] font-mono text-fg-secondary/60">
+                      3D
+                    </span>
+                  )}
+                </div>
+                <span className="truncate font-sans font-medium">
+                  {cat.name}
+                </span>
+              </Link>
+
+              <div className="flex items-center gap-1.5 shrink-0 ml-1">
+                <span className="text-xs font-mono text-fg-secondary">
+                  {assetCount}
+                </span>
+                {subCount > 0 && (
+                  <button
+                    type="button"
+                    onClick={(e) => toggleCategoryExpand(cat.id, e)}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white/10 transition-colors cursor-pointer text-fg-secondary"
+                    aria-label="Toggle subcategories"
+                  >
+                    {isExpanded ? (
+                      <FiChevronDown className="w-4 h-4" />
+                    ) : (
+                      <FiChevronRight className="w-4 h-4" />
+                    )}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Subcategories Accordion Indent */}
+            {isExpanded && subCount > 0 && (
+              <div className="ml-8 pl-3 border-l border-white/10 space-y-1 pt-1 pb-1.5">
+                {cat.sub_categories.map((sub) => {
+                  const isSubActive =
+                    Number(sub.id) === Number(activeSubCategoryId);
+                  const subAssetCount = sub.assets?.length || 0;
+
+                  return (
+                    <Link
+                      key={sub.id}
+                      href={`/${slugify(cat.name)}-${cat.id}/${slugify(sub.name)}-${sub.id}`}
+                      onClick={() => onItemClick?.()}
+                      className={`flex items-center justify-between py-1.5 px-2.5 rounded-md text-xs transition-all ${
+                        isSubActive
+                          ? "bg-action-tintBg text-action font-semibold shadow-sm"
+                          : "text-fg-secondary hover:text-fg hover:bg-white/[0.04]"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className="w-5 h-5 rounded overflow-hidden bg-canvas/60 border border-white/10 shrink-0 relative flex items-center justify-center shadow-sm">
+                          {sub.image ? (
+                            <Image
+                              src={getOptimizedImageUrl(
+                                getOriginalImageUrl(sub.image),
+                              )}
+                              alt={sub.name}
+                              fill
+                              sizes="20px"
+                              className="object-cover"
+                            />
+                          ) : (
+                            <span className="text-[8px] font-mono text-fg-secondary/50">
+                              3D
+                            </span>
+                          )}
+                        </div>
+                        <span className="truncate font-sans">{sub.name}</span>
+                      </div>
+                      <span className="text-[10px] font-mono ml-1 text-fg-secondary/80 shrink-0">
+                        {subAssetCount}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+
+  // Desktop Sidebar Content
   const sidebarContent = (
     <div className="space-y-4">
       {/* Category Tree Box */}
@@ -399,134 +574,7 @@ export default function CatalogLayout({
           </button>
         </div>
 
-        {/* Categories Tree Accordion */}
-        <div className="space-y-1">
-          {/* All Assets Row */}
-          <Link
-            href="/sketchup-3d-models-3"
-            className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all ${
-              !activeCategoryId && !activeSubCategoryId
-                ? "bg-white/10 text-fg font-semibold shadow-inner"
-                : "text-fg-secondary hover:text-fg hover:bg-white/[0.04]"
-            }`}
-          >
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-7 h-7 rounded-md bg-action-tintBg border border-action-tintLine flex items-center justify-center text-xs font-mono text-action shrink-0 shadow-sm">
-                ★
-              </div>
-              <span className="truncate font-sans font-medium">All Assets</span>
-            </div>
-            <span className="text-xs font-mono text-fg-secondary shrink-0 ml-1">
-              {totalCatalogAssetsCount}
-            </span>
-          </Link>
-
-          {/* Dynamic Categories */}
-          {categories.map((cat) => {
-            const isCatActive = Number(cat.id) === Number(activeCategoryId);
-            const isExpanded = !!expandedCategories[cat.id];
-            const subCount = cat.sub_categories?.length || 0;
-            const assetCount =
-              cat.sub_categories?.reduce(
-                (sum, s) => sum + (s.assets?.length || 0),
-                0
-              ) || 0;
-
-            return (
-              <div key={cat.id} className="space-y-0.5">
-                <div
-                  className={`flex items-center justify-between px-2.5 py-2 rounded-lg text-sm transition-all group ${
-                    isCatActive && !activeSubCategoryId
-                      ? "bg-white/10 text-fg font-semibold shadow-inner"
-                      : "text-fg-secondary hover:text-fg hover:bg-white/[0.04]"
-                  }`}
-                >
-                  <Link
-                    href={`/${slugify(cat.name)}-${cat.id}`}
-                    className="flex items-center gap-2.5 min-w-0 flex-1"
-                  >
-                    <div className="w-7 h-7 rounded-md overflow-hidden bg-canvas/60 border border-white/10 shrink-0 relative flex items-center justify-center shadow-sm">
-                      {cat.image ? (
-                        <Image
-                          src={getOptimizedImageUrl(getOriginalImageUrl(cat.image))}
-                          alt={cat.name}
-                          fill
-                          sizes="28px"
-                          className="object-cover"
-                        />
-                      ) : (
-                        <span className="text-[10px] font-mono text-fg-secondary/60">3D</span>
-                      )}
-                    </div>
-                    <span className="truncate font-sans font-medium">{cat.name}</span>
-                  </Link>
-
-                  <div className="flex items-center gap-1.5 shrink-0 ml-1">
-                    <span className="text-xs font-mono text-fg-secondary">
-                      {assetCount}
-                    </span>
-                    {subCount > 0 && (
-                      <button
-                        type="button"
-                        onClick={(e) => toggleCategoryExpand(cat.id, e)}
-                        className="p-1 hover:text-action transition-colors cursor-pointer text-fg-secondary"
-                        aria-label="Toggle subcategories"
-                      >
-                        {isExpanded ? (
-                          <FiChevronDown className="w-3.5 h-3.5" />
-                        ) : (
-                          <FiChevronRight className="w-3.5 h-3.5" />
-                        )}
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Subcategories Accordion Indent */}
-                {isExpanded && subCount > 0 && (
-                  <div className="ml-8 pl-3 border-l border-white/10 space-y-1 pt-1 pb-1.5">
-                    {cat.sub_categories.map((sub) => {
-                      const isSubActive = Number(sub.id) === Number(activeSubCategoryId);
-                      const subAssetCount = sub.assets?.length || 0;
-
-                      return (
-                        <Link
-                          key={sub.id}
-                          href={`/${slugify(cat.name)}-${cat.id}/${slugify(sub.name)}-${sub.id}`}
-                          className={`flex items-center justify-between py-1.5 px-2.5 rounded-md text-xs transition-all ${
-                            isSubActive
-                              ? "bg-action-tintBg text-action font-semibold shadow-sm"
-                              : "text-fg-secondary hover:text-fg hover:bg-white/[0.04]"
-                          }`}
-                        >
-                          <div className="flex items-center gap-2 min-w-0">
-                            <div className="w-5 h-5 rounded overflow-hidden bg-canvas/60 border border-white/10 shrink-0 relative flex items-center justify-center shadow-sm">
-                              {sub.image ? (
-                                <Image
-                                  src={getOptimizedImageUrl(getOriginalImageUrl(sub.image))}
-                                  alt={sub.name}
-                                  fill
-                                  sizes="20px"
-                                  className="object-cover"
-                                />
-                              ) : (
-                                <span className="text-[8px] font-mono text-fg-secondary/50">3D</span>
-                              )}
-                            </div>
-                            <span className="truncate font-sans">{sub.name}</span>
-                          </div>
-                          <span className="text-[10px] font-mono ml-1 text-fg-secondary/80 shrink-0">
-                            {subAssetCount}
-                          </span>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+        {renderCategoryTree()}
       </div>
 
       {/* Sidebar In-Feed AdSense */}
@@ -545,41 +593,17 @@ export default function CatalogLayout({
             {sidebarContent}
           </aside>
 
-          {/* MOBILE SLIDE-OUT DRAWER */}
-          {mobileDrawerOpen && (
-            <div
-              className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm lg:hidden flex"
-              onClick={() => setMobileDrawerOpen(false)}
-            >
-              <div
-                className="w-72 max-w-[85vw] h-full bg-surface/95 backdrop-blur-2xl border-r border-white/10 p-4 overflow-y-auto space-y-4"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                  <span className="text-xs font-mono uppercase tracking-wider text-fg font-semibold">
-                    Catalog Navigation
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setMobileDrawerOpen(false)}
-                    className="p-1 rounded-md text-fg-secondary hover:text-fg hover:bg-white/10"
-                    aria-label="Close drawer"
-                  >
-                    <FiX className="w-5 h-5" />
-                  </button>
-                </div>
-                {sidebarContent}
-              </div>
-            </div>
-          )}
-
           {/* RIGHT COLUMN: Main Catalog Area */}
           <main ref={catalogTopRef} className="flex-1 min-w-0 space-y-4 w-full">
             {/* Header Row: Title + Responsive Leaderboard Banner (Option A) */}
-            <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 pb-1">
+            <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3 sm:gap-4 pb-1">
               <div className="shrink-0">
                 <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-fg font-sans">
-                  Sketchshaper 3D Models
+                  {currentSubCategory
+                    ? `${currentSubCategory.name} 3D Models`
+                    : currentCategory
+                      ? `${currentCategory.name} 3D Models`
+                      : "Sketchshaper 3D Models"}
                 </h1>
               </div>
 
@@ -589,21 +613,227 @@ export default function CatalogLayout({
               </div>
             </div>
 
-            {/* Consolidated Filter Toolbar */}
-            <div className="rounded-xl p-2.5 border border-white/[0.08] bg-surface/30 backdrop-blur-2xl flex flex-wrap items-center justify-between gap-2.5 shadow-xl">
-              {/* Left: Mobile Drawer Trigger + Live Breadcrumb Path */}
-              <div className="flex items-center gap-2.5 min-w-0">
+            {/* MOBILE DEDICATED CONTROL SUITE (< lg) */}
+            <div className="lg:hidden space-y-3 w-full">
+              {/* 1. Mobile Minimalist Clean Search Bar (44px, zero iOS auto-zoom) */}
+              <form
+                onSubmit={handleSearchSubmit}
+                className="relative w-full h-11"
+              >
                 <button
-                  type="button"
-                  onClick={() => setMobileDrawerOpen(true)}
-                  className="lg:hidden p-1.5 rounded-lg border border-white/10 bg-canvas/60 text-fg-secondary hover:text-fg text-xs flex items-center gap-1.5"
+                  type="submit"
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-fg-secondary/70 hover:text-action transition-colors cursor-pointer p-0.5"
+                  aria-label="Submit search"
                 >
-                  <FiFilter className="w-3.5 h-3.5 text-action" />
-                  <span className="font-mono text-[11px]">Categories</span>
+                  <FiSearch className="w-4 h-4" />
                 </button>
+                <input
+                  type="text"
+                  placeholder={
+                    currentSubCategory
+                      ? `Search in ${currentSubCategory.name}...`
+                      : currentCategory
+                        ? `Search in ${currentCategory.name}...`
+                        : "Search 3D models..."
+                  }
+                  value={searchInputValue}
+                  onChange={(e) => setSearchInputValue(e.target.value)}
+                  className="w-full h-full bg-surface/40 backdrop-blur-md border border-white/10 hover:border-white/20 focus:border-action/60 focus:ring-1 focus:ring-action/25 rounded-xl pl-10 pr-9 text-base sm:text-xs text-fg placeholder:text-fg-secondary/50 font-sans focus:outline-none transition-all shadow-inner"
+                />
+                {searchInputValue && (
+                  <button
+                    type="button"
+                    onClick={handleClearSearch}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-fg-secondary hover:text-fg hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+                    aria-label="Clear search"
+                  >
+                    <FiX className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </form>
 
+              {/* 2. Stacked Category Bricks (Masonry flow, all visible at a glance) */}
+              <div className="flex flex-wrap gap-2 pt-0.5">
+                {/* "All Models" Brick */}
+                <Link
+                  href="/sketchup-3d-models-3"
+                  className={`min-h-[36px] py-2 px-3 rounded-xl text-xs font-mono flex items-center gap-2 transition-all cursor-pointer ${
+                    !activeCategoryId && !activeSubCategoryId
+                      ? "bg-action text-black font-semibold shadow-md shadow-action/25 border border-action"
+                      : "bg-surface/50 border border-white/10 text-fg-secondary hover:text-fg hover:bg-surface-raised"
+                  }`}
+                >
+                  <span className="text-action shrink-0 font-bold">★</span>
+                  <span className="font-sans font-medium">All Models</span>
+                  <span className="text-[10px] opacity-75">
+                    ({totalCatalogAssetsCount})
+                  </span>
+                </Link>
+
+                {/* Dynamic Category Bricks */}
+                {categories.map((cat) => {
+                  const isCatActive =
+                    Number(cat.id) === Number(activeCategoryId);
+                  const count =
+                    cat.sub_categories?.reduce(
+                      (sum, s) => sum + (s.assets?.length || 0),
+                      0,
+                    ) || 0;
+
+                  return (
+                    <Link
+                      key={cat.id}
+                      href={`/${slugify(cat.name)}-${cat.id}`}
+                      className={`min-h-[36px] py-2 px-3 rounded-xl text-xs font-mono flex items-center gap-2 transition-all cursor-pointer ${
+                        isCatActive
+                          ? "bg-action text-black font-semibold shadow-md shadow-action/25 border border-action"
+                          : "bg-surface/50 border border-white/10 text-fg-secondary hover:text-fg hover:bg-surface-raised"
+                      }`}
+                    >
+                      {cat.image ? (
+                        <div className="w-4 h-4 rounded-full overflow-hidden relative shrink-0 border border-white/10">
+                          <Image
+                            src={getOptimizedImageUrl(
+                              getOriginalImageUrl(cat.image),
+                            )}
+                            alt={cat.name}
+                            fill
+                            sizes="16px"
+                            className="object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <span className="w-4 h-4 rounded-full bg-white/10 text-[9px] flex items-center justify-center font-mono">
+                          3D
+                        </span>
+                      )}
+                      <span className="font-sans font-medium">{cat.name}</span>
+                      <span className="text-[10px] opacity-75">({count})</span>
+                    </Link>
+                  );
+                })}
+              </div>
+
+              {/* 3. Stacked Subcategory Bricks (when active category has subcategories) */}
+              {currentCategory?.sub_categories?.length > 0 && (
+                <div className="p-3 rounded-2xl bg-surface/30 border border-white/[0.08] space-y-2 mt-1">
+                  <div className="flex items-center gap-1.5 text-[11px] font-mono text-fg-secondary">
+                    <span className="w-1.5 h-1.5 rounded-full bg-action" />
+                    <span className="uppercase tracking-wider font-semibold text-fg">
+                      {currentCategory.name} Subcategories:
+                    </span>
+                  </div>
+
+                  <div className="flex flex-wrap gap-1.5">
+                    {/* "All" in current category */}
+                    <Link
+                      href={`/${slugify(currentCategory.name)}-${currentCategory.id}`}
+                      className={`min-h-[32px] py-1.5 px-3 rounded-lg text-xs font-mono flex items-center gap-1.5 transition-all cursor-pointer ${
+                        !activeSubCategoryId
+                          ? "bg-action text-black font-semibold shadow-xs border border-action"
+                          : "bg-surface/50 border border-white/10 text-fg-secondary hover:text-fg"
+                      }`}
+                    >
+                      <span>All {currentCategory.name}</span>
+                    </Link>
+
+                    {currentCategory.sub_categories.map((sub) => {
+                      const isSubActive =
+                        Number(sub.id) === Number(activeSubCategoryId);
+                      const subCount = sub.assets?.length || 0;
+
+                      return (
+                        <Link
+                          key={sub.id}
+                          href={`/${slugify(currentCategory.name)}-${currentCategory.id}/${slugify(sub.name)}-${sub.id}`}
+                          className={`min-h-[32px] py-1.5 px-2.5 rounded-lg text-xs font-mono flex items-center gap-1.5 transition-all cursor-pointer ${
+                            isSubActive
+                              ? "bg-action text-black font-semibold shadow-xs border border-action"
+                              : "bg-surface/50 border border-white/10 text-fg-secondary hover:text-fg"
+                          }`}
+                        >
+                          <span className="font-sans">{sub.name}</span>
+                          <span className="text-[10px] opacity-75">
+                            ({subCount})
+                          </span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* 4. Mobile In-Feed AdSense Card (Full mobile width >= 250px) */}
+              <div className="pt-1">
+                <InFeedAd />
+              </div>
+
+              {/* 5. Mobile Access & Sort Controls (Clean 50/50 Split - Zero Overflow) */}
+              <div className="grid grid-cols-2 gap-2.5 pt-1 w-full">
+                {/* Access Dropdown Pill */}
+                <div className="relative flex items-center justify-between h-10 px-3 rounded-xl bg-surface/40 backdrop-blur-md border border-white/10 hover:border-white/20 focus-within:border-action/60 transition-all shadow-xs group">
+                  <span className="text-[11px] font-mono text-fg-secondary font-semibold uppercase tracking-wider shrink-0">
+                    Access:
+                  </span>
+                  <select
+                    value={activeFilters.access || "all"}
+                    onChange={handleAccessChange}
+                    className="bg-transparent text-fg text-xs font-mono font-medium focus:outline-none cursor-pointer pl-1 truncate text-right flex-1 appearance-none pr-3"
+                  >
+                    <option value="all" className="bg-[#111317] text-fg">
+                      All
+                    </option>
+                    <option value="free" className="bg-[#111317] text-fg">
+                      Free
+                    </option>
+                    <option value="paid" className="bg-[#111317] text-fg">
+                      PRO
+                    </option>
+                  </select>
+                  <FiChevronDown className="w-3.5 h-3.5 text-fg-secondary/60 group-hover:text-fg pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 shrink-0" />
+                </div>
+
+                {/* Sort Dropdown Pill */}
+                <div className="relative flex items-center justify-between h-10 px-3 rounded-xl bg-surface/40 backdrop-blur-md border border-white/10 hover:border-white/20 focus-within:border-action/60 transition-all shadow-xs group">
+                  <span className="text-[11px] font-mono text-fg-secondary font-semibold uppercase tracking-wider flex items-center gap-1.5 shrink-0">
+                    <span className="text-action text-xs">⇅</span>
+                    <span>Sort:</span>
+                  </span>
+                  <select
+                    value={activeFilters.sort || "newest"}
+                    onChange={handleSortChange}
+                    className="bg-transparent text-fg text-xs font-mono font-medium focus:outline-none cursor-pointer pl-1 truncate text-right flex-1 appearance-none pr-3"
+                  >
+                    <option value="newest" className="bg-[#111317] text-fg">
+                      Newest
+                    </option>
+                    <option value="popular" className="bg-[#111317] text-fg">
+                      Popular
+                    </option>
+                    <option value="lowpoly" className="bg-[#111317] text-fg">
+                      Low Poly
+                    </option>
+                    <option value="free_first" className="bg-[#111317] text-fg">
+                      Free First
+                    </option>
+                    <option value="paid_first" className="bg-[#111317] text-fg">
+                      Paid First
+                    </option>
+                  </select>
+                  <FiChevronDown className="w-3.5 h-3.5 text-fg-secondary/60 group-hover:text-fg pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 shrink-0" />
+                </div>
+              </div>
+            </div>
+
+            {/* DESKTOP CONSOLIDATED FILTER TOOLBAR (>= lg) */}
+            <div className="hidden lg:flex rounded-xl p-2.5 border border-white/[0.08] bg-surface/30 backdrop-blur-2xl items-center justify-between gap-2.5 shadow-xl">
+              {/* Left: Live Breadcrumb Path */}
+              <div className="flex items-center gap-2.5 min-w-0">
                 <div className="flex items-center gap-1.5 text-xs font-mono text-fg-secondary truncate">
-                  <Link href="/" className="hover:text-action transition-colors">
+                  <Link
+                    href="/"
+                    className="hover:text-action transition-colors"
+                  >
                     models
                   </Link>
                   <span className="text-white/20">/</span>
@@ -622,11 +852,11 @@ export default function CatalogLayout({
               </div>
 
               {/* Right: Search + Access Filter + Sort Filter */}
-              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                {/* 1. Search input (Form: Enter or button to submit) */}
+              <div className="flex items-center gap-2">
+                {/* 1. Search input */}
                 <form
                   onSubmit={handleSearchSubmit}
-                  className="relative group flex-1 sm:w-64 md:w-72 lg:w-80 h-9"
+                  className="relative group w-64 md:w-72 lg:w-80 h-9"
                 >
                   <button
                     type="submit"
@@ -642,8 +872,8 @@ export default function CatalogLayout({
                       currentSubCategory
                         ? `Search in ${currentSubCategory.name}...`
                         : currentCategory
-                        ? `Search in ${currentCategory.name}...`
-                        : "Search 3D models..."
+                          ? `Search in ${currentCategory.name}...`
+                          : "Search 3D models..."
                     }
                     value={searchInputValue}
                     onChange={(e) => setSearchInputValue(e.target.value)}
@@ -736,9 +966,9 @@ export default function CatalogLayout({
               )}
             </div>
 
-            {/* 3D Models Grid (responsive 2-to-5 columns with generous breathing room) */}
+            {/* 3D Models Grid (responsive 2, 3, or 4 columns - 24 total cards fills 100% of rows) */}
             {displayAssets.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3.5 sm:gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3.5 sm:gap-4">
                 {displayAssets.map((asset, index) => {
                   const formattedSize = formatAssetSize(asset);
 
@@ -746,20 +976,22 @@ export default function CatalogLayout({
 
                   return (
                     <React.Fragment key={asset.id}>
-                      <article
-                        className="bg-surface/30 hover:bg-surface/50 border border-white/[0.08] hover:border-white/20 rounded-xl overflow-hidden flex flex-col group transition-all duration-300 shadow-md hover:shadow-xl relative"
-                      >
+                      <article className="bg-surface/30 hover:bg-surface/50 border border-white/[0.08] hover:border-white/20 rounded-xl overflow-hidden flex flex-col group transition-all duration-300 shadow-md hover:shadow-xl relative">
                         {/* Top 4:3 Image Stage */}
                         <Link
                           href={href}
-                          className="aspect-[4/3] w-full bg-canvas/40 overflow-hidden relative flex items-center justify-center p-2.5 block"
+                          className="aspect-[4/3] w-full bg-canvas/40 overflow-hidden relative flex items-center justify-center p-2.5"
                         >
                           {asset.cover ? (
                             <Image
-                              src={getOptimizedImageUrl(getOriginalImageUrl(asset.cover))}
+                              src={getOptimizedImageUrl(
+                                getOriginalImageUrl(asset.cover),
+                              )}
                               alt={asset.cover_alt?.trim() || asset.name}
                               fill
-                              loading="lazy"
+                              priority={index === 0}
+                              loading={index === 0 ? "eager" : "lazy"}
+                              fetchPriority={index === 0 ? "high" : "auto"}
                               sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw"
                               className="object-contain p-2 group-hover:scale-[1.15] transition-transform duration-500 ease-out drop-shadow-[0_6px_14px_rgba(0,0,0,0.65)]"
                             />
@@ -772,8 +1004,8 @@ export default function CatalogLayout({
                           {/* Top-Left Pricing Badge */}
                           <div className="absolute top-2 left-2 z-10 pointer-events-none">
                             {asset.access_type === "paid" ? (
-                              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-[#322B15] text-[#E8C96A] border border-[#5F5125] flex items-center gap-1 shadow-sm">
-                                <span>💎</span> PRO
+                              <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-[#322B15] text-[#E8C96A] border border-[#5F5125] shadow-sm">
+                                PRO
                               </span>
                             ) : (
                               <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-action-tintBg text-action border border-action-tintLine shadow-sm">
@@ -806,7 +1038,9 @@ export default function CatalogLayout({
 
                       {/* Organic Staggered In-Grid Ad (Option 1) */}
                       {adIndices.has(index) && (
-                        <CatalogGridAd key={`catalog-grid-ad-${displayPage}-${index}`} />
+                        <CatalogGridAd
+                          key={`catalog-grid-ad-${displayPage}-${index}`}
+                        />
                       )}
                     </React.Fragment>
                   );
@@ -891,13 +1125,52 @@ export default function CatalogLayout({
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-action" />
                   <h2 className="text-xs font-mono uppercase tracking-wider text-action font-semibold">
-                    Overview • {currentSubCategory?.name || currentCategory?.name || "Catalog"}
+                    Overview •{" "}
+                    {currentSubCategory?.name ||
+                      currentCategory?.name ||
+                      "Catalog"}
                   </h2>
                 </div>
-                <div
-                  className="text-sm text-fg-secondary leading-relaxed font-sans prose prose-invert max-w-none [&_p]:mb-2.5 [&_a]:text-action hover:[&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5"
-                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(activeDescription) }}
-                />
+
+                <div className="relative">
+                  <div
+                    ref={descriptionRef}
+                    className={`text-sm text-fg-secondary leading-relaxed font-sans prose prose-invert max-w-none [&_p]:mb-2.5 [&_a]:text-action hover:[&_a]:underline [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 transition-all duration-300 ${
+                      !isOverviewExpanded && isLongDescription
+                        ? "max-h-[140px] overflow-hidden sm:max-h-none sm:overflow-visible"
+                        : "max-h-none"
+                    }`}
+                    dangerouslySetInnerHTML={{
+                      __html: sanitizeHtml(activeDescription),
+                    }}
+                  />
+
+                  {/* Gradient Fade Overlay on Mobile when Collapsed */}
+                  {!isOverviewExpanded && isLongDescription && (
+                    <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#111317]/95 via-[#111317]/60 to-transparent pointer-events-none sm:hidden" />
+                  )}
+                </div>
+
+                {/* See More / See Less Toggle Button (Phone Only) */}
+                {isLongDescription && (
+                  <div className="pt-1 sm:hidden">
+                    <button
+                      type="button"
+                      onClick={() => setIsOverviewExpanded((prev) => !prev)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.06] hover:bg-white/10 border border-white/10 text-xs font-mono font-medium text-action transition-all cursor-pointer active:scale-95"
+                      aria-expanded={isOverviewExpanded}
+                    >
+                      <span>
+                        {isOverviewExpanded ? "See less" : "See more"}
+                      </span>
+                      {isOverviewExpanded ? (
+                        <FiChevronUp className="w-3.5 h-3.5" />
+                      ) : (
+                        <FiChevronDown className="w-3.5 h-3.5" />
+                      )}
+                    </button>
+                  </div>
+                )}
               </section>
             )}
           </main>
@@ -906,4 +1179,3 @@ export default function CatalogLayout({
     </div>
   );
 }
-

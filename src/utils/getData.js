@@ -20,13 +20,33 @@ const deriveTagsFromPath = (path) => {
   return tags;
 };
 
+// Structural & slow-changing endpoints cache for 1 hour (3600s), while dynamic assets default to 300s
+const getResourceTTL = (path) => {
+  if (!path || typeof path !== "string") return 300;
+  const clean = path.split("?")[0].toLowerCase();
+  if (
+    clean === "categories" ||
+    clean === "sub-categories" ||
+    clean === "social" ||
+    clean === "pages" ||
+    clean.startsWith("general/") ||
+    clean === "supportedby" ||
+    clean === "innovative" ||
+    clean === "sliders"
+  ) {
+    return 3600;
+  }
+  return 300;
+};
+
 const getData = async (path, options = {}) => {
   try {
     const defaultTags = deriveTagsFromPath(path);
     const customTags = options.tags || options.next?.tags || [];
     const mergedTags = Array.from(new Set([...defaultTags, ...customTags]));
+    const defaultRevalidate = getResourceTTL(path);
     const revalidate =
-      options.revalidate ?? options.next?.revalidate ?? 300; // 300-second fallback TTL safety net
+      options.revalidate ?? options.next?.revalidate ?? defaultRevalidate;
 
     const timeoutMs = options.timeout ?? 30000;
     const fetchOptions = {
