@@ -7,6 +7,7 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import { ErrorFallback } from "@/components/Shared/ErrorFallback/ErrorFallback";
 import Providers from "@/components/Providers";
 import localFont from "next/font/local";
+import { cleanText } from "@/utils/seo";
 
 const geistSans = localFont({
   src: "../../public/fonts/geist-latin.woff2",
@@ -39,22 +40,40 @@ async function getCachedApplicationSettings() {
 }
 
 export async function generateMetadata() {
+  let applicationSettings;
   try {
-    const applicationSettings = await getCachedApplicationSettings();
-    return {
-      metadataBase: new URL("https://www.sketchshaper.com"),
-      title: applicationSettings?.data?.site_name || "SketchShaper",
-      description:
-        applicationSettings?.data?.site_description ||
-        "Free & Pro 3D Models, Textures, and Plugins for SketchUp",
-    };
+    applicationSettings = await getCachedApplicationSettings();
   } catch (e) {
-    return {
-      metadataBase: new URL("https://www.sketchshaper.com"),
-      title: "SketchShaper",
-      description: "Free & Pro 3D Models, Textures, and Plugins for SketchUp",
-    };
+    console.error("Failed to load site metadata:", e);
   }
+
+  const siteName = "SketchShaper";
+  const description =
+    cleanText(applicationSettings?.data?.site_description, 160) ||
+    "Free and pro 3D models, textures, and plugins for SketchUp.";
+  const defaultImage = "/assets/seo/social-card.png";
+
+  return {
+    metadataBase: new URL("https://www.sketchshaper.com"),
+    title: {
+      default: siteName,
+      template: `%s | ${siteName}`,
+    },
+    description,
+    openGraph: {
+      title: siteName,
+      description,
+      siteName,
+      type: "website",
+      images: [{ url: defaultImage, width: 1200, height: 630, alt: siteName }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: siteName,
+      description,
+      images: [defaultImage],
+    },
+  };
 }
 
 export default async function RootLayout({ children }) {

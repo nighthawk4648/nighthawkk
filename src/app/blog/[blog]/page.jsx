@@ -7,6 +7,8 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { notFound } from "next/navigation";
+import { buildPageMetadata, cleanText } from "@/utils/seo";
+import { notFoundMeta } from "@/utils/validateSlug";
 import { FiArrowLeft, FiCalendar, FiClock, FiUser } from "react-icons/fi";
 import BlogLeftRail from "@/components/Blog/BlogLeftRail";
 import BlogRightRailAd from "@/components/Blog/BlogRightRailAd";
@@ -74,76 +76,45 @@ function extractHeadingsAndInjectIds(sections) {
 export async function generateMetadata({ params }) {
   const resolvedParams = await params;
   const id = resolvedParams?.blog?.split("-").pop();
-  const fallbackCanonical = `https://www.sketchshaper.com/blog/${resolvedParams?.blog || ""}`;
 
   if (!id || isNaN(Number(id))) {
-    return {
-      title: "Blog Not Found - SketchShaper",
-      description: "The requested blog post could not be found.",
-      alternates: {
-        canonical: fallbackCanonical,
-      },
-    };
+    return notFoundMeta;
   }
   const blog = await getData(`blogs/${id}`);
 
   if (!blog?.data) {
-    return {
-      title: "Blog Not Found - SketchShaper",
-      description: "The requested blog post could not be found.",
-      alternates: {
-        canonical: fallbackCanonical,
-      },
-    };
+    return notFoundMeta;
   }
 
   const post = blog.data;
-  const canonicalUrl =
-    post.title && post.id
-      ? `https://www.sketchshaper.com/blog/${slugify(post.title)}-${post.id}`
-      : fallbackCanonical;
-
   const cleanDescription =
-    stripHtml(
+    cleanText(
       post.short_description || post.paragraph_one || "",
       160,
     ) ||
     "Read our latest architectural 3D and visualization insights on SketchShaper.";
-  const coverUrl = post.image
-    ? getOriginalImageUrl(post.image)
-    : undefined;
 
   const title =
-    post.meta_title?.trim() || `${post.title} - SketchShaper Blog`;
+    cleanText(post.meta_title, 200) || `${post.title} - SketchShaper Blog`;
   const description =
     (post.meta_description
-      ? stripHtml(post.meta_description, 160)
+      ? cleanText(post.meta_description, 160)
       : "") || cleanDescription;
-  const keywords = post.keywords?.trim() || undefined;
+  const keywords = cleanText(post.keywords, 300) || undefined;
 
   return {
-    title,
-    description,
-    keywords,
-    alternates: {
-      canonical: canonicalUrl,
-    },
-    openGraph: {
-      title: post.title,
+    ...buildPageMetadata({
+      title,
       description,
-      url: canonicalUrl,
+      pathname: `/blog/${slugify(post.title)}-${post.id}`,
+      image: post.image,
+      imageAlt: post.title,
       type: "article",
-      siteName: "SketchShaper",
       publishedTime: post.created_at,
       modifiedTime: post.updated_at || post.created_at,
-      images: coverUrl ? [coverUrl] : [],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: post.title,
-      description,
-      images: coverUrl ? [coverUrl] : [],
-    },
+      authors: post.name ? [cleanText(post.name, 100)] : undefined,
+    }),
+    keywords,
   };
 }
 

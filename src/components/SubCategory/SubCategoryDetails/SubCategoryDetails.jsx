@@ -854,9 +854,17 @@ const SubCategoryDetails = ({ assetDetails }) => {
                 </span>
               </div>
 
-              <div className="space-y-2 text-xs font-mono text-fg-secondary">
+              {/* Highlighted 100% Human-Made Guarantee Badge */}
+              <div className="p-2.5 rounded-xl bg-action-tintBg/50 border border-action-tintLine flex items-start gap-2.5 shadow-xs">
+                <FiCheckCircle className="w-4 h-4 text-action shrink-0 mt-0.5" />
+                <span className="text-xs font-mono text-fg-secondary leading-relaxed">
+                  <strong className="text-action font-semibold">100% Human-Made:</strong> Each model is handcrafted by 3D artists with clean quad topology — zero AI-generated meshes.
+                </span>
+              </div>
+
+              <div className="space-y-2 text-xs font-mono text-fg-secondary pt-0.5">
                 <div className="flex items-start gap-2">
-                  <FiCheckCircle className="w-3.5 h-3.5 text-action shrink-0 mt-0.5" />
+                  <FiCheckCircle className="w-3.5 h-3.5 text-action/70 shrink-0 mt-0.5" />
                   <span>
                     <strong className="text-fg font-medium">Commercial &amp; Personal Renders:</strong> Royalty-free for client projects.
                   </span>

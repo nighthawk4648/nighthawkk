@@ -6,12 +6,14 @@ import img2 from "../../../public/assets/aboutus/img2.jpg";
 import img3 from "../../../public/assets/aboutus/img3.jpg";
 import img4 from "../../../public/assets/aboutus/img4.jpg";
 import img5 from "../../../public/assets/aboutus/img5.jpg"; // Added a fifth image
+import { buildPageMetadata } from "@/utils/seo";
 
-export const metadata = {
-  title: "About Us & Team - SketchShaper",
+export const metadata = buildPageMetadata({
+  title: "About Us & Team",
   description:
     "Learn about SketchShaper, our creative team, and our mission to provide high-quality SketchUp 3D models, textures, and plugins.",
-};
+  pathname: "/about-us",
+});
 
 const AboutUs = async () => {
   return (

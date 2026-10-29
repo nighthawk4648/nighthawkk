@@ -8,6 +8,14 @@ import AboutUs from "@/components/Shared/AboutUs/AboutUs";
 import SupportDesk from "@/components/Home/SupportDesk";
 import SupportedBy from "@/components/Shared/SupportedBy/SupportedBy";
 import getData from "@/utils/getData";
+import { buildPageMetadata } from "@/utils/seo";
+
+export const metadata = buildPageMetadata({
+  title: "Free 3D Models, Textures & SketchUp Plugins",
+  description:
+    "Discover free and pro SketchUp 3D models, high-quality textures, and helpful plugins for your next creative project.",
+  pathname: "/",
+});
 
 export default async function Home() {
   const carouselsPromise = getData("sliders");

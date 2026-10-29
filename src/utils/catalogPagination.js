@@ -1,21 +1,26 @@
+import { buildPageMetadata } from "@/utils/seo";
+
 export const ITEMS_PER_PAGE = 21;
 
 export function parsePageParam(rawPage) {
-  if (!rawPage) return 1;
+  if (typeof rawPage !== "string" || !/^[1-9]\d*$/.test(rawPage)) return 1;
   const num = Number(rawPage);
-  if (!Number.isInteger(num) || num < 1) return 1;
+  if (!Number.isSafeInteger(num)) return 1;
   return num;
 }
 
 export function resolveActiveFilters(searchParams = {}) {
-  const rawSearch = (searchParams?.search || "").trim();
-  const rawAccess = searchParams?.access || "all";
-  const rawSort = searchParams?.sort || "newest";
+  const rawSearch =
+    typeof searchParams?.search === "string" ? searchParams.search.trim() : "";
+  const rawAccess =
+    typeof searchParams?.access === "string" ? searchParams.access : "all";
+  const rawSort =
+    typeof searchParams?.sort === "string" ? searchParams.sort : "newest";
 
   return {
     search: rawSearch,
     access: ["all", "free", "paid"].includes(rawAccess) ? rawAccess : "all",
-    sort: ["newest", "popular", "lowpoly", "free_first", "paid_first"].includes(rawSort)
+    sort: ["newest", "oldest", "lowpoly", "highpoly"].includes(rawSort)
       ? rawSort
       : "newest",
   };
@@ -27,6 +32,30 @@ export function hasActiveFilters(activeFilters = {}) {
     (activeFilters.access && activeFilters.access !== "all") ||
     (activeFilters.sort && activeFilters.sort !== "newest")
   );
+}
+
+function getAssetByteSize(asset) {
+  if (asset?.file?.file_size) return Number(asset.file.file_size) || 0;
+  const s = String(asset?.size || "").trim().toLowerCase();
+  const match = s.match(/([\d.]+)\s*(gb|mb|kb|b)?/);
+  if (!match) return 0;
+  const val = parseFloat(match[1]);
+  const unit = match[2] || "mb";
+  if (unit === "gb") return val * 1024 * 1024 * 1024;
+  if (unit === "mb") return val * 1024 * 1024;
+  if (unit === "kb") return val * 1024;
+  return val;
+}
+
+function getPolyScore(asset) {
+  const text = `${asset?.resolution || ""} ${asset?.name || ""}`.toLowerCase();
+  if (text.includes("lowpoly") || text.includes("low poly") || text.includes("low-poly")) return 1;
+  if (text.includes("highpoly") || text.includes("high poly") || text.includes("high-poly")) return 10;
+  if (text.includes("1k")) return 2;
+  if (text.includes("2k")) return 4;
+  if (text.includes("4k")) return 6;
+  if (text.includes("8k")) return 8;
+  return 5;
 }
 
 export function filterAndSortAssets(
@@ -56,14 +85,24 @@ export function filterAndSortAssets(
   // Sort filter
   if (sort === "newest") {
     result.sort((a, b) => (Number(b.id) || 0) - (Number(a.id) || 0));
-  } else if (sort === "popular") {
-    result.sort((a, b) => (Number(b.id) || 0) - (Number(a.id) || 0));
-  } else if (sort === "free_first") {
-    result.sort((a, b) => (a.access_type === "paid" ? 1 : -1));
-  } else if (sort === "paid_first") {
-    result.sort((a, b) => (a.access_type === "paid" ? -1 : 1));
+  } else if (sort === "oldest") {
+    result.sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
   } else if (sort === "lowpoly") {
-    result.sort((a, b) => (a.resolution || "").localeCompare(b.resolution || ""));
+    result.sort((a, b) => {
+      const scoreDiff = getPolyScore(a) - getPolyScore(b);
+      if (scoreDiff !== 0) return scoreDiff;
+      const sizeDiff = getAssetByteSize(a) - getAssetByteSize(b);
+      if (sizeDiff !== 0) return sizeDiff;
+      return (Number(b.id) || 0) - (Number(a.id) || 0);
+    });
+  } else if (sort === "highpoly") {
+    result.sort((a, b) => {
+      const scoreDiff = getPolyScore(b) - getPolyScore(a);
+      if (scoreDiff !== 0) return scoreDiff;
+      const sizeDiff = getAssetByteSize(b) - getAssetByteSize(a);
+      if (sizeDiff !== 0) return sizeDiff;
+      return (Number(b.id) || 0) - (Number(a.id) || 0);
+    });
   }
 
   return result;
@@ -81,29 +120,15 @@ export function buildCatalogMetadata({
   const title = `${baseTitle || "3D Models"}${pageSuffix}`;
   const description = `${baseDesc || "Download 3D models for SketchUp."}${pageSuffix}`;
 
-  const canonicalUrl =
-    !hasFilters && page > 1
-      ? `https://www.sketchshaper.com${pathname}?page=${page}`
-      : `https://www.sketchshaper.com${pathname}`;
-
   return {
-    title,
-    description,
+    ...buildPageMetadata({
+      title,
+      description,
+      pathname,
+      searchParams: page > 1 ? { page: String(page) } : undefined,
+      preservePage: !hasFilters,
+      noIndex: hasFilters,
+    }),
     keywords: keywords || undefined,
-    alternates: {
-      canonical: canonicalUrl,
-    },
-    robots: {
-      index: !hasFilters,
-      follow: true,
-      googleBot: {
-        index: !hasFilters,
-        follow: true,
-        "max-video-preview": -1,
-        "max-image-preview": "large",
-        "max-snippet": -1,
-      },
-    },
   };
 }
-

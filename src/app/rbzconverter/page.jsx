@@ -1,25 +1,13 @@
 import React from "react";
 import RbzConverterClient from "./RbzConverterClient";
+import { buildPageMetadata } from "@/utils/seo";
 
-export const metadata = {
-  title: "ZIP to RBZ Converter for SketchUp - Free Online Tool | SketchShaper",
+export const metadata = buildPageMetadata({
+  title: "ZIP to RBZ Converter for SketchUp",
   description:
-    "Convert .zip archives into SketchUp extension packages (.rbz) instantly. Free, client-safe packaging tool for SketchUp plugin developers and users.",
-  alternates: {
-    canonical: "https://www.sketchshaper.com/rbzconverter",
-  },
-  openGraph: {
-    title: "ZIP to RBZ Converter for SketchUp | SketchShaper",
-    description:
-      "Convert .zip archives into SketchUp extension packages (.rbz) instantly. Free online packaging tool.",
-    url: "https://www.sketchshaper.com/rbzconverter",
-    type: "website",
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
-};
+    "Convert .zip archives into SketchUp extension packages (.rbz) instantly with this free online tool.",
+  pathname: "/rbzconverter",
+});
 
 export default function RbzConverterPage() {
   return (

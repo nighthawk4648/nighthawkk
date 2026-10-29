@@ -2,8 +2,9 @@ import React, { cache } from "react";
 import Link from "next/link";
 import { FiArrowLeft } from "react-icons/fi";
 import getData from "@/utils/getData";
-import { sanitizeHtml, stripHtml } from "@/utils/sanitizeHtml";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { ErrorFallback } from "@/components/Shared/ErrorFallback/ErrorFallback";
+import { buildPageMetadata, cleanText } from "@/utils/seo";
 
 const getPrivacyPage = cache(async () => {
   const allPages = await getData("pages", {
@@ -22,26 +23,16 @@ const getPrivacyPage = cache(async () => {
 export async function generateMetadata() {
   const page = await getPrivacyPage();
   const title =
-    page?.meta_title?.trim() ||
+    cleanText(page?.meta_title, 200) ||
     `${page?.title || "Privacy Policy"} - SketchShaper`;
   const description =
-    page?.meta_description?.trim() ||
-    stripHtml(page?.short_description || page?.content || "", 160) ||
+    cleanText(page?.meta_description, 160) ||
+    cleanText(page?.short_description || page?.content || "", 160) ||
     "Read our privacy policy regarding data collection and third party services.";
 
   return {
-    title,
-    description,
-    keywords: page?.keywords?.trim() || undefined,
-    alternates: {
-      canonical: "https://www.sketchshaper.com/privacy",
-    },
-    openGraph: {
-      title,
-      description,
-      url: "https://www.sketchshaper.com/privacy",
-      type: "website",
-    },
+    ...buildPageMetadata({ title, description, pathname: "/privacy" }),
+    keywords: cleanText(page?.keywords, 300) || undefined,
   };
 }
 

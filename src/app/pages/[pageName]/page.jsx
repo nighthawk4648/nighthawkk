@@ -1,30 +1,38 @@
 import getData from "@/utils/getData";
-import { stripHtml, sanitizeHtml } from "@/utils/sanitizeHtml";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { notFound } from "next/navigation";
 import React from "react";
+import { buildPageMetadata, cleanText } from "@/utils/seo";
+import { notFoundMeta } from "@/utils/validateSlug";
 
 export async function generateMetadata({ params }) {
   const { pageName } = await params;
   const pageId = pageName?.split("-").pop();
-  if (!pageId || isNaN(Number(pageId))) {
-    return { title: "Page Not Found - SketchShaper" };
-  }
+  if (!pageId || isNaN(Number(pageId))) return notFoundMeta;
 
   const footerPage = await getData(`pages/${pageId}`);
-  if (!footerPage?.data) {
-    return { title: "Page Not Found - SketchShaper" };
-  }
+  if (!footerPage?.data) return notFoundMeta;
 
-  const cleanDescription = footerPage.data.meta_description
-    ? stripHtml(footerPage.data.meta_description, 160)
-    : "";
+  const page = footerPage.data;
+  const title =
+    cleanText(page.meta_title, 200) ||
+    cleanText(page.title || page.name, 150) ||
+    "SketchShaper Page";
+  const description =
+    cleanText(page.meta_description, 160) ||
+    cleanText(page.short_description || page.content, 160);
+  const canonicalSlug = page.slug && page.id ? `${page.slug}-${page.id}` : pageName;
 
   return {
-    title:
-      footerPage.data.meta_title?.trim() ||
-      `${footerPage.data.title || footerPage.data.name || "Page"} - SketchShaper`,
-    description: cleanDescription || "SketchShaper custom page",
-    keywords: footerPage.data.keywords?.trim() || undefined,
+    ...buildPageMetadata({
+      title,
+      description,
+      pathname: `/pages/${canonicalSlug}`,
+      image: page.cover,
+      imageAlt: title,
+      noIndex: !description,
+    }),
+    keywords: cleanText(page.keywords, 300) || undefined,
   };
 }
 

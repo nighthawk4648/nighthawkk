@@ -2,6 +2,30 @@ import { NextResponse } from 'next/server';
 
 export function proxy(request) {
     const { pathname, search } = request.nextUrl;
+    const requestHost =
+        request.headers.get('x-forwarded-host')?.split(',')[0].trim() ||
+        request.headers.get('host') ||
+        request.nextUrl.hostname;
+    const hostname = requestHost.split(':')[0].toLowerCase();
+
+    if (hostname === 'sketchshaper.com' || hostname === 'www.sketchshaper.com') {
+        const forwardedProto = request.headers
+            .get('x-forwarded-proto')
+            ?.split(',')[0]
+            .trim()
+            .toLowerCase();
+        const isHttps = forwardedProto
+            ? forwardedProto === 'https'
+            : request.nextUrl.protocol === 'https:';
+
+        if (hostname !== 'www.sketchshaper.com' || !isHttps) {
+            const canonicalUrl = request.nextUrl.clone();
+            canonicalUrl.hostname = 'www.sketchshaper.com';
+            canonicalUrl.protocol = 'https:';
+            canonicalUrl.port = '';
+            return NextResponse.redirect(canonicalUrl, 301);
+        }
+    }
 
     // Check if URL has _rsc parameter
     if (search.includes('_rsc=')) {
@@ -18,16 +42,7 @@ export function proxy(request) {
         return new NextResponse('Not Found', { status: 404 });
     }
 
-    if (pathname.startsWith('/blog/')) {
-        return NextResponse.next();
-    }
-
-    // Add canonical URL header for all pages
-    const response = NextResponse.next();
-    const canonicalUrl = `https://www.sketchshaper.com${pathname}`;
-    response.headers.set('Link', `<${canonicalUrl}>; rel="canonical"`);
-
-    return response;
+    return NextResponse.next();
 }
 
 // Configure which routes the middleware should run on

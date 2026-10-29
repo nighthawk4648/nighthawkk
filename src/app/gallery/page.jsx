@@ -1,17 +1,13 @@
 import React from "react";
 
 import { Gallery } from "../../components/Gallery/Gallery";
+import { buildPageMetadata } from "@/utils/seo";
 
-export async function generateMetadata() {
-  const metaTitle = "Render Gallery • Sketch shaper";
-  const metaDescription =
-    "Artwork submitted by dozens of users, created using our assets.";
-
-  return {
-    title: `${metaTitle}`,
-    description: `${metaDescription}`,
-  };
-}
+export const metadata = buildPageMetadata({
+  title: "Render Gallery",
+  description: "Artwork submitted by creators using SketchShaper assets.",
+  pathname: "/gallery",
+});
 
 const Page = () => {
   return <Gallery />;

@@ -39,3 +39,24 @@ next-env.d.ts
 # agents
 .agents/
 
+# python virtual environments
+.venv/
+venv/
+
+# ide / editors
+.vscode/
+.idea/
+
+# build tools
+.turbo/
+
+# logs & os
+*.log
+Thumbs.db
+
+# graphify cache & intermediates
+graphify-out/cache/
+graphify-out/.*
+graphify-out/cost.json
+graphify-out/manifest.json
+

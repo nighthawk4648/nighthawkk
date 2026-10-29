@@ -2,8 +2,9 @@ import React, { cache } from "react";
 import Link from "next/link";
 import { FiArrowLeft } from "react-icons/fi";
 import getData from "@/utils/getData";
-import { sanitizeHtml, stripHtml } from "@/utils/sanitizeHtml";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { ErrorFallback } from "@/components/Shared/ErrorFallback/ErrorFallback";
+import { buildPageMetadata, cleanText } from "@/utils/seo";
 
 const getTermsPage = cache(async () => {
   const allPages = await getData("pages", {
@@ -22,26 +23,20 @@ const getTermsPage = cache(async () => {
 export async function generateMetadata() {
   const page = await getTermsPage();
   const title =
-    page?.meta_title?.trim() ||
+    cleanText(page?.meta_title, 200) ||
     `${page?.title || "Terms and Conditions"} - SketchShaper`;
   const description =
-    page?.meta_description?.trim() ||
-    stripHtml(page?.short_description || page?.content || "", 160) ||
+    cleanText(page?.meta_description, 160) ||
+    cleanText(page?.short_description || page?.content || "", 160) ||
     "Read the terms and conditions for using SketchShaper 3D models and services.";
 
   return {
-    title,
-    description,
-    keywords: page?.keywords?.trim() || undefined,
-    alternates: {
-      canonical: "https://www.sketchshaper.com/terms-and-conditions",
-    },
-    openGraph: {
+    ...buildPageMetadata({
       title,
       description,
-      url: "https://www.sketchshaper.com/terms-and-conditions",
-      type: "website",
-    },
+      pathname: "/terms-and-conditions",
+    }),
+    keywords: cleanText(page?.keywords, 300) || undefined,
   };
 }
 

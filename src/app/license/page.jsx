@@ -2,8 +2,9 @@ import React, { cache } from "react";
 import Link from "next/link";
 import { FiArrowLeft } from "react-icons/fi";
 import getData from "@/utils/getData";
-import { sanitizeHtml, stripHtml } from "@/utils/sanitizeHtml";
+import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { ErrorFallback } from "@/components/Shared/ErrorFallback/ErrorFallback";
+import { buildPageMetadata, cleanText } from "@/utils/seo";
 
 const getLicensePage = cache(async () => {
   const allPages = await getData("pages", {
@@ -34,26 +35,16 @@ const normalizeLicenseContent = (html) => {
 export async function generateMetadata() {
   const page = await getLicensePage();
   const title =
-    page?.meta_title?.trim() ||
+    cleanText(page?.meta_title, 200) ||
     `${page?.title || "License"} - SketchShaper`;
   const description =
-    page?.meta_description?.trim() ||
-    stripHtml(page?.short_description || page?.content || "", 160) ||
+    cleanText(page?.meta_description, 160) ||
+    cleanText(page?.short_description || page?.content || "", 160) ||
     "Creative Commons Zero (CC0) and platform licensing terms for SketchShaper assets.";
 
   return {
-    title,
-    description,
-    keywords: page?.keywords?.trim() || undefined,
-    alternates: {
-      canonical: "https://www.sketchshaper.com/license",
-    },
-    openGraph: {
-      title,
-      description,
-      url: "https://www.sketchshaper.com/license",
-      type: "website",
-    },
+    ...buildPageMetadata({ title, description, pathname: "/license" }),
+    keywords: cleanText(page?.keywords, 300) || undefined,
   };
 }
 

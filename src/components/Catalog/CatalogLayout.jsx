@@ -807,17 +807,14 @@ export default function CatalogLayout({
                     <option value="newest" className="bg-[#111317] text-fg">
                       Newest
                     </option>
-                    <option value="popular" className="bg-[#111317] text-fg">
-                      Popular
+                    <option value="oldest" className="bg-[#111317] text-fg">
+                      Oldest
                     </option>
                     <option value="lowpoly" className="bg-[#111317] text-fg">
                       Low Poly
                     </option>
-                    <option value="free_first" className="bg-[#111317] text-fg">
-                      Free First
-                    </option>
-                    <option value="paid_first" className="bg-[#111317] text-fg">
-                      Paid First
+                    <option value="highpoly" className="bg-[#111317] text-fg">
+                      High Poly
                     </option>
                   </select>
                   <FiChevronDown className="w-3.5 h-3.5 text-fg-secondary/60 group-hover:text-fg pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 shrink-0" />
@@ -932,17 +929,14 @@ export default function CatalogLayout({
                     <option value="newest" className="bg-[#111317] text-fg">
                       Newest
                     </option>
-                    <option value="popular" className="bg-[#111317] text-fg">
-                      Popular
+                    <option value="oldest" className="bg-[#111317] text-fg">
+                      Oldest
                     </option>
                     <option value="lowpoly" className="bg-[#111317] text-fg">
                       Low Poly
                     </option>
-                    <option value="free_first" className="bg-[#111317] text-fg">
-                      Free First
-                    </option>
-                    <option value="paid_first" className="bg-[#111317] text-fg">
-                      Paid First
+                    <option value="highpoly" className="bg-[#111317] text-fg">
+                      High Poly
                     </option>
                   </select>
                 </div>

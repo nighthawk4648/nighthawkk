@@ -1,33 +1,19 @@
 import Extension from './extension';
 import getData from '@/utils/getData';
+import { buildPageMetadata } from '@/utils/seo';
 
 export const metadata = {
-  title: 'SketchShaper Plugin for SketchUp – Free 3D Model Library & PBR Textures',
-  description:
-    'Download the official SketchShaper SketchUp extension (.rbz). Stream 1,500+ curated 3D architectural models and calibrated PBR textures directly into SketchUp 2022-2026. 100% free, fast, and lightweight.',
+  ...buildPageMetadata({
+    title: "SketchUp Extension & 3D Model Library",
+    description:
+      "Download the official SketchShaper SketchUp extension (.rbz). Stream curated 3D architectural models and PBR textures directly into SketchUp.",
+    pathname: "/extension",
+    image:
+      "https://res.cloudinary.com/dn0rgr930/image/upload/v1770007276/v1_wdzv0h.jpg",
+    imageAlt: "SketchShaper SketchUp extension",
+  }),
   keywords:
-    'SketchUp plugin, SketchUp extension, 3D model library, download rbz, SketchUp 2024 plugins, SketchUp 2025 plugins, SketchUp 2026 plugins, architectural visualization, free 3D models SketchUp, PBR textures SketchUp, 3D warehouse alternative, Enscape models, V-Ray SketchUp assets',
-  openGraph: {
-    title: 'SketchShaper Plugin for SketchUp – Free 3D Model Library & PBR Textures',
-    description:
-      'Stream 1,500+ curated 3D architectural models and calibrated PBR textures directly inside SketchUp without switching tabs.',
-    type: 'website',
-    images: [
-      {
-        url: 'https://res.cloudinary.com/dn0rgr930/image/upload/v1770007276/v1_wdzv0h.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'SketchShaper Plugin for SketchUp',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'SketchShaper Plugin for SketchUp',
-    description:
-      'Stream 1,500+ curated 3D architectural models and calibrated PBR textures directly inside SketchUp.',
-    images: ['https://res.cloudinary.com/dn0rgr930/image/upload/v1770007276/v1_wdzv0h.jpg'],
-  },
+    "SketchUp plugin, SketchUp extension, 3D model library, download rbz, architectural visualization, free 3D models SketchUp, PBR textures SketchUp",
 };
 
 const extensionFaqs = [

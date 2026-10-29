@@ -48,7 +48,7 @@ const nextConfig = {
   // Skip trailing slash redirect for cleaner URLs
   skipTrailingSlashRedirect: false,
 
-  // Headers for SEO
+  // Prevent indexing of Next.js RSC transport URLs.
   async redirects() {
     return [
       {
@@ -86,15 +86,6 @@ const nextConfig = {
 
   async headers() {
     return [
-      {
-        source: "/:path*",
-        headers: [
-          {
-            key: "X-Robots-Tag",
-            value: "index, follow",
-          },
-        ],
-      },
       {
         // Block indexing of URLs with _rsc parameter
         source: "/:path*",

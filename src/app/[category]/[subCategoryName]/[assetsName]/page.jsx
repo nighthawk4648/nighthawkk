@@ -2,7 +2,7 @@ export const revalidate = 300;
 
 import SubCategoryDetails from "@/components/SubCategory/SubCategoryDetails/SubCategoryDetails";
 import { notFound } from "next/navigation";
-import { getCleanMetadata } from "@/utils/seo";
+import { buildPageMetadata, cleanText } from "@/utils/seo";
 import { validateAsset, notFoundMeta } from "@/utils/validateSlug";
 
 export async function generateMetadata({ params }) {
@@ -14,26 +14,33 @@ export async function generateMetadata({ params }) {
   const pathname = `/${category}/${subCategoryName}/${assetsName}`;
   const asset = assetData.data;
 
-  const rawTitle = asset?.meta_title?.trim();
-  const rawDesc = asset?.meta_description?.trim();
-  const rawShortDesc = asset?.short_description
-    ? asset.short_description.replace(/<[^>]*>/g, "").trim()
-    : "";
+  const rawTitle = cleanText(asset?.meta_title, 200);
+  const rawDesc = cleanText(asset?.meta_description, 160);
+  const rawShortDesc = cleanText(asset?.short_description, 160);
 
   const title =
     rawTitle ||
-    (asset?.name ? `${asset.name} | SketchShaper` : "3D Model | SketchShaper");
+    (asset?.name ? `${cleanText(asset.name, 150)} 3D Model` : "3D Model");
   const description =
     rawDesc ||
     (rawShortDesc && rawShortDesc !== "-"
-      ? rawShortDesc
-      : `Download ${asset?.name || "3D model"} for SketchUp from SketchShaper.`);
+    ? rawShortDesc
+    : `Download ${asset?.name || "3D model"} for SketchUp from SketchShaper.`);
 
-  return getCleanMetadata(pathname, {
+  const firstGalleryImage = Array.isArray(asset?.images)
+    ? asset.images.find((item) => item?.image)?.image
+    : undefined;
+
+  return {
+    ...buildPageMetadata({
+    pathname,
     title,
     description,
-    keywords: asset?.keywords?.trim() || undefined,
-  });
+    image: asset?.cover || firstGalleryImage,
+    imageAlt: asset?.name || "SketchUp 3D model",
+    }),
+    keywords: cleanText(asset?.keywords, 300) || undefined,
+  };
 }
 
 const Page = async ({ params }) => {

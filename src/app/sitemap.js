@@ -1,5 +1,6 @@
 import getData from "@/utils/getData";
 import slugify from "@/utils/slugify";
+import { cleanText } from "@/utils/seo";
 
 // Revalidate sitemap dynamically every 24 hours
 export const revalidate = 86400;
@@ -219,6 +220,13 @@ export default async function sitemap() {
   for (const page of pages) {
     if (!page?.slug || !page?.id) continue;
     if (reservedSlugs.has(page.slug)) continue;
+    if (
+      !cleanText(page.meta_description, 160) &&
+      !cleanText(page.short_description, 160) &&
+      !cleanText(page.content, 160)
+    ) {
+      continue;
+    }
 
     const pageCover = toAbsoluteImageUrl(page.cover);
     dynamicRoutes.push({

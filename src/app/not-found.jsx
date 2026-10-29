@@ -2,7 +2,7 @@ import Link from "next/link";
 import { FiHome, FiGrid } from "react-icons/fi";
 
 export const metadata = {
-  title: "404 - Page Not Found | SketchShaper",
+  title: "404 - Page Not Found",
   description: "The page you are looking for does not exist.",
   robots: {
     index: false,

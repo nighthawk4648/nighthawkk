@@ -1,25 +1,13 @@
 import BlogsPage from "./BlogsPage";
 import getData from "@/utils/getData";
+import { buildPageMetadata } from "@/utils/seo";
 
-export const metadata = {
-  title: "Articles & Knowledge Base - SketchShaper",
+export const metadata = buildPageMetadata({
+  title: "Articles & Knowledge Base",
   description:
     "Stay informed with curated architectural 3D workflows, PBR texturing guides, lighting breakdowns, rendering tips, and SketchUp tutorials.",
-  openGraph: {
-    title: "Articles & Knowledge Base - SketchShaper",
-    description:
-      "Stay informed with curated architectural 3D workflows, PBR texturing guides, lighting breakdowns, rendering tips, and SketchUp tutorials.",
-    url: "https://www.sketchshaper.com/blog",
-    type: "website",
-    siteName: "SketchShaper",
-  },
-  twitter: {
-    card: "summary",
-    title: "Articles & Knowledge Base - SketchShaper",
-    description:
-      "Stay informed with curated architectural 3D workflows, PBR texturing guides, lighting breakdowns, rendering tips, and SketchUp tutorials.",
-  },
-};
+  pathname: "/blog",
+});
 
 export default async function Page() {
   let initialData = null;
