@@ -5,6 +5,11 @@ import getData from "@/utils/getData";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { ErrorFallback } from "@/components/Shared/ErrorFallback/ErrorFallback";
 import { buildPageMetadata, cleanText } from "@/utils/seo";
+import {
+  JsonLd,
+  generateBreadcrumbSchema,
+  generateWebPageSchema,
+} from "@/utils/schema";
 
 const getLicensePage = cache(async () => {
   const allPages = await getData("pages", {
@@ -58,8 +63,23 @@ export default async function LicensePage() {
   const normalized = normalizeLicenseContent(page.content);
   const cleanContent = sanitizeHtml(normalized);
 
+  const breadcrumbsSchema = generateBreadcrumbSchema([
+    { name: "Home", url: "/" },
+    { name: page.title || "License", url: "/license" },
+  ]);
+
+  const webPageSchema = generateWebPageSchema({
+    title: page.title || "License",
+    description:
+      page.short_description ||
+      "Creative Commons Zero (CC0) and platform licensing terms for SketchShaper assets.",
+    pathname: "/license",
+  });
+
   return (
     <div className="w-full min-h-screen text-fg font-sans py-8 sm:py-12 px-4 md:px-[0.5in] relative overflow-hidden bg-transparent">
+      <JsonLd data={breadcrumbsSchema} />
+      <JsonLd data={webPageSchema} />
       <div className="max-w-4xl mx-auto relative z-10">
         {/* Top Breadcrumb Navigation */}
         <nav className="mb-6 sm:mb-8">

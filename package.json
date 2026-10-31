@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test:seo": "node --experimental-default-type=module --test src/utils/seo.test.mjs",
+    "test:seo": "node --experimental-default-type=module --test src/utils/seo.test.mjs src/utils/schema.test.mjs",
     "lint": "echo 'ESLint not configured'"
   },
   "dependencies": {

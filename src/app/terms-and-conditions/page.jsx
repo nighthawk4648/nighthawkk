@@ -5,6 +5,11 @@ import getData from "@/utils/getData";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { ErrorFallback } from "@/components/Shared/ErrorFallback/ErrorFallback";
 import { buildPageMetadata, cleanText } from "@/utils/seo";
+import {
+  JsonLd,
+  generateBreadcrumbSchema,
+  generateWebPageSchema,
+} from "@/utils/schema";
 
 const getTermsPage = cache(async () => {
   const allPages = await getData("pages", {
@@ -49,8 +54,23 @@ export default async function TermsAndCondition() {
 
   const cleanContent = sanitizeHtml(page.content);
 
+  const breadcrumbsSchema = generateBreadcrumbSchema([
+    { name: "Home", url: "/" },
+    { name: page.title || "Terms and Conditions", url: "/terms-and-conditions" },
+  ]);
+
+  const webPageSchema = generateWebPageSchema({
+    title: page.title || "Terms and Conditions",
+    description:
+      page.short_description ||
+      "Read the terms and conditions for using SketchShaper 3D models and services.",
+    pathname: "/terms-and-conditions",
+  });
+
   return (
     <div className="w-full min-h-screen text-fg font-sans py-8 sm:py-12 px-4 md:px-[0.5in] relative overflow-hidden bg-transparent">
+      <JsonLd data={breadcrumbsSchema} />
+      <JsonLd data={webPageSchema} />
       <div className="max-w-4xl mx-auto relative z-10">
         {/* Top Breadcrumb Navigation */}
         <nav className="mb-6 sm:mb-8">

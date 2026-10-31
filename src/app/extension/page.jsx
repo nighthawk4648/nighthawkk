@@ -1,6 +1,11 @@
 import Extension from './extension';
 import getData from '@/utils/getData';
 import { buildPageMetadata } from '@/utils/seo';
+import {
+  JsonLd,
+  generateBreadcrumbSchema,
+  generateSoftwareAppSchema,
+} from '@/utils/schema';
 
 export const metadata = {
   ...buildPageMetadata({
@@ -59,38 +64,32 @@ export default async function Page() {
     })),
   };
 
-  const softwareStructuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
+  const softwareStructuredData = generateSoftwareAppSchema({
     name: 'SketchShaper Extension for SketchUp',
-    operatingSystem: 'Windows 10/11 64-bit, macOS 12+ (Apple Silicon & Intel)',
-    applicationCategory: 'DesignApplication',
-    softwareVersion: '1.5.0',
-    fileFormat: 'application/x-ruby-zip (.rbz)',
-    downloadUrl: 'https://sketchshaper.com/assets/rbz/sketchshaper-1.5.0.rbz',
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'USD',
-    },
     description:
       'Native SketchUp extension providing direct in-viewport streaming of 1,500+ curated 3D architectural models and calibrated PBR textures into SketchUp 2022-2026.',
-  };
+    pathname: '/extension',
+    applicationCategory: 'DesignApplication',
+    operatingSystem: 'Windows 10/11 64-bit, macOS 12+ (Apple Silicon & Intel)',
+    softwareVersion: '1.5.0',
+    fileFormat: 'application/x-ruby-zip (.rbz)',
+    downloadUrl:
+      'https://www.sketchshaper.com/assets/rbz/sketchshaper-1.5.0.rbz',
+    image:
+      'https://res.cloudinary.com/dn0rgr930/image/upload/v1770007276/v1_wdzv0h.jpg',
+    isFree: true,
+  });
+
+  const breadcrumbsSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: '/' },
+    { name: 'SketchUp Extension', url: '/extension' },
+  ]);
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(faqStructuredData),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(softwareStructuredData),
-        }}
-      />
+      <JsonLd data={faqStructuredData} />
+      <JsonLd data={softwareStructuredData} />
+      <JsonLd data={breadcrumbsSchema} />
       <Extension initialData={downloadData} />
     </>
   );

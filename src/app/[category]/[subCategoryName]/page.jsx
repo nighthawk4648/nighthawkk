@@ -4,6 +4,11 @@ import SingleSubCategoryPage from "@/components/SubCategory/SubCategory/SingleSu
 import { notFound, redirect } from "next/navigation";
 import { validateSubCategory, notFoundMeta } from "@/utils/validateSlug";
 import {
+  JsonLd,
+  generateBreadcrumbSchema,
+  generateCollectionSchema,
+} from "@/utils/schema";
+import {
   ITEMS_PER_PAGE,
   parsePageParam,
   resolveActiveFilters,
@@ -85,8 +90,24 @@ const Page = async ({ params, searchParams }) => {
   const paginatedAssets =
     totalCount === 0 ? [] : filteredAssets.slice(start, start + ITEMS_PER_PAGE);
 
+  const breadcrumbsSchema = generateBreadcrumbSchema([
+    { name: "Home", url: "/" },
+    { name: catName, url: `/${category}` },
+    { name: subName, url: `/${category}/${subCategoryName}` },
+  ]);
+
+  const collectionSchema = generateCollectionSchema({
+    name: `${subName} 3D Models - ${catName}`,
+    description:
+      result.subCategoryData?.data?.meta_description ||
+      `Download free and PRO ${subName} 3D models for SketchUp.`,
+    pathname: `/${category}/${subCategoryName}`,
+  });
+
   return (
     <div>
+      <JsonLd data={collectionSchema} />
+      <JsonLd data={breadcrumbsSchema} />
       <SingleSubCategoryPage
         categoryId={categoryId}
         subCategoryId={subCategoryId}

@@ -7,6 +7,7 @@ import img3 from "../../../public/assets/aboutus/img3.jpg";
 import img4 from "../../../public/assets/aboutus/img4.jpg";
 import img5 from "../../../public/assets/aboutus/img5.jpg"; // Added a fifth image
 import { buildPageMetadata } from "@/utils/seo";
+import { JsonLd, generateBreadcrumbSchema } from "@/utils/schema";
 
 export const metadata = buildPageMetadata({
   title: "About Us & Team",
@@ -15,9 +16,51 @@ export const metadata = buildPageMetadata({
   pathname: "/about-us",
 });
 
+const aboutPageSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "AboutPage",
+      name: "About Us & Team - SketchShaper",
+      url: "https://www.sketchshaper.com/about-us",
+      description:
+        "Learn about SketchShaper, our creative team, and our mission to provide high-quality SketchUp 3D models, textures, and plugins.",
+      mainEntity: {
+        "@type": "Organization",
+        name: "SketchShaper",
+        url: "https://www.sketchshaper.com",
+        founder: {
+          "@type": "Person",
+          name: "Majharul Islam Asik",
+          jobTitle: "Founder & Asset Creator",
+        },
+        employee: [
+          {
+            "@type": "Person",
+            name: "Naimul Islam Shihab",
+            jobTitle: "3D Artist",
+          },
+          {
+            "@type": "Person",
+            name: "Shafia Zaman Ema",
+            jobTitle: "Textures Designer",
+          },
+        ],
+      },
+    },
+  ],
+};
+
+const breadcrumbsSchema = generateBreadcrumbSchema([
+  { name: "Home", url: "/" },
+  { name: "About Us", url: "/about-us" },
+]);
+
 const AboutUs = async () => {
   return (
     <div className="bg-[#141414] text-white p-4 flex flex-col items-center">
+      <JsonLd data={aboutPageSchema} />
+      <JsonLd data={breadcrumbsSchema} />
       <p className="text-l font-light text-justify max-w-4xl">
         Sketch Shaper offers a free library of high-quality SketchUp 3D models
         and textures. Our collection includes diverse textures and detailed
