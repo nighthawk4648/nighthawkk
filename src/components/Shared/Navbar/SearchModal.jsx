@@ -396,9 +396,9 @@ export default function SearchModal({
                                       getOriginalImageUrl(asset.cover)
                                     )}
                                     alt={asset.name}
-                                    fill
-                                    sizes="40px"
-                                    className="object-cover"
+                                    width={40}
+                                    height={40}
+                                    className="w-full h-full object-cover"
                                   />
                                 ) : (
                                   <div className="w-full h-full bg-surface-raised flex items-center justify-center text-xs font-mono text-fg-secondary">

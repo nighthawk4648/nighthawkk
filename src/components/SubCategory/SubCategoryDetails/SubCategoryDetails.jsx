@@ -633,9 +633,9 @@ const SubCategoryDetails = ({ assetDetails }) => {
                     <Image
                       src={getOptimizedImageUrl(getOriginalImageUrl(img?.image))}
                       alt={img?.alt || `Angle #${idx + 1}`}
-                      fill
-                      sizes="48px"
-                      className="object-cover"
+                      width={48}
+                      height={36}
+                      className="w-full h-full object-cover"
                     />
                   </button>
                 ))}
@@ -1229,9 +1229,9 @@ const SubCategoryDetails = ({ assetDetails }) => {
                   <Image
                     src={getOptimizedImageUrl(getOriginalImageUrl(img?.image))}
                     alt={`Angle #${idx + 1}`}
-                    fill
-                    sizes="56px"
-                    className="object-cover"
+                    width={56}
+                    height={40}
+                    className="w-full h-full object-cover"
                   />
                 </button>
               ))}

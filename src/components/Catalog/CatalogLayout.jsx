@@ -466,9 +466,9 @@ export default function CatalogLayout({
                     <Image
                       src={getOptimizedImageUrl(getOriginalImageUrl(cat.image))}
                       alt={cat.name}
-                      fill
-                      sizes="28px"
-                      className="object-cover"
+                      width={28}
+                      height={28}
+                      className="w-full h-full object-cover"
                     />
                   ) : (
                     <span className="text-[10px] font-mono text-fg-secondary/60">
@@ -529,9 +529,9 @@ export default function CatalogLayout({
                                 getOriginalImageUrl(sub.image),
                               )}
                               alt={sub.name}
-                              fill
-                              sizes="20px"
-                              className="object-cover"
+                              width={20}
+                              height={20}
+                              className="w-full h-full object-cover"
                             />
                           ) : (
                             <span className="text-[8px] font-mono text-fg-secondary/50">
@@ -697,9 +697,9 @@ export default function CatalogLayout({
                               getOriginalImageUrl(cat.image),
                             )}
                             alt={cat.name}
-                            fill
-                            sizes="16px"
-                            className="object-cover"
+                            width={16}
+                            height={16}
+                            className="w-full h-full object-cover"
                           />
                         </div>
                       ) : (

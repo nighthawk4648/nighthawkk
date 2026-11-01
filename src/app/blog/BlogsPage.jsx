@@ -205,9 +205,9 @@ const BlogsPage = ({ initialData = null }) => {
                             compactArticles[0].title ||
                             "Article thumbnail"
                           }
-                          fill
-                          sizes="120px"
-                          className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                          width={112}
+                          height={96}
+                          className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-[10px] font-mono text-fg-secondary/50 p-2 text-center">
@@ -261,9 +261,9 @@ const BlogsPage = ({ initialData = null }) => {
                             compactArticles[1].title ||
                             "Article thumbnail"
                           }
-                          fill
-                          sizes="120px"
-                          className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                          width={112}
+                          height={96}
+                          className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-[10px] font-mono text-fg-secondary/50 p-2 text-center">

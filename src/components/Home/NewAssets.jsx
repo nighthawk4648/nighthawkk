@@ -101,10 +101,10 @@ export default function NewAssets({ categories = [] }) {
           <Image
             src={getOptimizedImageUrl(getOriginalImageUrl(asset.cover))}
             alt={asset.cover_alt?.trim() || asset.name}
-            fill
+            width={124}
+            height={124}
             loading="lazy"
-            sizes="142px"
-            className="object-contain p-2 transition-transform duration-500 ease-out group-hover:scale-105 drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
+            className="absolute inset-0 h-full w-full object-contain p-2 transition-transform duration-500 ease-out group-hover:scale-105 drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-fg-secondary/40 font-mono text-[10px]">

@@ -49,6 +49,7 @@ const AboutUs = ({ aboutUs }) => {
             src={coverUrl}
             alt={aboutUs?.title || "About SketchShaper"}
             fill
+            sizes="100vw"
             className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-canvas via-canvas/80 to-canvas" />

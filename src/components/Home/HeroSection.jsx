@@ -202,21 +202,13 @@ export default function HeroSection({
                 <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-4 sm:p-6 text-center pointer-events-none">
                   {currentSlideLogo && (
                     <div className="mb-2 sm:mb-3 drop-shadow-[0_8px_24px_rgba(0,0,0,0.85)]">
-                      {currentSlideLogo.startsWith("http") ? (
-                        <img
-                          src={currentSlideLogo}
-                          alt={currentSlide.name ? `${currentSlide.name} logo` : "Collection logo"}
-                          className="h-12 sm:h-20 lg:h-24 w-auto max-w-[220px] sm:max-w-[340px] object-contain"
-                        />
-                      ) : (
-                        <Image
-                          src={currentSlideLogo}
-                          alt={currentSlide.name ? `${currentSlide.name} logo` : "Collection logo"}
-                          width={320}
-                          height={80}
-                          className="h-12 sm:h-20 lg:h-24 w-auto max-w-[220px] sm:max-w-[340px] object-contain"
-                        />
-                      )}
+                      <Image
+                        src={currentSlideLogo}
+                        alt={currentSlide.name ? `${currentSlide.name} logo` : "Collection logo"}
+                        width={320}
+                        height={80}
+                        className="h-12 sm:h-20 lg:h-24 w-auto max-w-[220px] sm:max-w-[340px] object-contain"
+                      />
                     </div>
                   )}
                   {currentSlide.name && (

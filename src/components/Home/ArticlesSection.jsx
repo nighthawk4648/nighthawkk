@@ -67,20 +67,13 @@ export default function ArticlesSection({ blogs = [] }) {
               {/* Thumbnail Frame: 80px square on mobile -> 16:10 wide hero banner on desktop */}
               <div className="w-20 h-20 sm:w-24 sm:h-24 md:w-full md:h-auto md:aspect-[16/10] rounded-xl md:rounded-[14px] overflow-hidden bg-canvas/80 border border-white/10 relative shadow-inner flex-shrink-0 md:mb-5">
                 {article.image ? (
-                  article.image.startsWith("http") ? (
-                    <img
-                      src={article.image}
-                      alt={article.title}
-                      className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                    />
-                  ) : (
-                    <Image
-                      src={article.image}
-                      alt={article.title}
-                      fill
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                    />
-                  )
+                  <Image
+                    src={article.image}
+                    alt={article.title}
+                    fill
+                    sizes="(max-width: 639px) 80px, (max-width: 767px) 96px, (max-width: 1023px) 40vw, (max-width: 1279px) 25vw, 380px"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-fg-secondary/50 font-mono text-[10px] sm:text-xs">
                     Article
