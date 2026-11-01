@@ -54,9 +54,6 @@ venv/
 *.log
 Thumbs.db
 
-# graphify cache & intermediates
-graphify-out/cache/
-graphify-out/.*
-graphify-out/cost.json
-graphify-out/manifest.json
+# graphify
+graphify-out/
 
