@@ -1,5 +1,6 @@
 import getData from "@/utils/getData";
 import slugify from "@/utils/slugify";
+import { buildAssetPath } from "@/utils/buildAssetPath";
 import { cleanText } from "@/utils/seo";
 
 // Revalidate sitemap dynamically every 24 hours
@@ -136,7 +137,7 @@ export default async function sitemap() {
     if (!cat?.name || !cat?.id) continue;
     const catImage = toAbsoluteImageUrl(cat.image);
     dynamicRoutes.push({
-      url: `${baseUrl}/${slugify(cat.name)}-${cat.id}`,
+      url: `${baseUrl}/${cat.slug || slugify(cat.name)}-${cat.id}`,
       lastModified: parseDate(cat.updated_at || cat.created_at, now),
       changeFrequency: "daily",
       priority: 0.9,
@@ -152,7 +153,7 @@ export default async function sitemap() {
 
     const subImage = toAbsoluteImageUrl(sub.image);
     dynamicRoutes.push({
-      url: `${baseUrl}/${slugify(parentCategory.name)}-${parentCategory.id}/${slugify(sub.name)}-${sub.id}`,
+      url: `${baseUrl}/${parentCategory.slug || slugify(parentCategory.name)}-${parentCategory.id}/${sub.slug || slugify(sub.name)}-${sub.id}`,
       lastModified: parseDate(sub.updated_at || sub.created_at, now),
       changeFrequency: "daily",
       priority: 0.85,
@@ -182,7 +183,12 @@ export default async function sitemap() {
     }
 
     dynamicRoutes.push({
-      url: `${baseUrl}/${slugify(cat.name)}-${cat.id}/${slugify(sub.name)}-${sub.id}/${slugify(asset.name)}-${asset.id}`,
+      url: `${baseUrl}${buildAssetPath(asset, {
+        categorySlug: cat.slug,
+        categoryName: cat.name,
+        subCategorySlug: sub.slug,
+        subCategoryName: sub.name,
+      })}`,
       lastModified: parseDate(asset.updated_at || asset.created_at, now),
       changeFrequency: "weekly",
       priority: 0.9,
@@ -201,7 +207,7 @@ export default async function sitemap() {
     if (bgImg && !blogImages.includes(bgImg)) blogImages.push(bgImg);
 
     dynamicRoutes.push({
-      url: `${baseUrl}/blog/${slugify(blog.title)}-${blog.id}`,
+      url: `${baseUrl}/blog/${blog.slug || slugify(blog.title)}-${blog.id}`,
       lastModified: parseDate(blog.updated_at || blog.created_at, now),
       changeFrequency: "weekly",
       priority: 0.8,

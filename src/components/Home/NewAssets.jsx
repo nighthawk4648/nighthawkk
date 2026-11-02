@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import slugify from "@/utils/slugify";
+import { buildAssetPath } from "@/utils/buildAssetPath";
 import { getOptimizedImageUrl } from "@/utils/cloudinary";
 
 export default function NewAssets({ categories = [] }) {
@@ -27,7 +28,9 @@ export default function NewAssets({ categories = [] }) {
               .map((asset) => ({
                 ...asset,
                 categoryName: category.name,
+                categorySlug: category.slug,
                 subCategoryName: subCategory.name,
+                subCategorySlug: subCategory.slug,
               }));
           }) || []
         );
@@ -90,9 +93,7 @@ export default function NewAssets({ categories = [] }) {
   const renderMarqueeCard = (asset, key) => (
     <Link
       key={key}
-      href={`/${slugify(asset.categoryName)}/${slugify(
-        asset.subCategoryName,
-      )}/${slugify(asset.name)}-${asset.id}`}
+      href={buildAssetPath(asset)}
       className="w-[142px] flex-shrink-0 flex flex-col p-2 rounded-xl bg-surface/50 border border-line hover:border-action/40 transition-all select-none group shadow-sm"
       aria-label={asset.name}
     >
@@ -202,9 +203,7 @@ export default function NewAssets({ categories = [] }) {
         {displayAssets.map((asset) => (
           <Link
             key={asset.id}
-            href={`/${slugify(asset.categoryName)}/${slugify(
-              asset.subCategoryName,
-            )}/${slugify(asset.name)}-${asset.id}`}
+            href={buildAssetPath(asset)}
             className="group flex flex-col p-2 rounded-xl bg-transparent transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-action"
             aria-label={asset.name}
           >

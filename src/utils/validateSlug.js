@@ -1,13 +1,23 @@
 import { cache } from "react";
-import getData from "@/utils/getData";
-import slugify from "@/utils/slugify";
+import getData from "./getData.js";
+import slugify from "./slugify.js";
+import buildAssetPath from "./buildAssetPath.js";
 
 /**
  * Shared URL slug validation functions.
- * Ensures only the ONE correct URL renders a page — all others get 404.
+ * Ensures only the ONE correct URL renders a page — all others redirect or get 404.
  * Wrapped in React cache() so generateMetadata and Page share the exact
  * same in-memory promise within a single request cycle.
  */
+
+export const safeDecode = (val) => {
+  if (typeof val !== "string") return null;
+  try {
+    return decodeURIComponent(val);
+  } catch {
+    return null; // Malformed percent-encoding -> produce 404, not 500
+  }
+};
 
 const isValidRouteParam = (param) => {
   if (typeof param !== "string") return false;
@@ -22,10 +32,12 @@ const isValidRouteParam = (param) => {
 
 // ─── Category page: /category-slug-{id} ────────────────────────────
 export const validateCategory = cache(async (categoryParam) => {
-  if (!isValidRouteParam(categoryParam)) return null;
+  const decoded = safeDecode(categoryParam);
+  if (!decoded || !isValidRouteParam(decoded)) return null;
 
-  const categoryId = categoryParam?.split("-").slice(-1)?.[0];
-  if (!categoryId) return null;
+  const idMatch = decoded.match(/-(\d+)$/);
+  if (!idMatch) return null;
+  const categoryId = idMatch[1];
 
   const categoryData = await getData(`categories/${categoryId}`, {
     tags: ["categories", `category-${categoryId}`],
@@ -33,22 +45,30 @@ export const validateCategory = cache(async (categoryParam) => {
   });
   if (!categoryData?.data) return null;
 
-  const expectedSlug = `${slugify(categoryData.data.name)}-${categoryData.data.id}`;
-  if (categoryParam !== expectedSlug) return null;
+  const catSlug = (
+    categoryData.data.slug ||
+    slugify(categoryData.data.name) ||
+    "category"
+  ).trim();
+  const expectedSlug = `${catSlug}-${categoryData.data.id}`;
+  if (decoded !== expectedSlug) return null;
 
   return categoryData;
 });
 
 // ─── SubCategory page: /category-slug-{id}/subcategory-slug-{id} ───
 export const validateSubCategory = cache(async (categoryParam, subCategoryParam) => {
-  if (!isValidRouteParam(categoryParam) || !isValidRouteParam(subCategoryParam))
+  const decodedCat = safeDecode(categoryParam);
+  const decodedSub = safeDecode(subCategoryParam);
+  if (!decodedCat || !decodedSub || !isValidRouteParam(decodedCat) || !isValidRouteParam(decodedSub))
     return null;
 
-  const categoryData = await validateCategory(categoryParam);
+  const categoryData = await validateCategory(decodedCat);
   if (!categoryData) return null;
 
-  const subCategoryId = subCategoryParam?.split("-").slice(-1)?.[0];
-  if (!subCategoryId) return null;
+  const subIdMatch = decodedSub.match(/-(\d+)$/);
+  if (!subIdMatch) return null;
+  const subCategoryId = subIdMatch[1];
 
   const subCategoryData = await getData(`sub-categories/${subCategoryId}`, {
     tags: ["sub-categories", `subcategory-${subCategoryId}`],
@@ -56,81 +76,72 @@ export const validateSubCategory = cache(async (categoryParam, subCategoryParam)
   });
   if (!subCategoryData?.data) return null;
 
-  const expectedSlug = `${slugify(subCategoryData.data.name)}-${subCategoryData.data.id}`;
-  if (subCategoryParam !== expectedSlug) return null;
+  const subSlug = (
+    subCategoryData.data.slug ||
+    slugify(subCategoryData.data.name) ||
+    "subcategory"
+  ).trim();
+  const expectedSlug = `${subSlug}-${subCategoryData.data.id}`;
+  if (decodedSub !== expectedSlug) return null;
 
   return { categoryData, subCategoryData };
 });
 
 // ─── Asset page: /category-slug/subcategory-slug/asset-slug-{id} ───
-// Tolerant validation: accepts pure slugs (category/subcategory) and ID-suffixed slugs
+// Self-healing: if ID exists, segment mismatches redirect to canonical path
 export const validateAsset = cache(async (
   categoryParam,
   subCategoryParam,
   assetParam,
 ) => {
-  if (
-    !isValidRouteParam(categoryParam) ||
-    !isValidRouteParam(subCategoryParam) ||
-    !isValidRouteParam(assetParam)
-  )
-    return null;
+  const decodedCat = safeDecode(categoryParam);
+  const decodedSub = safeDecode(subCategoryParam);
+  const decodedAsset = safeDecode(assetParam);
 
-  const assetId = assetParam?.split("-").slice(-1)?.[0];
-  if (!assetId || isNaN(Number(assetId))) return null;
+  if (
+    !decodedCat ||
+    !decodedSub ||
+    !decodedAsset ||
+    !isValidRouteParam(decodedCat) ||
+    !isValidRouteParam(decodedSub) ||
+    !isValidRouteParam(decodedAsset)
+  ) {
+    return null; // Malformed encoding or invalid path param -> 404
+  }
+
+  // Extract ID as the last hyphen-delimited numeric digits (-(\d+)$)
+  const idMatch = decodedAsset.match(/-(\d+)$/);
+  if (!idMatch) return null; // No trailing numeric ID -> 404
+  const assetId = idMatch[1];
 
   // Tagged caching with 5-minute TTL: deduplicates across metadata & page
   const assetData = await getData(`assets/${assetId}`, {
     tags: ["assets", `asset-${assetId}`],
     revalidate: 300,
   });
-  if (!assetData?.data) return null;
+  if (!assetData?.data) return null; // Nonexistent or deleted asset -> 404
 
-  // Validate asset slug
-  const expectedAssetSlug = `${slugify(assetData.data.name)}-${assetData.data.id}`;
-  if (assetParam !== expectedAssetSlug) return null;
+  const asset = assetData.data;
 
-  // Retrieve subcategory and category directly from the asset relation (single DB lookup)
-  let subCategory = assetData.data.sub_category;
-  let category = subCategory?.category;
+  // Compute canonical 3-tier URL path using the shared builder
+  const canonicalPath = buildAssetPath(asset);
+  const canonicalParts = canonicalPath.slice(1).split("/");
+  const canonicalCat = canonicalParts[0];
+  const canonicalSub = canonicalParts[1];
+  const canonicalAsset = canonicalParts[2];
 
-  // Fallback only if parent category was not returned
-  if (!category && assetData.data.sub_category_id) {
-    const subCategoryData = await getData(
-      `sub-categories/${assetData.data.sub_category_id}`,
-      {
-        tags: ["sub-categories", `subcategory-${assetData.data.sub_category_id}`],
-        revalidate: 300,
-      },
-    );
-    if (subCategoryData?.data) {
-      subCategory = subCategoryData.data;
-      category = subCategoryData.data.category;
-    }
-  }
+  // Case-sensitive segment-by-segment comparison
+  const isMatch =
+    decodedCat === canonicalCat &&
+    decodedSub === canonicalSub &&
+    decodedAsset === canonicalAsset;
 
-  // Validate subcategory slug (accepts pure slug or slug with ID)
-  if (subCategory) {
-    const expectedSubSlug = slugify(subCategory.name);
-    const expectedSubSlugWithId = `${expectedSubSlug}-${subCategory.id}`;
-    if (
-      subCategoryParam !== expectedSubSlug &&
-      subCategoryParam !== expectedSubSlugWithId
-    ) {
-      return null;
-    }
-  }
-
-  // Validate category slug (accepts pure slug or slug with ID)
-  if (category) {
-    const expectedCatSlug = slugify(category.name);
-    const expectedCatSlugWithId = `${expectedCatSlug}-${category.id}`;
-    if (
-      categoryParam !== expectedCatSlug &&
-      categoryParam !== expectedCatSlugWithId
-    ) {
-      return null;
-    }
+  if (!isMatch) {
+    return {
+      redirectUrl: canonicalPath,
+      data: asset,
+      asset,
+    };
   }
 
   return assetData;

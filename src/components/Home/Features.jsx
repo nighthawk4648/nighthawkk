@@ -61,7 +61,7 @@ export default function Features({ categories = [] }) {
           return (
             <Link
               key={category.id}
-              href={`/${slugify(category.name)}-${category.id}`}
+              href={`/${category.slug || slugify(category.name)}-${category.id}`}
               className="w-[170px] xs:w-[180px] sm:w-auto sm:flex-1 flex-shrink-0 snap-start flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-2 sm:gap-5 lg:gap-6 p-3 sm:p-5 lg:p-6 rounded-xl sm:rounded-2xl lg:rounded-[22px] bg-surface/75 border border-line hover:border-action/50 transition-all duration-300 shadow-sm group cursor-pointer"
             >
               {/* Spherical Preview Orb (Scaled to 56px on mobile) */}

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import slugify from "@/utils/slugify";
+import { buildAssetPath } from "@/utils/buildAssetPath";
 
 export const dynamic = "force-dynamic";
 
@@ -82,7 +83,7 @@ export async function GET(request) {
       return {
         id: item.id,
         name: item.name,
-        slug: `/${slugify(catName)}/${slugify(subCatName)}/${slugify(item.name)}-${item.id}`,
+        slug: buildAssetPath(item),
         cover: item.cover || null,
         access_type: item.access_type || "free",
         categoryName: catName,
@@ -103,7 +104,7 @@ export async function GET(request) {
     const category = filteredCategories.slice(0, 5).map((item) => ({
       id: item.id,
       name: item.name,
-      slug: `/${slugify(item.name)}-${item.id}`,
+      slug: `/${item.slug || slugify(item.name)}-${item.id}`,
     }));
 
     // Known category fallbacks
@@ -146,8 +147,12 @@ export async function GET(request) {
         catLookup.get(catId) ||
         KNOWN_CATEGORIES.get(Number(catId)) ||
         "Sketchup 3D models";
-      const catSlug = catId ? `${slugify(catName)}-${catId}` : slugify(catName);
-      const subCatSlug = `${slugify(item.name)}-${item.id}`;
+      const catSlug = item?.category?.slug
+        ? `${item.category.slug}-${catId}`
+        : catId
+          ? `${slugify(catName)}-${catId}`
+          : slugify(catName);
+      const subCatSlug = `${item.slug || slugify(item.name)}-${item.id}`;
 
       return {
         id: item.id,

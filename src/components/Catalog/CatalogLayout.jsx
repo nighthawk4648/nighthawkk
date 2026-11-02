@@ -8,6 +8,7 @@ import useSWR from "swr";
 import { fetcher } from "@/utils/swrFetcher";
 import { getOptimizedImageUrl } from "@/utils/cloudinary";
 import slugify from "@/utils/slugify";
+import { buildAssetPath } from "@/utils/buildAssetPath";
 import {
   FiSearch,
   FiChevronDown,
@@ -457,7 +458,7 @@ export default function CatalogLayout({
               }`}
             >
               <Link
-                href={`/${slugify(cat.name)}-${cat.id}`}
+                href={`/${cat.slug || slugify(cat.name)}-${cat.id}`}
                 onClick={() => onItemClick?.()}
                 className="flex items-center gap-2.5 min-w-0 flex-1"
               >
@@ -513,7 +514,7 @@ export default function CatalogLayout({
                   return (
                     <Link
                       key={sub.id}
-                      href={`/${slugify(cat.name)}-${cat.id}/${slugify(sub.name)}-${sub.id}`}
+                      href={`/${cat.slug || slugify(cat.name)}-${cat.id}/${sub.slug || slugify(sub.name)}-${sub.id}`}
                       onClick={() => onItemClick?.()}
                       className={`flex items-center justify-between py-1.5 px-2.5 rounded-md text-xs transition-all ${
                         isSubActive
@@ -683,7 +684,7 @@ export default function CatalogLayout({
                   return (
                     <Link
                       key={cat.id}
-                      href={`/${slugify(cat.name)}-${cat.id}`}
+                      href={`/${cat.slug || slugify(cat.name)}-${cat.id}`}
                       className={`min-h-[36px] py-2 px-3 rounded-xl text-xs font-mono flex items-center gap-2 transition-all cursor-pointer ${
                         isCatActive
                           ? "bg-action text-black font-semibold shadow-md shadow-action/25 border border-action"
@@ -727,7 +728,7 @@ export default function CatalogLayout({
                   <div className="flex flex-wrap gap-1.5">
                     {/* "All" in current category */}
                     <Link
-                      href={`/${slugify(currentCategory.name)}-${currentCategory.id}`}
+                      href={`/${currentCategory.slug || slugify(currentCategory.name)}-${currentCategory.id}`}
                       className={`min-h-[32px] py-1.5 px-3 rounded-lg text-xs font-mono flex items-center gap-1.5 transition-all cursor-pointer ${
                         !activeSubCategoryId
                           ? "bg-action text-black font-semibold shadow-xs border border-action"
@@ -745,7 +746,7 @@ export default function CatalogLayout({
                       return (
                         <Link
                           key={sub.id}
-                          href={`/${slugify(currentCategory.name)}-${currentCategory.id}/${slugify(sub.name)}-${sub.id}`}
+                          href={`/${currentCategory.slug || slugify(currentCategory.name)}-${currentCategory.id}/${sub.slug || slugify(sub.name)}-${sub.id}`}
                           className={`min-h-[32px] py-1.5 px-2.5 rounded-lg text-xs font-mono flex items-center gap-1.5 transition-all cursor-pointer ${
                             isSubActive
                               ? "bg-action text-black font-semibold shadow-xs border border-action"
@@ -966,7 +967,12 @@ export default function CatalogLayout({
                 {displayAssets.map((asset, index) => {
                   const formattedSize = formatAssetSize(asset);
 
-                  const href = `/${slugify(asset.category_name || currentCategory?.name || "sketchup-3d-models")}/${slugify(asset.sub_category_name || currentSubCategory?.name || "sofa")}/${slugify(asset.name)}-${asset.id}`;
+                  const href = buildAssetPath(asset, {
+                    categorySlug: currentCategory?.slug,
+                    categoryName: currentCategory?.name,
+                    subCategorySlug: currentSubCategory?.slug,
+                    subCategoryName: currentSubCategory?.name,
+                  });
 
                   return (
                     <React.Fragment key={asset.id}>

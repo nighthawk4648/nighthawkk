@@ -106,7 +106,7 @@ export async function generateMetadata({ params }) {
     ...buildPageMetadata({
       title,
       description,
-      pathname: `/blog/${slugify(post.title)}-${post.id}`,
+      pathname: `/blog/${post.slug || slugify(post.title)}-${post.id}`,
       image: post.image,
       imageAlt: post.title,
       type: "article",
@@ -157,7 +157,7 @@ const BlogDetailPage = async ({ params }) => {
   const fullText = processedSections.map((s) => s.html).join(" ");
   const readingTime = estimateReadingTime(fullText);
 
-  const canonicalUrl = `https://www.sketchshaper.com/blog/${slugify(post.title)}-${post.id}`;
+  const canonicalUrl = `https://www.sketchshaper.com/blog/${post.slug || slugify(post.title)}-${post.id}`;
 
   const normalizedAuthor = (post?.name || "")
     .toLowerCase()

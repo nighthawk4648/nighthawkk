@@ -171,7 +171,7 @@ export default function Navbar({
   const featuredSize = formatAssetSize(featuredAsset) || STOCKHOLM_SOFA.size;
   const featuredAssetHref =
     featuredAsset && featuredCategory && featuredSubCategory
-      ? `/${slugify(featuredCategory.name)}/${slugify(featuredSubCategory.name)}/${slugify(featuredAsset.name)}-${featuredAsset.id}`
+      ? `/${featuredCategory.slug || slugify(featuredCategory.name)}/${featuredSubCategory.slug || slugify(featuredSubCategory.name)}/${featuredAsset.slug || slugify(featuredAsset.name)}-${featuredAsset.id}`
       : STOCKHOLM_SOFA.href;
 
   return (
@@ -312,7 +312,7 @@ export default function Navbar({
                             return (
                               <Link
                                 key={category.id}
-                                href={`/${slugify(category.name)}-${category.id}`}
+                                href={`/${category.slug || slugify(category.name)}-${category.id}`}
                                 onClick={() => setIsBrowseOpen(false)}
                                 className="flex items-center justify-between p-2.5 rounded-lg hover:bg-surface-raised group transition-colors"
                               >
@@ -568,7 +568,7 @@ export default function Navbar({
                 {topCategories.map((cat) => (
                   <Link
                     key={cat.id}
-                    href={`/${slugify(cat.name)}-${cat.id}`}
+                    href={`/${cat.slug || slugify(cat.name)}-${cat.id}`}
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="p-2 rounded hover:bg-surface-raised text-fg-secondary hover:text-action truncate"
                   >

@@ -61,11 +61,15 @@ const Page = async ({ params, searchParams }) => {
 
   // 2. Aggregate raw assets
   const catName = result.categoryData?.data?.name || "Sketchup 3D models";
+  const catSlug = result.categoryData?.data?.slug;
   const subName = result.subCategoryData?.data?.name || "Models";
+  const subSlug = result.subCategoryData?.data?.slug;
   const rawAssets = (result.subCategoryData?.data?.assets || []).map((a) => ({
     ...a,
     category_name: catName,
+    category_slug: catSlug,
     sub_category_name: subName,
+    sub_category_slug: subSlug,
   }));
 
   // 3. Filter and sort on server

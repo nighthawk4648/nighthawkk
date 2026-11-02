@@ -58,11 +58,14 @@ const Page = async ({ params, searchParams }) => {
 
   // 2. Aggregate all assets across the category's subcategories
   const catName = categoryData.data.name || "Sketchup 3D models";
+  const catSlug = categoryData.data.slug;
   const rawAssets = (categoryData.data.sub_categories || []).flatMap((sub) =>
     (sub?.assets || []).map((a) => ({
       ...a,
       category_name: catName,
+      category_slug: catSlug,
       sub_category_name: sub.name,
+      sub_category_slug: sub.slug,
     }))
   );
 

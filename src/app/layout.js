@@ -83,12 +83,7 @@ export default async function RootLayout({ children }) {
   const socialsPromise = getData("social");
 
   // Parallel fetch data required by Navbar and Footer
-  const [
-    categories,
-    subCategories,
-    footerPages,
-    socials,
-  ] = await Promise.all([
+  const [categories, subCategories, footerPages, socials] = await Promise.all([
     categoriesPromise,
     subCategoriesPromise,
     footerPagesPromise,
@@ -98,7 +93,10 @@ export default async function RootLayout({ children }) {
   // Only show full-screen error if the primary backend connection completely failed
   if (!categories && !subCategories) {
     return (
-      <html lang="en" className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}>
+      <html
+        lang="en"
+        className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}
+      >
         <body className={`${geistSans.className} antialiased font-sans`}>
           <ErrorFallback />
         </body>
@@ -107,10 +105,16 @@ export default async function RootLayout({ children }) {
   }
 
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}>
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}
+    >
       <head>
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
-        <link rel="preconnect" href="https://fundingchoicesmessages.google.com" />
+        <link
+          rel="preconnect"
+          href="https://fundingchoicesmessages.google.com"
+        />
         <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
         <script
           async

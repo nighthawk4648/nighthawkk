@@ -24,7 +24,7 @@ export default function ArticlesSection({ blogs = [] }) {
     author: blog.name || "SketchShaper",
     date: formatDate(blog.created_at) || "Recent",
     image: blog.image ? getOptimizedImageUrl(getOriginalImageUrl(blog.image)) : null,
-    href: `/blog/${slugify(blog.title)}-${blog.id}`,
+    href: `/blog/${blog.slug || slugify(blog.title)}-${blog.id}`,
   }));
 
   const gridClass =

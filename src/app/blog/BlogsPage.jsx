@@ -122,7 +122,7 @@ const BlogsPage = ({ initialData = null }) => {
 
                 <div className="relative z-10">
                   <Link
-                    href={`/blog/${slugify(featuredArticle.title)}-${featuredArticle.id}`}
+                    href={`/blog/${featuredArticle.slug || slugify(featuredArticle.title)}-${featuredArticle.id}`}
                     className="block"
                   >
                     <div className="aspect-[16/9] w-full rounded-[14px] overflow-hidden mb-6 bg-canvas/80 border border-white/10 relative shadow-inner">
@@ -178,7 +178,7 @@ const BlogsPage = ({ initialData = null }) => {
                 <div className="mt-6 pt-4 border-t border-white/[0.08] text-xs font-mono text-fg-secondary flex items-center justify-between">
                   <span>By {featuredArticle.name || "SketchShaper"}</span>
                   <Link
-                    href={`/blog/${slugify(featuredArticle.title)}-${featuredArticle.id}`}
+                    href={`/blog/${featuredArticle.slug || slugify(featuredArticle.title)}-${featuredArticle.id}`}
                     className="text-action hover:underline inline-flex items-center gap-1 font-medium group-hover:translate-x-0.5 transition-transform"
                   >
                     <span>Read full article</span>
@@ -193,7 +193,7 @@ const BlogsPage = ({ initialData = null }) => {
                 {compactArticles[0] && (
                   <Link
                     key={compactArticles[0].id}
-                    href={`/blog/${slugify(compactArticles[0].title)}-${compactArticles[0].id}`}
+                    href={`/blog/${compactArticles[0].slug || slugify(compactArticles[0].title)}-${compactArticles[0].id}`}
                     className="p-4 sm:p-5 rounded-card border border-white/[0.08] hover:border-action/40 bg-surface/30 hover:bg-surface/50 backdrop-blur-2xl transition-all duration-300 flex items-center gap-4 group shadow-lg shadow-black/10 relative overflow-hidden"
                   >
                     <div className="w-24 sm:w-28 h-20 sm:h-24 rounded-[12px] bg-canvas/80 border border-white/10 flex-shrink-0 relative overflow-hidden">
@@ -249,7 +249,7 @@ const BlogsPage = ({ initialData = null }) => {
                 {compactArticles[1] && (
                   <Link
                     key={compactArticles[1].id}
-                    href={`/blog/${slugify(compactArticles[1].title)}-${compactArticles[1].id}`}
+                    href={`/blog/${compactArticles[1].slug || slugify(compactArticles[1].title)}-${compactArticles[1].id}`}
                     className="p-4 sm:p-5 rounded-card border border-white/[0.08] hover:border-action/40 bg-surface/30 hover:bg-surface/50 backdrop-blur-2xl transition-all duration-300 flex items-center gap-4 group shadow-lg shadow-black/10 relative overflow-hidden"
                   >
                     <div className="w-24 sm:w-28 h-20 sm:h-24 rounded-[12px] bg-canvas/80 border border-white/10 flex-shrink-0 relative overflow-hidden">
@@ -381,7 +381,7 @@ const BlogsPage = ({ initialData = null }) => {
 
                   <div className="relative z-10 flex flex-col justify-between h-full">
                     <Link
-                      href={`/blog/${slugify(article.title)}-${article.id}`}
+                      href={`/blog/${article.slug || slugify(article.title)}-${article.id}`}
                       className="block"
                     >
                       <div className="aspect-[16/10] w-full rounded-[14px] overflow-hidden mb-5 bg-canvas/80 border border-white/10 relative shadow-inner">
@@ -435,7 +435,7 @@ const BlogsPage = ({ initialData = null }) => {
 
                     <div className="mt-5 pt-4 border-t border-white/[0.08] text-xs font-mono text-action flex items-center justify-between">
                       <Link
-                        href={`/blog/${slugify(article.title)}-${article.id}`}
+                        href={`/blog/${article.slug || slugify(article.title)}-${article.id}`}
                         className="hover:underline flex items-center gap-1 group-hover:translate-x-0.5 transition-transform"
                       >
                         <span>Read article</span>

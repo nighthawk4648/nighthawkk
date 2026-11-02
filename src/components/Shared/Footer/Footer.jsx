@@ -119,7 +119,7 @@ const Footer = ({ categories = [], footerPages = [], socials = [] }) => {
               {categories?.map((category) => (
                 <li key={category?.id}>
                   <Link
-                    href={`/${slugify(category?.name)}-${category?.id}`}
+                    href={`/${category?.slug || slugify(category?.name)}-${category?.id}`}
                     className="text-sm text-fg-secondary hover:text-action transition-colors inline-block"
                   >
                     {category?.name}

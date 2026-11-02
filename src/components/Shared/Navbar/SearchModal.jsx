@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef, useMemo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import slugify from "@/utils/slugify";
+import { buildAssetPath } from "@/utils/buildAssetPath";
 import { getOptimizedImageUrl } from "@/utils/cloudinary";
 
 // Module-scope LRU cache: survives unmounts, capped at 40 entries
@@ -138,24 +139,17 @@ export default function SearchModal({
     if (!hasResults) return [];
     const items = [];
     subCategories.forEach((sub) => {
-      const url =
-        sub.slug ||
-        (sub.category
-          ? `/${slugify(sub.category.name)}-${sub.category.id}/${slugify(sub.name)}-${sub.id}`
-          : `/${slugify(sub.category_name || "Sketchup 3D models")}-${sub.category_id || 3}/${slugify(sub.name)}-${sub.id}`);
-      items.push({ type: "subCategory", id: `sub-${sub.id}`, name: sub.name, url });
+      items.push({ type: "subCategory", id: `sub-${sub.id}`, name: sub.name, url: sub.slug });
     });
     categories.forEach((cat) => {
-      const url = cat.slug || `/${slugify(cat.name)}-${cat.id}`;
-      items.push({ type: "category", id: `cat-${cat.id}`, name: cat.name, url });
+      items.push({ type: "category", id: `cat-${cat.id}`, name: cat.name, url: cat.slug });
     });
     assets.forEach((asset) => {
-      const url =
-        asset.slug ||
-        `/${slugify(asset.sub_category?.category?.name || "model")}/${slugify(
-          asset.sub_category?.name || "asset"
-        )}/${slugify(asset.name)}-${asset.id}`;
-      items.push({ type: "asset", id: `asset-${asset.id}`, name: asset.name, url });
+      const assetUrl =
+        asset.slug && typeof asset.slug === "string" && asset.slug.startsWith("/")
+          ? asset.slug
+          : buildAssetPath(asset);
+      items.push({ type: "asset", id: `asset-${asset.id}`, name: asset.name, url: assetUrl });
     });
     return items;
   }, [hasResults, subCategories, categories, assets]);
@@ -169,21 +163,13 @@ export default function SearchModal({
 
     // 2. If matching subcategory exists, take directly to that subcategory!
     if (subCategories.length > 0) {
-      const targetSub = subCategories[0];
-      const url =
-        targetSub.slug ||
-        (targetSub.category
-          ? `/${slugify(targetSub.category.name)}-${targetSub.category.id}/${slugify(targetSub.name)}-${targetSub.id}`
-          : `/${slugify(targetSub.category_name || "Sketchup 3D models")}-${targetSub.category_id || 3}/${slugify(targetSub.name)}-${targetSub.id}`);
-      handleSelect(url);
+      handleSelect(subCategories[0].slug);
       return;
     }
 
     // 3. If matching category exists, take directly to that category!
     if (categories.length > 0) {
-      const targetCat = categories[0];
-      const url = targetCat.slug || `/${slugify(targetCat.name)}-${targetCat.id}`;
-      handleSelect(url);
+      handleSelect(categories[0].slug);
       return;
     }
 
@@ -292,11 +278,7 @@ export default function SearchModal({
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       {subCategories.map((sub) => {
-                        const url =
-                          sub.slug ||
-                          (sub.category
-                            ? `/${slugify(sub.category.name)}-${sub.category.id}/${slugify(sub.name)}-${sub.id}`
-                            : `/${slugify(sub.category_name || "Sketchup 3D models")}-${sub.category_id || 3}/${slugify(sub.name)}-${sub.id}`);
+                        const url = sub.slug;
                         const isSelected =
                           flatItems[selectedIndex]?.id === `sub-${sub.id}`;
 
@@ -369,12 +351,9 @@ export default function SearchModal({
                     <div className="space-y-1">
                       {assets.map((asset) => {
                         const assetUrl =
-                          asset.slug ||
-                          `/${slugify(
-                            asset.sub_category?.category?.name || "model"
-                          )}/${slugify(
-                            asset.sub_category?.name || "asset"
-                          )}/${slugify(asset.name)}-${asset.id}`;
+                          asset.slug && typeof asset.slug === "string" && asset.slug.startsWith("/")
+                            ? asset.slug
+                            : buildAssetPath(asset);
                         const isSelected =
                           flatItems[selectedIndex]?.id === `asset-${asset.id}`;
 

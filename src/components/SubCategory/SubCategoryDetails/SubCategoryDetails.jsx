@@ -7,6 +7,7 @@ import cloudinaryLoader from "@/utils/cloudinaryLoader";
 import useSWR from "swr";
 import { fetcher } from "@/utils/swrFetcher";
 import slugify from "@/utils/slugify";
+import { buildAssetPath } from "@/utils/buildAssetPath";
 import { usePatreonAuth } from "@/contexts/PatreonAuthContext";
 import {
   FiDownload,
@@ -314,6 +315,10 @@ const SubCategoryDetails = ({ assetDetails }) => {
     assetDetails?.sub_category?.category?.name ||
     relatedAssetsData?.data?.category?.name ||
     "Sketchup 3D models";
+  const categorySlug =
+    assetDetails?.sub_category?.category?.slug ||
+    relatedAssetsData?.data?.category?.slug ||
+    slugify(categoryName);
   const categoryId =
     assetDetails?.sub_category?.category?.id ||
     relatedAssetsData?.data?.category?.id ||
@@ -322,6 +327,10 @@ const SubCategoryDetails = ({ assetDetails }) => {
     assetDetails?.sub_category?.name ||
     relatedAssetsData?.data?.name ||
     "3D Models";
+  const subCategorySlug =
+    assetDetails?.sub_category?.slug ||
+    relatedAssetsData?.data?.slug ||
+    slugify(subCategoryName);
   const subCategoryId =
     assetDetails?.sub_category?.id ||
     assetDetails?.sub_category_id ||
@@ -372,14 +381,14 @@ const SubCategoryDetails = ({ assetDetails }) => {
             </Link>
             <span className="text-line-control">/</span>
             <Link
-              href={`/${slugify(categoryName)}-${categoryId}`}
+              href={`/${categorySlug}-${categoryId}`}
               className="hover:text-action transition-colors truncate max-w-[150px] sm:max-w-none"
             >
               {categoryName}
             </Link>
             <span className="text-line-control">/</span>
             <Link
-              href={`/${slugify(categoryName)}-${categoryId}/${slugify(subCategoryName)}-${subCategoryId}`}
+              href={`/${categorySlug}-${categoryId}/${subCategorySlug}-${subCategoryId}`}
               className="hover:text-action transition-colors truncate max-w-[170px] sm:max-w-none"
             >
               {subCategoryName}
@@ -392,7 +401,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
 
           {/* Right: Back to Models Button */}
           <Link
-            href={`/${slugify(categoryName)}-${categoryId}/${slugify(subCategoryName)}-${subCategoryId}`}
+            href={`/${categorySlug}-${categoryId}/${subCategorySlug}-${subCategoryId}`}
             className="inline-flex items-center gap-1.5 bg-surface hover:bg-surface-raised border border-line hover:border-action/40 text-fg-secondary hover:text-fg rounded-lg px-3.5 py-1.5 text-xs font-mono transition-all shadow-sm"
           >
             <FiArrowLeft className="w-3.5 h-3.5 text-action" />
@@ -902,7 +911,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
                 Related Assets
               </h2>
               <Link
-                href={`/${slugify(categoryName)}-${categoryId}/${slugify(subCategoryName)}-${subCategoryId}`}
+                href={`/${categorySlug}-${categoryId}/${subCategorySlug}-${subCategoryId}`}
                 className="text-xs font-mono text-action hover:text-action-hover transition-colors flex items-center gap-1 font-medium"
               >
                 <span>View All {subCategoryName}</span>
@@ -918,7 +927,9 @@ const SubCategoryDetails = ({ assetDetails }) => {
                 <RelatedAssetCard
                   asset={relatedAssets[0]}
                   categoryName={categoryName}
+                  categorySlug={categorySlug}
                   subCategoryName={subCategoryName}
+                  subCategorySlug={subCategorySlug}
                   getOriginalImageUrl={getOriginalImageUrl}
                   onDownloadClick={showToast}
                 />
@@ -929,7 +940,9 @@ const SubCategoryDetails = ({ assetDetails }) => {
                 <RelatedAssetCard
                   asset={relatedAssets[1]}
                   categoryName={categoryName}
+                  categorySlug={categorySlug}
                   subCategoryName={subCategoryName}
+                  subCategorySlug={subCategorySlug}
                   getOriginalImageUrl={getOriginalImageUrl}
                   onDownloadClick={showToast}
                 />
@@ -943,7 +956,9 @@ const SubCategoryDetails = ({ assetDetails }) => {
                 <RelatedAssetCard
                   asset={relatedAssets[2]}
                   categoryName={categoryName}
+                  categorySlug={categorySlug}
                   subCategoryName={subCategoryName}
+                  subCategorySlug={subCategorySlug}
                   getOriginalImageUrl={getOriginalImageUrl}
                   onDownloadClick={showToast}
                 />
@@ -954,7 +969,9 @@ const SubCategoryDetails = ({ assetDetails }) => {
                 <RelatedAssetCard
                   asset={relatedAssets[3]}
                   categoryName={categoryName}
+                  categorySlug={categorySlug}
                   subCategoryName={subCategoryName}
+                  subCategorySlug={subCategorySlug}
                   getOriginalImageUrl={getOriginalImageUrl}
                   onDownloadClick={showToast}
                 />
@@ -965,7 +982,9 @@ const SubCategoryDetails = ({ assetDetails }) => {
                 <RelatedAssetCard
                   asset={relatedAssets[4]}
                   categoryName={categoryName}
+                  categorySlug={categorySlug}
                   subCategoryName={subCategoryName}
+                  subCategorySlug={subCategorySlug}
                   getOriginalImageUrl={getOriginalImageUrl}
                   onDownloadClick={showToast}
                 />
@@ -1343,13 +1362,20 @@ function ExtensionPromoCard() {
 function RelatedAssetCard({
   asset,
   categoryName,
+  categorySlug,
   subCategoryName,
+  subCategorySlug,
   getOriginalImageUrl,
   onDownloadClick,
 }) {
   const assetSize = formatAssetSize(asset);
 
-  const href = `/${slugify(categoryName)}/${slugify(subCategoryName)}/${slugify(asset?.name)}-${asset?.id}`;
+  const href = buildAssetPath(asset, {
+    categorySlug,
+    categoryName,
+    subCategorySlug,
+    subCategoryName,
+  });
 
   return (
     <article className="bg-surface border border-line hover:border-action/40 rounded-xl overflow-hidden flex flex-col justify-between group transition-all duration-300 shadow-md hover:shadow-xl">
