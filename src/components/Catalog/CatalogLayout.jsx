@@ -601,10 +601,10 @@ export default function CatalogLayout({
               <div className="shrink-0">
                 <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-fg font-sans">
                   {currentSubCategory
-                    ? `${currentSubCategory.name} 3D Models`
+                    ? currentSubCategory.name
                     : currentCategory
-                      ? `${currentCategory.name} 3D Models`
-                      : "Sketchshaper 3D Models"}
+                      ? currentCategory.name
+                      : "Sketchshaper"}
                 </h1>
               </div>
 
