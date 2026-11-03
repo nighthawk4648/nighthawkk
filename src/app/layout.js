@@ -111,16 +111,20 @@ export default async function RootLayout({ children }) {
     >
       <head>
         <link rel="dns-prefetch" href="https://res.cloudinary.com" />
-        <link
-          rel="preconnect"
-          href="https://fundingchoicesmessages.google.com"
-        />
-        <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5557791257949251"
-          crossOrigin="anonymous"
-        ></script>
+        {process.env.NODE_ENV === "production" && (
+          <>
+            <link
+              rel="preconnect"
+              href="https://fundingchoicesmessages.google.com"
+            />
+            <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
+            <script
+              async
+              src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5557791257949251"
+              crossOrigin="anonymous"
+            ></script>
+          </>
+        )}
       </head>
       <body className={geistSans.className}>
         <Providers>

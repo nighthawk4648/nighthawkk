@@ -26,6 +26,9 @@ export default function AdUnit({
   const { user, isAuthenticated, loading } = usePatreonAuth();
 
   const isPatron = isAuthenticated && !!user?.is_active_patron;
+  const isProduction =
+    process.env.NODE_ENV === "production" ||
+    process.env.NEXT_PUBLIC_ENABLE_ADSENSE === "true";
 
   // Google AdSense requirement: fluid native ads require at least 250px available width
   const minRequiredWidth = format === "fluid" ? 250 : 50;
@@ -75,7 +78,7 @@ export default function AdUnit({
 
   // 2. Safe push to adsbygoogle: execute only AFTER browser completes layout and paint pass
   useEffect(() => {
-    if (!isVisible || pushedRef.current) return;
+    if (!isProduction || !isVisible || pushedRef.current) return;
 
     const ins = adRef.current;
     if (!ins || typeof window === "undefined") return;
@@ -115,7 +118,7 @@ export default function AdUnit({
         ref={containerRef}
         className={`relative z-10 w-full block text-center ${className}`}
       >
-        {isVisible && (
+        {isProduction && isVisible && (
           <ins
             ref={adRef}
             className="adsbygoogle"
@@ -149,7 +152,7 @@ export default function AdUnit({
         className="relative z-10 w-full block py-1 text-center"
         style={{ minWidth: format === "fluid" ? "250px" : undefined }}
       >
-        {isVisible && (
+        {isProduction && isVisible && (
           <ins
             ref={adRef}
             className="adsbygoogle"
