@@ -392,6 +392,12 @@ export default function Navbar({
               >
                 Articles
               </Link>
+              <Link
+                href="/contact"
+                className="px-3.5 py-1.5 rounded-full hover:text-fg hover:bg-surface-raised transition-colors"
+              >
+                Contact
+              </Link>
             </nav>
           </div>
 
@@ -550,6 +556,13 @@ export default function Navbar({
                 className="p-2 rounded hover:bg-surface-raised"
               >
                 Articles
+              </Link>
+              <Link
+                href="/contact"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-2 rounded hover:bg-surface-raised"
+              >
+                Contact
               </Link>
               <Link
                 href="/extension"
