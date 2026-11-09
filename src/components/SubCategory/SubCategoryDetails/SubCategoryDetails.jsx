@@ -32,6 +32,7 @@ import {
   FiLoader,
 } from "react-icons/fi";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
+import LinkedAssetsSection from "@/components/Shared/LinkedAssets/LinkedAssetsSection";
 import InFeedAd from "@/components/Shared/GoogleAdsense/InFeedAd";
 import ResponsiveBannerAd from "@/components/Shared/GoogleAdsense/ResponsiveBannerAd";
 import { formatAssetSize } from "@/utils/formatAssetSize";
@@ -650,6 +651,13 @@ const SubCategoryDetails = ({ assetDetails }) => {
                 ))}
               </div>
             </div>
+
+            {/* Textures & Materials Used (internal linking) */}
+            <LinkedAssetsSection
+              assets={assetDetails?.used_assets}
+              title="Textures & Materials Used in this Model"
+              eyebrow="Constituent Assets"
+            />
 
             {/* Model Description & Specifications Card */}
             {assetDetails?.short_description && (

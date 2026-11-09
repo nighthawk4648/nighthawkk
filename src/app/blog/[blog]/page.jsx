@@ -14,6 +14,7 @@ import BlogLeftRail from "@/components/Blog/BlogLeftRail";
 import BlogRightRailAd from "@/components/Blog/BlogRightRailAd";
 import BlogMobileToc from "@/components/Blog/BlogMobileToc";
 import BlogHorizontalAd from "@/components/Blog/BlogHorizontalAd";
+import LinkedAssetsSection from "@/components/Shared/LinkedAssets/LinkedAssetsSection";
 
 function estimateReadingTime(content) {
   const text = stripHtml(content, 100000);
@@ -396,6 +397,14 @@ const BlogDetailPage = async ({ params }) => {
                   </div>
                 </figure>
               )}
+
+              {/* 3D Models & Textures Featured in this Guide (internal linking) */}
+              <LinkedAssetsSection
+                assets={post.featured_assets}
+                title="3D Models & Textures Featured in this Guide"
+                eyebrow="Featured Assets"
+                className="my-10"
+              />
 
               {/* Bottom In-Article Horizontal Ad */}
               <BlogHorizontalAd slot="2114378043" className="mt-10 !mb-8" />
