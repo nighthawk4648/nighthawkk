@@ -77,21 +77,21 @@ export async function generateMetadata() {
 }
 
 export default async function RootLayout({ children }) {
-  const categoriesPromise = getData("categories");
-  const subCategoriesPromise = getData("sub-categories");
+  const categoriesPromise = getData("categories/nav");
+  const featuredAssetPromise = getData("assets/247");
   const footerPagesPromise = getData("pages");
   const socialsPromise = getData("social");
 
   // Parallel fetch data required by Navbar and Footer
-  const [categories, subCategories, footerPages, socials] = await Promise.all([
+  const [categories, featuredAsset, footerPages, socials] = await Promise.all([
     categoriesPromise,
-    subCategoriesPromise,
+    featuredAssetPromise,
     footerPagesPromise,
     socialsPromise,
   ]);
 
   // Only show full-screen error if the primary backend connection completely failed
-  if (!categories && !subCategories) {
+  if (!categories) {
     return (
       <html
         lang="en"
@@ -130,7 +130,7 @@ export default async function RootLayout({ children }) {
         <Providers>
           <Navbar
             categories={categories?.data || []}
-            subCategories={subCategories?.data || []}
+            featuredAsset={featuredAsset?.data || null}
             footerPages={footerPages?.data || []}
           />
 

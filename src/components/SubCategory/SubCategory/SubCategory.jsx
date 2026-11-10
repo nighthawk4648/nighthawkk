@@ -5,6 +5,7 @@ import CatalogLayout from "@/components/Catalog/CatalogLayout";
 
 const SubCategory = ({
   subCategoriesByCategoryId,
+  navCategories = [],
   serverAssets = null,
   currentPage = 1,
   totalPages = 1,
@@ -18,6 +19,7 @@ const SubCategory = ({
       activeSubCategoryId={null}
       initialCategoryData={subCategoriesByCategoryId}
       initialSubCategoryData={null}
+      navCategories={navCategories}
       serverAssets={serverAssets}
       page={currentPage}
       totalPages={totalPages}

@@ -2,6 +2,7 @@ export const revalidate = 300;
 
 import SubCategory from "@/components/SubCategory/SubCategory/SubCategory";
 import { notFound, redirect } from "next/navigation";
+import getData from "@/utils/getData";
 import { validateCategory, notFoundMeta } from "@/utils/validateSlug";
 import {
   JsonLd,
@@ -51,6 +52,7 @@ const Page = async ({ params, searchParams }) => {
 
   const categoryData = await validateCategory(category);
   if (!categoryData?.data) notFound();
+  const navData = await getData("categories/nav");
 
   // 1. Resolve filters & requested page
   const activeFilters = resolveActiveFilters(resolvedSearchParams);
@@ -110,6 +112,7 @@ const Page = async ({ params, searchParams }) => {
       <JsonLd data={breadcrumbsSchema} />
       <SubCategory
         subCategoriesByCategoryId={categoryData}
+        navCategories={navData?.data || []}
         serverAssets={paginatedAssets}
         currentPage={currentPage}
         totalPages={totalPages}

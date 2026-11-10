@@ -19,7 +19,7 @@ const SearchModal = dynamic(() => import("./SearchModal"), {
 
 export default function Navbar({
   categories = [],
-  subCategories = [],
+  featuredAsset = null,
   footerPages = [],
 }) {
   const router = useRouter();
@@ -117,47 +117,9 @@ export default function Navbar({
     href: "/sketchup-3d-models/sofa/stockholm-sundhamn-beige-sofa-by-ikea-247",
   };
 
-  // Safely resolve the featured asset (specifically prioritizing Stockholm sofa ID 247)
-  let featuredAsset = null;
-  let featuredCategory = null;
-  let featuredSubCategory = null;
-
-  for (const cat of categories) {
-    if (Array.isArray(cat?.sub_categories) && cat.sub_categories.length > 0) {
-      for (const sub of cat.sub_categories) {
-        if (Array.isArray(sub?.assets) && sub.assets.length > 0) {
-          const match247 = sub.assets.find((a) => a.id === 247);
-          if (match247) {
-            featuredAsset = match247;
-            featuredCategory = cat;
-            featuredSubCategory = sub;
-            break;
-          }
-        }
-      }
-    }
-    if (featuredAsset) break;
-  }
-
-  // Fallback check against subCategories prop
-  if (!featuredAsset && Array.isArray(subCategories) && subCategories.length > 0) {
-    for (const sub of subCategories) {
-      if (Array.isArray(sub?.assets) && sub.assets.length > 0) {
-        const match247 = sub.assets.find((a) => a.id === 247);
-        if (match247) {
-          featuredAsset = match247;
-          featuredSubCategory = sub;
-          featuredCategory =
-            sub.category ||
-            categories.find((c) => c.id === sub.category_id) || {
-              id: 3,
-              name: "Sketchup 3D models",
-            };
-          break;
-        }
-      }
-    }
-  }
+  // Featured asset (ID 247) is fetched directly by the layout; category/subcategory come with it
+  const featuredSubCategory = featuredAsset?.sub_category || null;
+  const featuredCategory = featuredSubCategory?.category || null;
 
   // Resolved metadata with guaranteed Stockholm sofa presentation
   const featuredCover = featuredAsset?.cover || STOCKHOLM_SOFA.cover;
@@ -305,7 +267,7 @@ export default function Navbar({
                           {topCategories.map((category) => {
                             const assetCount =
                               category.sub_categories?.reduce(
-                                (acc, sub) => acc + (sub.assets?.length || 0),
+                                (acc, sub) => acc + (sub._count?.assets || 0),
                                 0,
                               ) || 0;
 

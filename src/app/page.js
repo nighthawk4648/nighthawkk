@@ -20,7 +20,8 @@ export const metadata = buildPageMetadata({
 
 export default async function Home() {
   const carouselsPromise = getData("sliders");
-  const categoriesPromise = getData("categories");
+  const categoriesPromise = getData("categories/nav");
+  const latestAssetsPromise = getData("assets/pages?page=1&limit=18&order=desc");
   const extensionPromise = getData("extension-downloads/MyExtension");
   const blogsPromise = getData("blogs");
   const supportedByPromise = getData("supportedby");
@@ -31,6 +32,7 @@ export default async function Home() {
   const [
     carousels,
     categories,
+    latestAssets,
     extension,
     blogs,
     supportedby,
@@ -40,6 +42,7 @@ export default async function Home() {
   ] = await Promise.all([
     carouselsPromise,
     categoriesPromise,
+    latestAssetsPromise,
     extensionPromise,
     blogsPromise,
     supportedByPromise,
@@ -52,16 +55,17 @@ export default async function Home() {
   const websiteSchema = generateWebsiteAndOrgSchema(socialUrls);
 
   // Calculate live total models from database or fallback to 4,280
-  const totalModels =
+  const totalAssets =
     categories?.data?.reduce(
       (acc, cat) =>
         acc +
         (cat.sub_categories?.reduce(
-          (subAcc, sub) => subAcc + (sub.assets?.length || 0),
+          (subAcc, sub) => subAcc + (sub._count?.assets || 0),
           0,
         ) || 0),
       0,
-    ) || 4280;
+    ) || 0;
+  const totalModels = totalAssets || 4280;
 
   return (
     <main className="w-full overflow-x-hidden selection:bg-action selection:text-canvas">
@@ -82,7 +86,10 @@ export default async function Home() {
       <ExtensionBanner initialDownloads={extension?.data?.count ?? 0} />
 
       {/* 5. New Assets Feed (Band #0E1611, Segmented Tabs, Responsive CAD Grid) */}
-      <NewAssets categories={categories?.data || []} />
+      <NewAssets
+        assets={latestAssets?.data?.result || []}
+        totalAssetsCount={totalAssets}
+      />
 
       {/* 6. Articles / Editorial Section (Golden Split 1.618fr : 1fr) */}
       <ArticlesSection blogs={blogs?.data || []} />

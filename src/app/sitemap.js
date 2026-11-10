@@ -95,11 +95,10 @@ export default async function sitemap() {
   ];
 
   // Fetch dynamic content in parallel with resilient fallbacks
-  const [categoriesRes, subCategoriesRes, assetsRes, blogsRes, pagesRes] =
+  const [categoriesRes, assetsRes, blogsRes, pagesRes] =
     await Promise.allSettled([
-      getData("categories", { next: { revalidate: 86400 } }),
-      getData("sub-categories", { next: { revalidate: 86400 } }),
-      getData("assets", { timeout: 60000, next: { revalidate: 86400 } }),
+      getData("categories/nav", { next: { revalidate: 86400 } }),
+      getData("assets/sitemap", { timeout: 60000, next: { revalidate: 86400 } }),
       getData("blogs", { next: { revalidate: 86400 } }),
       getData("pages", { next: { revalidate: 86400 } }),
     ]);
@@ -108,10 +107,7 @@ export default async function sitemap() {
     categoriesRes.status === "fulfilled" && categoriesRes.value?.data
       ? categoriesRes.value.data
       : [];
-  const subCategories =
-    subCategoriesRes.status === "fulfilled" && subCategoriesRes.value?.data
-      ? subCategoriesRes.value.data
-      : [];
+  const subCategories = categories.flatMap((cat) => cat.sub_categories || []);
   const assets =
     assetsRes.status === "fulfilled" && assetsRes.value?.data
       ? assetsRes.value.data

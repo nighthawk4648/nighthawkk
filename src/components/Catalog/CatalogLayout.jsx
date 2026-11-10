@@ -4,8 +4,6 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import useSWR from "swr";
-import { fetcher } from "@/utils/swrFetcher";
 import { getOptimizedImageUrl } from "@/utils/cloudinary";
 import slugify from "@/utils/slugify";
 import { buildAssetPath } from "@/utils/buildAssetPath";
@@ -26,11 +24,15 @@ import ResponsiveBannerAd from "@/components/Shared/GoogleAdsense/ResponsiveBann
 import CatalogGridAd from "@/components/Shared/GoogleAdsense/CatalogGridAd";
 import { formatAssetSize } from "@/utils/formatAssetSize";
 
+// Nav tree rows carry a count; full rows carry the asset list. Accept both.
+const countAssets = (sub) => sub?._count?.assets ?? sub?.assets?.length ?? 0;
+
 export default function CatalogLayout({
   activeCategoryId = null,
   activeSubCategoryId = null,
   initialCategoryData = null,
   initialSubCategoryData = null,
+  navCategories = [],
   serverAssets = null,
   page = 1,
   totalPages: serverTotalPages = null,
@@ -85,19 +87,15 @@ export default function CatalogLayout({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Fetch all categories for sidebar tree
-  const { data: allCategoriesData } = useSWR(
-    `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/categories`,
-    fetcher,
-    { revalidateOnFocus: false, revalidateOnReconnect: false },
-  );
-
+  // Sidebar tree comes from the server (categories/nav); no client request
   const categories = useMemo(() => {
-    const list =
-      allCategoriesData?.data ||
-      (initialCategoryData?.data ? [initialCategoryData.data] : []);
+    const list = navCategories.length
+      ? navCategories
+      : initialCategoryData?.data
+        ? [initialCategoryData.data]
+        : [];
     return [...list].sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0));
-  }, [allCategoriesData, initialCategoryData]);
+  }, [navCategories, initialCategoryData]);
 
   // Total count of all assets across all categories and subcategories
   const totalCatalogAssetsCount = useMemo(() => {
@@ -105,7 +103,7 @@ export default function CatalogLayout({
       (total, cat) =>
         total +
         (cat.sub_categories?.reduce(
-          (sum, s) => sum + (s.assets?.length || 0),
+          (sum, s) => sum + countAssets(s),
           0,
         ) || 0),
       0,
@@ -163,23 +161,13 @@ export default function CatalogLayout({
       );
     }
 
-    // Otherwise, flatten all categories
-    return (categories || []).flatMap((cat) =>
-      (cat?.sub_categories || []).flatMap((sub) =>
-        (sub?.assets || []).map((a) => ({
-          ...a,
-          category_name: cat.name,
-          sub_category_name: sub.name,
-        })),
-      ),
-    );
+    return [];
   }, [
     isServerDriven,
     activeCategoryId,
     activeSubCategoryId,
     initialCategoryData,
     initialSubCategoryData,
-    categories,
   ]);
 
   // Display derivations: models to render, active page, total pages, and total count
@@ -208,12 +196,13 @@ export default function CatalogLayout({
     );
   }, [categories, activeCategoryId, initialCategoryData]);
 
+  // Prefer the server-loaded subcategory: nav rows have no short_description
   const currentSubCategory = useMemo(() => {
-    if (!currentCategory?.sub_categories) return initialSubCategoryData?.data;
     return (
-      currentCategory.sub_categories.find(
+      initialSubCategoryData?.data ||
+      currentCategory?.sub_categories?.find(
         (s) => Number(s.id) === Number(activeSubCategoryId),
-      ) || initialSubCategoryData?.data
+      )
     );
   }, [currentCategory, activeSubCategoryId, initialSubCategoryData]);
 
@@ -444,7 +433,7 @@ export default function CatalogLayout({
         const subCount = cat.sub_categories?.length || 0;
         const assetCount =
           cat.sub_categories?.reduce(
-            (sum, s) => sum + (s.assets?.length || 0),
+            (sum, s) => sum + countAssets(s),
             0,
           ) || 0;
 
@@ -509,7 +498,7 @@ export default function CatalogLayout({
                 {cat.sub_categories.map((sub) => {
                   const isSubActive =
                     Number(sub.id) === Number(activeSubCategoryId);
-                  const subAssetCount = sub.assets?.length || 0;
+                  const subAssetCount = countAssets(sub);
 
                   return (
                     <Link
@@ -677,7 +666,7 @@ export default function CatalogLayout({
                     Number(cat.id) === Number(activeCategoryId);
                   const count =
                     cat.sub_categories?.reduce(
-                      (sum, s) => sum + (s.assets?.length || 0),
+                      (sum, s) => sum + countAssets(s),
                       0,
                     ) || 0;
 
@@ -741,7 +730,7 @@ export default function CatalogLayout({
                     {currentCategory.sub_categories.map((sub) => {
                       const isSubActive =
                         Number(sub.id) === Number(activeSubCategoryId);
-                      const subCount = sub.assets?.length || 0;
+                      const subCount = countAssets(sub);
 
                       return (
                         <Link

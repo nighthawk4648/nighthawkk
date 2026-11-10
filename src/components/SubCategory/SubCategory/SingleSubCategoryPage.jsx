@@ -10,6 +10,7 @@ const SingleSubCategoryPage = ({
   subCategoryId,
   initialCategoryData,
   initialSubCategoryData,
+  navCategories = [],
   serverAssets = null,
   currentPage = 1,
   totalPages = 1,
@@ -30,6 +31,7 @@ const SingleSubCategoryPage = ({
       activeSubCategoryId={subCategoryId}
       initialCategoryData={categoryData}
       initialSubCategoryData={subCategoryData}
+      navCategories={navCategories}
       serverAssets={serverAssets}
       page={currentPage}
       totalPages={totalPages}

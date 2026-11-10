@@ -2,6 +2,7 @@ export const revalidate = 300;
 
 import SingleSubCategoryPage from "@/components/SubCategory/SubCategory/SingleSubCategoryPage";
 import { notFound, redirect } from "next/navigation";
+import getData from "@/utils/getData";
 import { validateSubCategory, notFoundMeta } from "@/utils/validateSlug";
 import {
   JsonLd,
@@ -51,6 +52,7 @@ const Page = async ({ params, searchParams }) => {
 
   const result = await validateSubCategory(category, subCategoryName);
   if (!result) notFound();
+  const navData = await getData("categories/nav");
 
   const categoryId = category?.split("-").slice(-1)?.[0];
   const subCategoryId = subCategoryName?.split("-").slice(-1)?.[0];
@@ -117,6 +119,7 @@ const Page = async ({ params, searchParams }) => {
         subCategoryId={subCategoryId}
         initialCategoryData={result?.categoryData}
         initialSubCategoryData={result?.subCategoryData}
+        navCategories={navData?.data || []}
         serverAssets={paginatedAssets}
         currentPage={currentPage}
         totalPages={totalPages}

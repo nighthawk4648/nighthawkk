@@ -7,58 +7,32 @@ import slugify from "@/utils/slugify";
 import { buildAssetPath } from "@/utils/buildAssetPath";
 import { getOptimizedImageUrl } from "@/utils/cloudinary";
 
-export default function NewAssets({ categories = [] }) {
+export default function NewAssets({ assets = [], totalAssetsCount = 0 }) {
   const getOriginalImageUrl = (imagePath) => {
     if (!imagePath) return "";
     if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) return imagePath;
     return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE || ""}${imagePath}`;
   };
 
-  // Flatten live backend assets across categories
-  // Skip any asset with a missing category or subcategory name. No fallbacks.
-  const allBackendAssets = React.useMemo(() => {
-    return (
-      categories?.flatMap((category) => {
-        if (!category?.name) return [];
-        return (
-          category?.sub_categories?.flatMap((subCategory) => {
-            if (!subCategory?.name) return [];
-            return (subCategory?.assets || [])
-              .filter((asset) => asset && asset.id && asset.name)
-              .map((asset) => ({
-                ...asset,
-                categoryName: category.name,
-                categorySlug: category.slug,
-                subCategoryName: subCategory.name,
-                subCategorySlug: subCategory.slug,
-              }));
-          }) || []
-        );
-      }) || []
-    );
-  }, [categories]);
-
-  // Total count of all assets across categories for the browse count
-  const totalAssetsCount = React.useMemo(() => {
-    return (
-      categories?.reduce(
-        (acc, cat) =>
-          acc +
-          (cat?.sub_categories?.reduce(
-            (subAcc, sub) => subAcc + (sub?.assets?.length || 0),
-            0,
-          ) || 0),
-        0,
-      ) || allBackendAssets.length
-    );
-  }, [categories, allBackendAssets]);
-
-  // Sort newest first and display 18 assets (clean 6-col showcase: 18 divides evenly by 2, 3, and 6)
-  const displayAssets = React.useMemo(() => {
-    return [...allBackendAssets]
-      .sort((a, b) => (Number(b.id) || 0) - (Number(a.id) || 0))
-      .slice(0, 18);
-  }, [allBackendAssets]);
+  // Latest assets arrive newest-first from the server. Skip any asset with a missing
+  // category or subcategory name. No fallbacks.
+  const displayAssets = React.useMemo(
+    () =>
+      assets
+        .filter(
+          (asset) =>
+            asset?.id &&
+            asset.name &&
+            asset.sub_category?.name &&
+            asset.sub_category?.category?.name,
+        )
+        .map((asset) => ({
+          ...asset,
+          categoryName: asset.sub_category.category.name,
+          subCategoryName: asset.sub_category.name,
+        })),
+    [assets],
+  );
 
   // Split into two balanced sets for mobile dual-direction marquee
   const { row1Assets, row2Assets } = React.useMemo(() => {
