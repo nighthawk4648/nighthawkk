@@ -76,6 +76,9 @@ const getData = async (path, options = {}) => {
       fetchOptions,
     );
 
+    // A missing item is a normal answer, not an error worth logging
+    if (response.status === 404) return null;
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

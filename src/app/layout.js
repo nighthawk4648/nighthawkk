@@ -90,6 +90,27 @@ export default async function RootLayout({ children }) {
     socialsPromise,
   ]);
 
+  // The Navbar is a client component: send only the fields its featured card reads
+  const featuredAssetData = featuredAsset?.data;
+  const featuredSub = featuredAssetData?.sub_category;
+  const featuredCard = featuredAssetData && {
+    id: featuredAssetData.id,
+    name: featuredAssetData.name,
+    slug: featuredAssetData.slug,
+    cover: featuredAssetData.cover,
+    access_type: featuredAssetData.access_type,
+    size: featuredAssetData.size,
+    file: featuredAssetData.file && { file_size: featuredAssetData.file.file_size },
+    sub_category: featuredSub && {
+      name: featuredSub.name,
+      slug: featuredSub.slug,
+      category: featuredSub.category && {
+        name: featuredSub.category.name,
+        slug: featuredSub.category.slug,
+      },
+    },
+  };
+
   // Only show full-screen error if the primary backend connection completely failed
   if (!categories) {
     return (
@@ -130,7 +151,7 @@ export default async function RootLayout({ children }) {
         <Providers>
           <Navbar
             categories={categories?.data || []}
-            featuredAsset={featuredAsset?.data || null}
+            featuredAsset={featuredCard || null}
             footerPages={footerPages?.data || []}
           />
 
