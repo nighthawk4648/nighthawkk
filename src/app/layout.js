@@ -21,28 +21,10 @@ const geistMono = localFont({
   display: "swap",
 });
 
-let applicationSettingsCache = null;
-let applicationSettingsCacheTimestamp = 0;
-const APPLICATION_SETTINGS_CACHE_TTL = 10_000;
-
-async function getCachedApplicationSettings() {
-  if (
-    applicationSettingsCache &&
-    Date.now() - applicationSettingsCacheTimestamp <
-      APPLICATION_SETTINGS_CACHE_TTL
-  ) {
-    return applicationSettingsCache;
-  }
-
-  applicationSettingsCache = await getData("general/application-settings");
-  applicationSettingsCacheTimestamp = Date.now();
-  return applicationSettingsCache;
-}
-
 export async function generateMetadata() {
   let applicationSettings;
   try {
-    applicationSettings = await getCachedApplicationSettings();
+    applicationSettings = await getData("general/application-settings");
   } catch (e) {
     console.error("Failed to load site metadata:", e);
   }

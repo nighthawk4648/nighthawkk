@@ -103,6 +103,11 @@ export default async function sitemap() {
       getData("pages", { next: { revalidate: 86400 } }),
     ]);
 
+  // Categories and assets are the core of the sitemap: fail rather than cache a nearly empty one for 24 h
+  for (const res of [categoriesRes, assetsRes]) {
+    if (res.status === "rejected") throw res.reason;
+  }
+
   const categories =
     categoriesRes.status === "fulfilled" && categoriesRes.value?.data
       ? categoriesRes.value.data

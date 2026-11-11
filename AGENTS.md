@@ -97,7 +97,8 @@ All asset detail URLs MUST follow the strict 3-tier structure:
 
 ## 4. Caching & Cache Invalidation Pipeline
 
-- **Server Fetches:** Handled by `getData.js` using Next.js tagged fetch caching (`tags: ["assets", "asset-${id}"]`, `revalidate: 300`).
+- **Server Fetches:** Handled by `getData.js` using Next.js tagged fetch caching (`tags: ["assets", "asset-${id}"]`, `revalidate: 300`). Tag and TTL rules live in one place: `src/utils/cacheConfig.js`. The backend decides what each admin change purges in `nighthawk-server-mysql_version/src/utils/cacheTags.mjs`; tag names must match between the two.
+- **Errors:** `getData` returns `null` only for a 404. Any other failure throws, so a backend outage is never cached as page content: the build fails and a running site keeps serving its last good page. Always run `npm run build` with the backend reachable.
 - **Hierarchical Invalidation:**
   - When an asset is created, updated, moved, or deleted, the backend dispatches a webhook to `/api/revalidate` with `x-revalidate-secret`.
   - On asset move: Both the **old** and **new** parent category and subcategory tags are purged simultaneously (`category-${oldId}`, `category-${newId}`, `subcategory-${oldId}`, `subcategory-${newId}`).

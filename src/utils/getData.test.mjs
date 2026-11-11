@@ -25,10 +25,8 @@ test("404 returns null without logging an error", async () => {
   assert.equal(logged.length, 0);
 });
 
-test("500 returns null and logs the error", async () => {
-  const { result, logged } = await run(new Response("{}", { status: 500 }));
-  assert.equal(result, null);
-  assert.equal(logged.length, 1);
+test("500 throws", async () => {
+  await assert.rejects(run(new Response("{}", { status: 500 })), /status: 500/);
 });
 
 test("200 returns the data", async () => {
