@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { getOptimizedImageUrl } from "@/utils/cloudinary";
 import slugify from "@/utils/slugify";
 import { buildAssetPath } from "@/utils/buildAssetPath";
 import {
@@ -454,7 +453,7 @@ export default function CatalogLayout({
                 <div className="w-7 h-7 rounded-md overflow-hidden bg-canvas/60 border border-white/10 shrink-0 relative flex items-center justify-center shadow-sm">
                   {cat.image ? (
                     <Image
-                      src={getOptimizedImageUrl(getOriginalImageUrl(cat.image))}
+                      src={getOriginalImageUrl(cat.image)}
                       alt={cat.name}
                       width={28}
                       height={28}
@@ -515,9 +514,7 @@ export default function CatalogLayout({
                         <div className="w-5 h-5 rounded overflow-hidden bg-canvas/60 border border-white/10 shrink-0 relative flex items-center justify-center shadow-sm">
                           {sub.image ? (
                             <Image
-                              src={getOptimizedImageUrl(
-                                getOriginalImageUrl(sub.image),
-                              )}
+                              src={getOriginalImageUrl(sub.image)}
                               alt={sub.name}
                               width={20}
                               height={20}
@@ -683,9 +680,7 @@ export default function CatalogLayout({
                       {cat.image ? (
                         <div className="w-4 h-4 rounded-full overflow-hidden relative shrink-0 border border-white/10">
                           <Image
-                            src={getOptimizedImageUrl(
-                              getOriginalImageUrl(cat.image),
-                            )}
+                            src={getOriginalImageUrl(cat.image)}
                             alt={cat.name}
                             width={16}
                             height={16}
@@ -973,9 +968,7 @@ export default function CatalogLayout({
                         >
                           {asset.cover ? (
                             <Image
-                              src={getOptimizedImageUrl(
-                                getOriginalImageUrl(asset.cover),
-                              )}
+                              src={getOriginalImageUrl(asset.cover)}
                               alt={asset.cover_alt?.trim() || asset.name}
                               fill
                               priority={index === 0}

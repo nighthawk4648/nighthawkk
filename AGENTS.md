@@ -52,7 +52,7 @@ src/
     ├── getData.js                        # Tagged server-side fetch with ISR caching
     ├── seo.js                            # Metadata, OpenGraph & Twitter Card builder
     ├── schema.js                         # JSON-LD Schema.org generators (Product, Breadcrumbs)
-    ├── cloudinary.js                     # Image transformation & optimization helpers
+    ├── imageUrl.js                       # Image URL helpers (built-in next/image optimizer)
     └── slugRouting.test.mjs              # Automated routing & redirect test suite
 ```
 

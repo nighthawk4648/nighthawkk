@@ -1,4 +1,3 @@
-import { getOptimizedImageUrl } from "@/utils/cloudinary";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import Image from "next/image";
 import React from "react";
@@ -11,7 +10,7 @@ const AboutUs = ({ aboutUs }) => {
   };
 
   const coverUrl = aboutUs?.cover
-    ? getOptimizedImageUrl(getOriginalImageUrl(aboutUs.cover))
+    ? getOriginalImageUrl(aboutUs.cover)
     : null;
 
   return (

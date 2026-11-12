@@ -1,4 +1,3 @@
-import { getOptimizedImageUrl } from "@/utils/cloudinary";
 import Image from "next/image";
 import React from "react";
 
@@ -15,7 +14,7 @@ const Innovative = ({ innovatives = [] }) => {
     <section className="w-full px-4 md:px-[0.5in] py-4 sm:py-8 lg:py-12 space-y-4 sm:space-y-8">
       {innovatives.map((innovative, index) => {
         const bgUrl = innovative?.bgImg
-          ? getOptimizedImageUrl(getOriginalImageUrl(innovative.bgImg))
+          ? getOriginalImageUrl(innovative.bgImg)
           : null;
 
         return (

@@ -2,8 +2,7 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { getOptimizedImageUrl } from "@/utils/cloudinary";
-import cloudinaryLoader from "@/utils/cloudinaryLoader";
+import { optimizedImageUrl } from "@/utils/imageUrl";
 import useSWR from "swr";
 import { fetcher } from "@/utils/swrFetcher";
 import slugify from "@/utils/slugify";
@@ -149,15 +148,8 @@ const SubCategoryDetails = ({ assetDetails }) => {
         const rawUrl = getOriginalImageUrl(item.image);
         if (!rawUrl) return;
 
-        // Use custom Cloudinary loader format to mirror Next.js <Image> request
-        const optimizedUrl = cloudinaryLoader({
-          src: rawUrl,
-          width: targetWidth,
-          quality: 75,
-        });
-
         const preloadedImg = new window.Image();
-        preloadedImg.src = optimizedUrl;
+        preloadedImg.src = optimizedImageUrl(rawUrl, targetWidth);
       });
     };
 
@@ -641,7 +633,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
                     title={img?.alt || `Angle #${idx + 1}`}
                   >
                     <Image
-                      src={getOptimizedImageUrl(getOriginalImageUrl(img?.image))}
+                      src={getOriginalImageUrl(img?.image)}
                       alt={img?.alt || `Angle #${idx + 1}`}
                       width={48}
                       height={36}
@@ -1254,7 +1246,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
                   }`}
                 >
                   <Image
-                    src={getOptimizedImageUrl(getOriginalImageUrl(img?.image))}
+                    src={getOriginalImageUrl(img?.image)}
                     alt={`Angle #${idx + 1}`}
                     width={56}
                     height={40}
@@ -1394,7 +1386,7 @@ function RelatedAssetCard({
         >
           {asset?.cover ? (
             <Image
-              src={getOptimizedImageUrl(getOriginalImageUrl(asset.cover))}
+              src={getOriginalImageUrl(asset.cover)}
               alt={asset?.cover_alt?.trim() || asset?.name || "Asset image"}
               fill
               loading="lazy"

@@ -1,6 +1,6 @@
 import React from "react";
 import { cleanText } from "./seo.js";
-import { getOriginalImageUrl } from "./cloudinary.js";
+import { getOriginalImageUrl } from "./imageUrl.js";
 
 const SITE_URL = "https://www.sketchshaper.com";
 const DEFAULT_LOGO = `${SITE_URL}/assets/navbar/navbar_logo.png`;

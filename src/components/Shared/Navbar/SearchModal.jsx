@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import slugify from "@/utils/slugify";
 import { buildAssetPath } from "@/utils/buildAssetPath";
-import { getOptimizedImageUrl } from "@/utils/cloudinary";
 
 // Module-scope LRU cache: survives unmounts, capped at 40 entries
 const SEARCH_CACHE_MAX = 40;
@@ -371,9 +370,7 @@ export default function SearchModal({
                               <div className="w-10 h-10 rounded-md overflow-hidden bg-surface flex-shrink-0 relative border border-line">
                                 {asset.cover ? (
                                   <Image
-                                    src={getOptimizedImageUrl(
-                                      getOriginalImageUrl(asset.cover)
-                                    )}
+                                    src={getOriginalImageUrl(asset.cover)}
                                     alt={asset.name}
                                     width={40}
                                     height={40}

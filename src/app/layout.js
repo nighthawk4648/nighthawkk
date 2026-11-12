@@ -113,7 +113,6 @@ export default async function RootLayout({ children }) {
       className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}
     >
       <head>
-        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
         {process.env.NODE_ENV === "production" && (
           <>
             <link

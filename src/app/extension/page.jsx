@@ -14,7 +14,7 @@ export const metadata = {
       "Download the official SketchShaper SketchUp extension (.rbz). Stream curated 3D architectural models and PBR textures directly into SketchUp.",
     pathname: "/extension",
     image:
-      "https://res.cloudinary.com/dn0rgr930/image/upload/v1770007276/v1_wdzv0h.jpg",
+      "https://www.sketchshaper.com/assets/extension/v1.jpg",
     imageAlt: "SketchShaper SketchUp extension",
   }),
   keywords:
@@ -76,7 +76,7 @@ export default async function Page() {
     downloadUrl:
       'https://www.sketchshaper.com/assets/rbz/sketchshaper-1.5.0.rbz',
     image:
-      'https://res.cloudinary.com/dn0rgr930/image/upload/v1770007276/v1_wdzv0h.jpg',
+      'https://www.sketchshaper.com/assets/extension/v1.jpg',
     isFree: true,
   });
 

@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FiSearch } from "react-icons/fi";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
-import { getOriginalImageUrl } from "@/utils/cloudinary";
+import { getOriginalImageUrl } from "@/utils/imageUrl";
 import { formatDate } from "@/utils/formateDate";
 import { stripHtml } from "@/utils/sanitizeHtml";
 import slugify from "@/utils/slugify";

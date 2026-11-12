@@ -47,28 +47,12 @@ test("getOgImageUrl falls back for missing or invalid values", () => {
   assert.equal(getOgImageUrl("http://[invalid"), fallback);
 });
 
-test("getOgImageUrl creates a 1200 by 630 Cloudinary crop", () => {
-  const originalCloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-  process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME = "example-cloud";
-
-  try {
-    assert.equal(
-      getOgImageUrl(
-        "https://res.cloudinary.com/example-cloud/image/upload/v123/photo.jpg",
-      ),
-      "https://res.cloudinary.com/example-cloud/image/upload/c_fill,w_1200,h_630,f_auto,q_auto/v123/photo.jpg",
-    );
-    assert.match(
-      getOgImageUrl("https://cdn.example.com/photo.jpg"),
-      /image\/fetch\/c_fill,w_1200,h_630,f_auto,q_auto\//,
-    );
-  } finally {
-    if (originalCloudName === undefined) {
-      delete process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-    } else {
-      process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME = originalCloudName;
-    }
-  }
+test("getOgImageUrl returns the absolute original image URL", () => {
+  assert.equal(
+    getOgImageUrl("https://cdn.example.com/photo.jpg"),
+    "https://cdn.example.com/photo.jpg",
+  );
+  assert.match(getOgImageUrl("cover-1.png"), /^https:\/\/.+\/cover-1\.png$/);
 });
 
 test("buildPageMetadata applies title branding, canonicals, and robots rules", () => {
@@ -85,8 +69,10 @@ test("buildPageMetadata applies title branding, canonicals, and robots rules", (
     { index: metadata.robots.index, follow: metadata.robots.follow },
     { index: false, follow: true },
   );
-  assert.equal(metadata.openGraph.images[0].width, 1200);
-  assert.equal(metadata.openGraph.images[0].height, 630);
+  assert.equal(
+    metadata.openGraph.images[0].url,
+    "https://www.sketchshaper.com/assets/seo/social-card.png",
+  );
 });
 
 test("buildPageMetadata retains article-specific social metadata", () => {

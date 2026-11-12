@@ -1,6 +1,5 @@
 import React from "react";
 import Image from "next/image";
-import { getOptimizedImageUrl } from "@/utils/cloudinary";
 
 const SupportedBy = ({ supportedby = [] }) => {
   if (!supportedby || supportedby.length === 0) {
@@ -75,7 +74,7 @@ const SupportedBy = ({ supportedby = [] }) => {
                   </span>
 
                   <Image
-                    src={getOptimizedImageUrl(getOriginalImageUrl(imgPath))}
+                    src={getOriginalImageUrl(imgPath)}
                     alt={support?.short_description || "Partner logo"}
                     width={280}
                     height={100}

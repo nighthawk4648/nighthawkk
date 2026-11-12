@@ -2,7 +2,6 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import slugify from "@/utils/slugify";
-import { getOptimizedImageUrl } from "@/utils/cloudinary";
 import { formatDate } from "@/utils/formateDate";
 import { stripHtml } from "@/utils/sanitizeHtml";
 
@@ -23,7 +22,7 @@ export default function ArticlesSection({ blogs = [] }) {
     description: stripHtml(blog.short_description || "", 160),
     author: blog.name || "SketchShaper",
     date: formatDate(blog.created_at) || "Recent",
-    image: blog.image ? getOptimizedImageUrl(getOriginalImageUrl(blog.image)) : null,
+    image: blog.image ? getOriginalImageUrl(blog.image) : null,
     href: `/blog/${blog.slug || slugify(blog.title)}-${blog.id}`,
   }));
 

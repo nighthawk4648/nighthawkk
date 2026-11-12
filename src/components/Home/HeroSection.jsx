@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import { getOptimizedImageUrl } from "@/utils/cloudinary";
 
 export default function HeroSection({
   totalModels = 4280,
@@ -60,10 +59,10 @@ export default function HeroSection({
   const hasRealSlides = Array.isArray(sliders) && sliders.length > 0;
   const currentSlide = hasRealSlides ? sliders[activeSlideIndex] : null;
   const currentSlideImage = currentSlide?.image
-    ? getOptimizedImageUrl(getOriginalImageUrl(currentSlide.image))
+    ? getOriginalImageUrl(currentSlide.image)
     : null;
   const currentSlideLogo = currentSlide?.logo
-    ? getOptimizedImageUrl(getOriginalImageUrl(currentSlide.logo))
+    ? getOriginalImageUrl(currentSlide.logo)
     : null;
 
   return (

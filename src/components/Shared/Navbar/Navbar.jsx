@@ -6,7 +6,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import slugify from "@/utils/slugify";
 import { usePatreonAuth } from "@/contexts/PatreonAuthContext";
-import { getOptimizedImageUrl } from "@/utils/cloudinary";
 import { formatAssetSize } from "@/utils/formatAssetSize";
 import dynamic from "next/dynamic";
 
@@ -314,9 +313,7 @@ export default function Navbar({
                           <div className="aspect-video relative overflow-hidden bg-surface-raised">
                             {featuredCover ? (
                               <Image
-                                src={getOptimizedImageUrl(
-                                  getOriginalImageUrl(featuredCover),
-                                )}
+                                src={getOriginalImageUrl(featuredCover)}
                                 alt={featuredName}
                                 fill
                                 sizes="(max-width: 768px) 100vw, 320px"

@@ -302,7 +302,7 @@ const ExtensionPage = ({ initialData }) => {
             </div>
             <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-canvas border border-line/60">
               <Image
-                src="https://res.cloudinary.com/dn0rgr930/image/upload/v1770007276/v1_wdzv0h.jpg"
+                src="/assets/extension/v1.jpg"
                 alt="SketchShaper 3D Models Cloud Library"
                 fill
                 sizes="(max-width: 768px) 100vw, 33vw"
@@ -331,7 +331,7 @@ const ExtensionPage = ({ initialData }) => {
             </div>
             <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-canvas border border-line/60">
               <Image
-                src="https://res.cloudinary.com/dn0rgr930/image/upload/v1770007276/v3_lr5lhu.jpg"
+                src="/assets/extension/v3.jpg"
                 alt="SketchShaper Calibrated PBR Textures"
                 fill
                 sizes="(max-width: 768px) 100vw, 33vw"
@@ -360,7 +360,7 @@ const ExtensionPage = ({ initialData }) => {
             </div>
             <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-canvas border border-line/60">
               <Image
-                src="https://res.cloudinary.com/dn0rgr930/image/upload/v1770007276/v2_p1o2z1.jpg"
+                src="/assets/extension/v2.jpg"
                 alt="SketchShaper 1-Click Integration"
                 fill
                 sizes="(max-width: 768px) 100vw, 33vw"

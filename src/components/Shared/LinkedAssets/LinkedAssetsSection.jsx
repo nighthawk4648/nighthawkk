@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FiLayers } from "react-icons/fi";
 import { buildAssetPath } from "@/utils/buildAssetPath";
-import { getOptimizedImageUrl, getOriginalImageUrl } from "@/utils/cloudinary";
+import { getOriginalImageUrl } from "@/utils/imageUrl";
 import { cleanText } from "@/utils/seo";
 
 /**
@@ -54,7 +54,7 @@ const LinkedAssetsSection = ({ assets, title, eyebrow, className = "" }) => {
                 <div className="relative aspect-[4/3] w-full bg-canvas">
                   {item.cover && (
                     <Image
-                      src={getOptimizedImageUrl(getOriginalImageUrl(item.cover))}
+                      src={getOriginalImageUrl(item.cover)}
                       alt={item.cover_alt?.trim() || name}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"

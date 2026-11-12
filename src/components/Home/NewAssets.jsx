@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import slugify from "@/utils/slugify";
 import { buildAssetPath } from "@/utils/buildAssetPath";
-import { getOptimizedImageUrl } from "@/utils/cloudinary";
 
 export default function NewAssets({ assets = [], totalAssetsCount = 0 }) {
   const getOriginalImageUrl = (imagePath) => {
@@ -74,7 +73,7 @@ export default function NewAssets({ assets = [], totalAssetsCount = 0 }) {
       <div className="relative aspect-square w-full rounded-lg overflow-hidden bg-canvas/60 border border-line/40 flex items-center justify-center">
         {asset.cover ? (
           <Image
-            src={getOptimizedImageUrl(getOriginalImageUrl(asset.cover))}
+            src={getOriginalImageUrl(asset.cover)}
             alt={asset.cover_alt?.trim() || asset.name}
             width={124}
             height={124}
@@ -185,7 +184,7 @@ export default function NewAssets({ assets = [], totalAssetsCount = 0 }) {
             <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-transparent border border-transparent flex items-center justify-center">
               {asset.cover ? (
                 <Image
-                  src={getOptimizedImageUrl(getOriginalImageUrl(asset.cover))}
+                  src={getOriginalImageUrl(asset.cover)}
                   alt={asset.cover_alt?.trim() || asset.name}
                   fill
                   loading="lazy"

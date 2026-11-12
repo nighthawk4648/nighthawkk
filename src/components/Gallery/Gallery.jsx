@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
-import { getOptimizedImageUrl } from "@/utils/cloudinary";
+import { optimizedImageUrl } from "@/utils/imageUrl";
 import { useState, useEffect, useCallback } from "react";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
@@ -162,7 +162,7 @@ export const Gallery = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 grid-flow-dense max-w-[1600px] mx-auto">
         {images.map((image, index) => {
           const rawImagePath = image.image || image.image_url || image.url;
-          const optimizedUrl = getOptimizedImageUrl(getOriginalImageUrl(rawImagePath));
+          const optimizedUrl = getOriginalImageUrl(rawImagePath);
           const spanClass = getBentoSpan(index);
           const isFeatured = (index % 12 === 0) || (index % 12 === 9);
 
@@ -343,8 +343,9 @@ export const Gallery = () => {
                   selectedImage.image ||
                   selectedImage.image_url ||
                   selectedImage.url;
-                const modalUrl = getOptimizedImageUrl(
-                  getOriginalImageUrl(modalRawPath)
+                const modalUrl = optimizedImageUrl(
+                  getOriginalImageUrl(modalRawPath),
+                  1200
                 );
 
                 return (

@@ -6,42 +6,25 @@ const nextConfig = {
   },
 
   images: {
-    loader: "custom",
-    loaderFile: "./src/utils/cloudinaryLoader.js",
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // Upload filenames are unique timestamps, so a cached image never goes stale
+    minimumCacheTTL: 2678400,
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "res.cloudinary.com",
-      },
-      {
-        protocol: "https",
         hostname: "api.sketchshaper.com",
-      },
-      {
-        protocol: "https",
-        hostname: "ik.imagekit.io",
-      },
-      {
-        protocol: "http",
-        hostname: "localhost",
+        pathname: "/api/uploads/**",
       },
       {
         protocol: "http",
         hostname: "localhost",
         port: "5000",
-      },
-      {
-        protocol: "http",
-        hostname: "127.0.0.1",
-      },
-      {
-        protocol: "http",
-        hostname: "127.0.0.1",
-        port: "5000",
+        pathname: "/api/uploads/**",
       },
     ],
+    // Only lets a local backend's images through during development
+    dangerouslyAllowLocalIP: process.env.NODE_ENV !== "production",
   },
 
   // Add trailing slashes for consistent URLs

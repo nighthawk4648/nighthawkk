@@ -110,7 +110,7 @@ export function buildCanonicalUrl(
   return canonical.toString();
 }
 
-function absoluteImageUrl(image) {
+export function getOgImageUrl(image) {
   if (typeof image !== "string" || !image.trim() || image.trim() === "-") {
     return new URL(DEFAULT_IMAGE, SITE_URL).toString();
   }
@@ -136,24 +136,6 @@ function absoluteImageUrl(image) {
   return url.toString();
 }
 
-export function getOgImageUrl(image) {
-  const imageUrl = absoluteImageUrl(image);
-  if (imageUrl.endsWith(DEFAULT_IMAGE)) return imageUrl;
-
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-  if (!cloudName || cloudName.includes("your_cloudinary")) return imageUrl;
-
-  if (imageUrl.includes("res.cloudinary.com")) {
-    return imageUrl.replace(
-      "/image/upload/",
-      "/image/upload/c_fill,w_1200,h_630,f_auto,q_auto/",
-    );
-  }
-
-  const encodedUrl = encodeURIComponent(imageUrl);
-  return `https://res.cloudinary.com/${cloudName}/image/fetch/c_fill,w_1200,h_630,f_auto,q_auto/${encodedUrl}`;
-}
-
 export function buildPageMetadata({
   title,
   description,
@@ -176,10 +158,9 @@ export function buildPageMetadata({
     "SketchShaper";
   const cleanDescription =
     cleanText(description, 160) || DEFAULT_DESCRIPTION;
+  // No width/height: uploads come in their own sizes, not 1200x630
   const socialImage = {
     url: getOgImageUrl(image),
-    width: 1200,
-    height: 630,
     alt: cleanText(imageAlt, 200) || "SketchShaper",
   };
   const robots = {

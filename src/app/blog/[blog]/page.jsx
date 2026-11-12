@@ -1,4 +1,4 @@
-import { getOriginalImageUrl } from "@/utils/cloudinary";
+import { getOriginalImageUrl } from "@/utils/imageUrl";
 import { formatDate } from "@/utils/formateDate";
 import getData from "@/utils/getData";
 import { sanitizeHtml, stripHtml } from "@/utils/sanitizeHtml";
