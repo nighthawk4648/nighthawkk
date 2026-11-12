@@ -648,7 +648,6 @@ const SubCategoryDetails = ({ assetDetails }) => {
             <LinkedAssetsSection
               assets={assetDetails?.used_assets}
               title="Textures & Materials Used in this Model"
-              eyebrow="Constituent Assets"
             />
 
             {/* Model Description & Specifications Card */}
@@ -1334,9 +1333,9 @@ function ExtensionPromoCard() {
           <Link href="/extension" className="block group">
             <h3
               className="text-xs font-semibold text-fg truncate group-hover:text-action transition-colors font-sans"
-              title="SketchShaper Extension for SketchUp"
+              title="Sketch shaper Extension for SketchUp"
             >
-              SketchShaper Plugin
+              Sketch shaper Plugin
             </h3>
             <p className="text-[10px] text-fg-secondary truncate mt-0.5 font-mono">
               Direct SketchUp Library
@@ -1378,7 +1377,7 @@ function RelatedAssetCard({
   });
 
   return (
-    <article className="bg-surface border border-line hover:border-action/40 rounded-xl overflow-hidden flex flex-col justify-between group transition-all duration-300 shadow-md hover:shadow-xl">
+    <article className="bg-surface border border-line hover:border-action/40 rounded-xl overflow-hidden flex flex-col justify-between group transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-0.5">
       <div>
         <Link
           href={href}

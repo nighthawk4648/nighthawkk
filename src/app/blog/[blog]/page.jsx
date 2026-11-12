@@ -93,10 +93,10 @@ export async function generateMetadata({ params }) {
       post.short_description || post.paragraph_one || "",
       160,
     ) ||
-    "Read our latest architectural 3D and visualization insights on SketchShaper.";
+    "Read our latest architectural 3D and visualization insights on Sketch shaper.";
 
   const title =
-    cleanText(post.meta_title, 200) || `${post.title} - SketchShaper Blog`;
+    cleanText(post.meta_title, 200) || `${post.title} - Sketch shaper Blog`;
   const description =
     (post.meta_description
       ? cleanText(post.meta_description, 160)
@@ -168,7 +168,7 @@ const BlogDetailPage = async ({ params }) => {
     normalizedAuthor === "sketchshaper" || !normalizedAuthor
       ? {
           "@type": "Organization",
-          name: "SketchShaper",
+          name: "Sketch shaper",
           url: "https://www.sketchshaper.com",
         }
       : {
@@ -178,7 +178,7 @@ const BlogDetailPage = async ({ params }) => {
 
   const publisherObject = {
     "@type": "Organization",
-    name: "SketchShaper",
+    name: "Sketch shaper",
     url: "https://www.sketchshaper.com",
     logo: {
       "@type": "ImageObject",
@@ -286,7 +286,7 @@ const BlogDetailPage = async ({ params }) => {
                     <FiUser className="w-3.5 h-3.5" />
                   </div>
                   <span className="font-medium text-fg">
-                    {post.name || "SketchShaper"}
+                    {post.name || "Sketch shaper"}
                   </span>
                 </div>
 

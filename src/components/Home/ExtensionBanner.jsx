@@ -90,7 +90,7 @@ export default function ExtensionBanner({ initialDownloads = 0 }) {
               </h2>
 
               <p className="text-fg-secondary text-xs sm:text-base leading-relaxed mb-4 sm:mb-6 font-sans">
-                Browse and insert SketchShaper models without leaving SketchUp.
+                Browse and insert Sketch shaper models without leaving SketchUp.
                 Free extension. Free assets.
               </p>
 
@@ -166,7 +166,7 @@ export default function ExtensionBanner({ initialDownloads = 0 }) {
           >
             <div className="flex justify-between items-center mb-3 px-2">
               <span className="text-sm font-semibold text-fg">
-                SketchShaper Extension Preview
+                Sketch shaper Extension Preview
               </span>
               <button
                 type="button"
@@ -180,7 +180,7 @@ export default function ExtensionBanner({ initialDownloads = 0 }) {
               <iframe
                 className="w-full h-full"
                 src="https://www.youtube.com/embed/vo-nsPWgrkg?autoplay=1"
-                title="SketchShaper Extension Demo"
+                title="Sketch shaper Extension Demo"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               />

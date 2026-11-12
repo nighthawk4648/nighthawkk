@@ -26,7 +26,7 @@ const Innovative = ({ innovatives = [] }) => {
             {bgUrl && (
               <Image
                 src={bgUrl}
-                alt={innovative?.title || "SketchShaper Highlight"}
+                alt={innovative?.title || "Sketch shaper Highlight"}
                 fill
                 sizes="100vw"
                 className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
@@ -40,7 +40,7 @@ const Innovative = ({ innovatives = [] }) => {
             {/* Centered Content */}
             <div className="relative z-20 max-w-2xl mx-auto flex flex-col items-center">
               <h2 className="text-xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-fg font-sans mb-1.5 sm:mb-3">
-                {innovative?.title || "SketchShaper"}
+                {innovative?.title || "Sketch shaper"}
               </h2>
 
               <p className="text-xs sm:text-sm lg:text-base text-fg-secondary leading-relaxed font-sans max-w-xl line-clamp-3 sm:line-clamp-none">

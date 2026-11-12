@@ -145,7 +145,7 @@ export default function BlogLeftRail({
     url || (typeof window !== "undefined" ? window.location.href : "")
   );
   const shareTitle = encodeURIComponent(
-    title || "Check out this architectural article on SketchShaper"
+    title || "Check out this architectural article on Sketch shaper"
   );
 
   return (

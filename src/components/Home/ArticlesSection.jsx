@@ -20,7 +20,7 @@ export default function ArticlesSection({ blogs = [] }) {
     id: blog.id,
     title: blog.title,
     description: stripHtml(blog.short_description || "", 160),
-    author: blog.name || "SketchShaper",
+    author: blog.name || "Sketch shaper",
     date: formatDate(blog.created_at) || "Recent",
     image: blog.image ? getOriginalImageUrl(blog.image) : null,
     href: `/blog/${blog.slug || slugify(blog.title)}-${blog.id}`,

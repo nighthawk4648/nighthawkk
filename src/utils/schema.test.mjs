@@ -47,7 +47,7 @@ test("generateWebsiteAndOrgSchema includes Sitelinks SearchAction and Organizati
   assert.ok(website.potentialAction.target.urlTemplate.includes("search_term_string"));
 
   assert.ok(org);
-  assert.equal(org.name, "SketchShaper");
+  assert.equal(org.name, "Sketch shaper");
   assert.ok(org.logo.url.includes("navbar_logo.png"));
   assert.ok(org.sameAs.includes("https://twitter.com/sketchshaper"));
 });
@@ -104,7 +104,7 @@ test("generateWebPageSchema produces valid WebPage schema with publisher", () =>
   assert.equal(pageSchema["@type"], "WebPage");
   assert.equal(pageSchema.name, "License Agreement");
   assert.equal(pageSchema.url, "https://www.sketchshaper.com/license");
-  assert.equal(pageSchema.publisher.name, "SketchShaper");
+  assert.equal(pageSchema.publisher.name, "Sketch shaper");
 });
 
 test("generateCollectionSchema produces valid CollectionPage and sanitizes description", () => {

@@ -4,9 +4,9 @@ import { buildPageMetadata } from "@/utils/seo";
 import { JsonLd, generateBreadcrumbSchema } from "@/utils/schema";
 
 export const metadata = buildPageMetadata({
-  title: "Commission Custom 3D & Architectural Projects | SketchShaper Studio",
+  title: "Commission Custom 3D & Architectural Projects | Sketch shaper Studio",
   description:
-    "Request custom 3D modeling, full interior design & exterior architectural scenes, SketchUp plugins, and realistic PBR material sets directly from the SketchShaper studio.",
+    "Request custom 3D modeling, full interior design & exterior architectural scenes, SketchUp plugins, and realistic PBR material sets directly from the Sketch shaper studio.",
   pathname: "/contact",
 });
 
@@ -17,12 +17,12 @@ const contactPageSchema = {
       "@type": "ContactPage",
       "@id": "https://www.sketchshaper.com/contact#webpage",
       url: "https://www.sketchshaper.com/contact",
-      name: "Commission Custom 3D & Architectural Projects - SketchShaper",
+      name: "Commission Custom 3D & Architectural Projects - Sketch shaper",
       description:
-        "Request custom 3D modeling, full interior design & exterior architectural scenes, SketchUp plugins, and realistic PBR material sets directly from the SketchShaper studio.",
+        "Request custom 3D modeling, full interior design & exterior architectural scenes, SketchUp plugins, and realistic PBR material sets directly from the Sketch shaper studio.",
       mainEntity: {
         "@type": "Organization",
-        name: "SketchShaper",
+        name: "Sketch shaper",
         url: "https://www.sketchshaper.com",
         contactPoint: {
           "@type": "ContactPoint",

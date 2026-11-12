@@ -50,7 +50,7 @@ export async function generateMetadata({ params, searchParams }) {
     rawDesc ||
     (rawShortDesc && rawShortDesc !== "-"
       ? rawShortDesc
-      : `Download ${asset?.name || "3D model"} for SketchUp from SketchShaper.`);
+      : `Download ${asset?.name || "3D model"} for SketchUp from Sketch shaper.`);
 
   const firstGalleryImage = Array.isArray(asset?.images)
     ? asset.images.find((item) => item?.image)?.image

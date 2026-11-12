@@ -143,7 +143,7 @@ export function buildPageMetadata({
   searchParams,
   preservePage = false,
   image,
-  imageAlt = "SketchShaper",
+  imageAlt = "Sketch shaper",
   type = "website",
   noIndex = false,
   noFollow = false,
@@ -152,16 +152,16 @@ export function buildPageMetadata({
   authors,
 }) {
   const canonical = buildCanonicalUrl(pathname, searchParams, { preservePage });
-  const cleanedTitle = cleanText(title, 200) || "SketchShaper";
+  const cleanedTitle = cleanText(title, 200) || "Sketch shaper";
   const cleanTitle =
-    cleanedTitle.replace(/\s*(?:\||-|–|—)\s*SketchShaper(?:\s+Blog)?$/i, "").trim() ||
-    "SketchShaper";
+    cleanedTitle.replace(/\s*(?:\||-|–|—)\s*Sketch\s?Shaper(?:\s+Blog)?$/i, "").trim() ||
+    "Sketch shaper";
   const cleanDescription =
     cleanText(description, 160) || DEFAULT_DESCRIPTION;
   // No width/height: uploads come in their own sizes, not 1200x630
   const socialImage = {
     url: getOgImageUrl(image),
-    alt: cleanText(imageAlt, 200) || "SketchShaper",
+    alt: cleanText(imageAlt, 200) || "Sketch shaper",
   };
   const robots = {
     index: !noIndex,
@@ -179,7 +179,7 @@ export function buildPageMetadata({
     description: cleanDescription,
     url: canonical,
     type,
-    siteName: "SketchShaper",
+    siteName: "Sketch shaper",
     images: [socialImage],
   };
 

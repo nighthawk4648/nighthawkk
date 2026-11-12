@@ -105,7 +105,7 @@ const ExtensionPage = ({ initialData }) => {
   const faqs = [
     {
       q: "Which SketchUp versions are compatible?",
-      a: "SketchShaper is natively engineered and verified for SketchUp 2022, 2023, 2024, 2025, and 2026 across both Windows (10/11 64-bit) and macOS (including Apple Silicon M1, M2, M3, and M4 chips).",
+      a: "Sketch shaper is natively engineered and verified for SketchUp 2022, 2023, 2024, 2025, and 2026 across both Windows (10/11 64-bit) and macOS (including Apple Silicon M1, M2, M3, and M4 chips).",
     },
     {
       q: "How do I install the .rbz extension file in SketchUp?",
@@ -113,7 +113,7 @@ const ExtensionPage = ({ initialData }) => {
     },
     {
       q: "Are the 3D models and textures free for commercial rendering?",
-      a: "Yes. All assets inserted through the SketchShaper extension come with full commercial visualization rights. You can use them in client presentations, architectural competitions, and commercial renders with zero licensing fees or attribution required.",
+      a: "Yes. All assets inserted through the Sketch shaper extension come with full commercial visualization rights. You can use them in client presentations, architectural competitions, and commercial renders with zero licensing fees or attribution required.",
     },
     {
       q: "Does the extension slow down SketchUp startup time or viewport FPS?",
@@ -125,7 +125,7 @@ const ExtensionPage = ({ initialData }) => {
     },
     {
       q: "Do I need an account or subscription to download?",
-      a: "No registration or subscription is required. SketchShaper is 100% free forever. You can download the .rbz bundle directly and start inserting 3D models immediately without signing in.",
+      a: "No registration or subscription is required. Sketch shaper is 100% free forever. You can download the .rbz bundle directly and start inserting 3D models immediately without signing in.",
     },
   ];
 
@@ -145,7 +145,7 @@ const ExtensionPage = ({ initialData }) => {
 
         {/* Clean Architectural Title (No redundant top badge) */}
         <h1 className="text-4xl sm:text-6xl lg:text-7xl font-semibold tracking-tight-title text-fg font-sans mb-5 sm:mb-6">
-          Sketch<span className="text-action">shaper</span> for SketchUp
+          Sketch <span className="text-action">shaper</span> for SketchUp
         </h1>
 
         {/* Core Value Proposition with Comfortable Spacing */}
@@ -234,7 +234,7 @@ const ExtensionPage = ({ initialData }) => {
       <section className="max-w-6xl mx-auto pt-10 sm:pt-16 lg:pt-20 mb-24 sm:mb-32">
         <div className="text-center mb-10 sm:mb-12">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-tight-h2 text-fg font-sans mb-3 sm:mb-4">
-            See SketchShaper in <span className="text-action">Action</span>
+            See Sketch shaper in <span className="text-action">Action</span>
           </h2>
           <p className="text-sm sm:text-base text-fg-secondary max-w-xl mx-auto font-sans leading-relaxed">
             Watch how fast assets stream into the 3D workspace and snap straight to active drawing axes.
@@ -250,7 +250,7 @@ const ExtensionPage = ({ initialData }) => {
               <span className="w-3 h-3 rounded-full bg-amber-500/80 inline-block" />
               <span className="w-3 h-3 rounded-full bg-emerald-500/80 inline-block" />
               <span className="ml-2 text-fg/70">
-                viewport-session.skp &bull; [SketchShaper Toolset]
+                viewport-session.skp &bull; [Sketch shaper Toolset]
               </span>
             </div>
           </div>
@@ -260,7 +260,7 @@ const ExtensionPage = ({ initialData }) => {
             <iframe
               className="w-full h-full"
               src="https://www.youtube.com/embed/vo-nsPWgrkg"
-              title="SketchShaper Extension Demo"
+              title="Sketch shaper Extension Demo"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               loading="lazy"
@@ -303,7 +303,7 @@ const ExtensionPage = ({ initialData }) => {
             <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-canvas border border-line/60">
               <Image
                 src="/assets/extension/v1.jpg"
-                alt="SketchShaper 3D Models Cloud Library"
+                alt="Sketch shaper 3D Models Cloud Library"
                 fill
                 sizes="(max-width: 768px) 100vw, 33vw"
                 className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
@@ -332,7 +332,7 @@ const ExtensionPage = ({ initialData }) => {
             <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-canvas border border-line/60">
               <Image
                 src="/assets/extension/v3.jpg"
-                alt="SketchShaper Calibrated PBR Textures"
+                alt="Sketch shaper Calibrated PBR Textures"
                 fill
                 sizes="(max-width: 768px) 100vw, 33vw"
                 className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
@@ -361,7 +361,7 @@ const ExtensionPage = ({ initialData }) => {
             <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-canvas border border-line/60">
               <Image
                 src="/assets/extension/v2.jpg"
-                alt="SketchShaper 1-Click Integration"
+                alt="Sketch shaper 1-Click Integration"
                 fill
                 sizes="(max-width: 768px) 100vw, 33vw"
                 className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
@@ -382,7 +382,7 @@ const ExtensionPage = ({ initialData }) => {
             How to Install in <span className="text-action">SketchUp</span>
           </h2>
           <p className="text-sm sm:text-base text-fg-secondary max-w-xl mx-auto font-sans leading-relaxed">
-            Follow these 3 simple steps to integrate SketchShaper into your modeling workspace.
+            Follow these 3 simple steps to integrate Sketch shaper into your modeling workspace.
           </p>
         </div>
 
@@ -465,7 +465,7 @@ const ExtensionPage = ({ initialData }) => {
               </h3>
               <p className="text-sm text-fg-secondary leading-relaxed font-sans mb-4">
                 Click the Install button at the bottom of the manager, select your downloaded{" "}
-                <span className="text-action font-mono">.rbz</span> file, and accept. The SketchShaper toolbar docks immediately!
+                <span className="text-action font-mono">.rbz</span> file, and accept. The Sketch shaper toolbar docks immediately!
               </p>
             </div>
             <div className="text-xs font-mono text-action flex items-center gap-1.5">

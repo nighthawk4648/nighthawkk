@@ -147,8 +147,8 @@ body::after {
 /* Glass Panel Styling */
 .glass-panel {
   background: var(--bg-glass);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
+  /* Via Tailwind: a hand-written pair gets its standard line dropped by the CSS minifier */
+  @apply backdrop-blur-[var(--glass-blur)];
   border: 1px solid var(--border-glass);
 }
 

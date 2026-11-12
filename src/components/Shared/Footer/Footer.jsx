@@ -78,7 +78,7 @@ const Footer = ({ categories = [], footerPages = [], socials = [] }) => {
             <div>
               <Link
                 href="/"
-                className="flex items-center text-xl sm:text-2xl font-medium tracking-tight-brand select-none group font-sans mb-4"
+                className="flex items-center text-xl sm:text-2xl font-medium tracking-tight-brand gap-[0.25em] select-none group font-sans mb-4"
               >
                 <span className="text-fg group-hover:text-fg/90 transition-colors">
                   Sketch
@@ -111,7 +111,7 @@ const Footer = ({ categories = [], footerPages = [], socials = [] }) => {
 
             {/* Copyright integrated on the left side */}
             <div className="mt-8 font-mono text-xs text-fg-secondary/60">
-              &copy; {new Date().getFullYear()} SketchShaper. All rights reserved.
+              &copy; {new Date().getFullYear()} Sketch shaper. All rights reserved.
             </div>
           </div>
 

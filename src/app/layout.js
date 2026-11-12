@@ -29,7 +29,7 @@ export async function generateMetadata() {
     console.error("Failed to load site metadata:", e);
   }
 
-  const siteName = "SketchShaper";
+  const siteName = "Sketch shaper";
   const description =
     cleanText(applicationSettings?.data?.site_description, 160) ||
     "Free and pro 3D models, textures, and plugins for SketchUp.";

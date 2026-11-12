@@ -140,7 +140,7 @@ export const Gallery = () => {
 
         <p className="text-base sm:text-lg text-fg-secondary leading-relaxed max-w-2xl mx-auto font-sans">
           Curated visual artwork and architectural scenes submitted by our
-          community, crafted using SketchShaper 3D models and calibrated textures.
+          community, crafted using Sketch shaper 3D models and calibrated textures.
         </p>
       </div>
 
@@ -388,7 +388,7 @@ export const Gallery = () => {
             className="w-full max-w-3xl mx-auto px-4 py-2.5 rounded-xl border border-white/10 bg-black/60 backdrop-blur-xl flex items-center justify-between text-xs font-mono text-zinc-300/80"
             onClick={(e) => e.stopPropagation()}
           >
-            <span>SKETCHSHAPER CAD RENDER ARCHIVE</span>
+            <span>SKETCH SHAPER CAD RENDER ARCHIVE</span>
             <button
               type="button"
               onClick={closeModal}

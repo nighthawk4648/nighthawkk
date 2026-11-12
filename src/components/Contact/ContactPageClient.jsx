@@ -30,35 +30,30 @@ const REQUEST_OPTIONS = [
   {
     id: "architecture",
     title: "Architectural Project",
-    subtitle: "Interior & exterior 3D scenes",
     icon: FiHome,
     colSpan: "col-span-1",
   },
   {
     id: "single-model",
-    title: "Bespoke 3D Model",
-    subtitle: "Custom furniture or individual asset",
+    title: "3D Model",
     icon: FiBox,
     colSpan: "col-span-1",
   },
   {
     id: "textures",
     title: "Textures & Materials",
-    subtitle: "Seamless PBR texture sets",
     icon: FiLayers,
     colSpan: "col-span-1",
   },
   {
     id: "extension",
     title: "Plugin / Extension",
-    subtitle: "SketchUp Ruby scripts & tools",
     icon: FiCpu,
     colSpan: "col-span-1",
   },
   {
     id: "support",
     title: "General Support & Inquiries",
-    subtitle: "Report an issue, ask a question, or submit feedback",
     icon: FiMessageSquare,
     colSpan: "col-span-2",
   },
@@ -364,7 +359,7 @@ export default function ContactPageClient() {
         message:
           selectedType === "support"
             ? "Your message has been received. Our support desk will get back to you shortly."
-            : "Project brief received. The SketchShaper studio team will review your requirements and follow up shortly.",
+            : "Project brief received. The Sketch shaper studio team will review your requirements and follow up shortly.",
       });
 
       // Reset form
@@ -411,13 +406,10 @@ export default function ContactPageClient() {
           {/* LEFT SIDE (32%): Header, WhatsApp, and 2-Column Options Grid            */}
           {/* ----------------------------------------------------------------------- */}
           <div className="flex flex-col space-y-6">
-            <div>
+            <div className="pb-4">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-[-0.03em] text-fg font-sans">
-                Get in Touch with SketchShaper
+                Get in Touch with Sketch shaper
               </h1>
-              <p className="mt-2 text-xs sm:text-sm text-fg-secondary leading-relaxed">
-                Select an option below to start your custom 3D commission or connect directly with our studio support desk.
-              </p>
             </div>
 
             {/* Direct WhatsApp Action Bar */}
@@ -432,7 +424,7 @@ export default function ContactPageClient() {
                   <FiPhone className="h-4 w-4" />
                 </div>
                 <div className="text-left font-mono text-[11px]">
-                  <div className="font-semibold text-fg">Direct WhatsApp Desk</div>
+                  <div className="font-semibold text-fg text-[13px]">Direct WhatsApp Desk</div>
                   <span className="text-action text-[10px]">Instant chat with studio</span>
                 </div>
               </div>
@@ -491,15 +483,12 @@ export default function ContactPageClient() {
 
                       <div className="min-w-0">
                         <h3
-                          className={`text-xs font-semibold truncate ${
+                          className={`text-sm font-semibold truncate ${
                             isSelected ? "text-action" : "text-fg group-hover:text-action"
                           }`}
                         >
                           {opt.title}
                         </h3>
-                        <p className="text-[10px] sm:text-[11px] text-fg-secondary leading-tight mt-0.5 line-clamp-2">
-                          {opt.subtitle}
-                        </p>
                       </div>
                     </button>
                   );
@@ -532,17 +521,9 @@ export default function ContactPageClient() {
             />
 
             {/* Form Top Active Indicator Bar */}
-            <div className="relative z-10 mb-6 pb-4 border-b border-white/[0.08] flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5">
-                <span className="font-mono text-[10px] text-action uppercase tracking-wider bg-action-tintBg border border-action-tintLine px-2.5 py-1 rounded-md">
-                  Active Form
-                </span>
-                <span className="text-xs sm:text-sm font-semibold text-fg">
-                  {activeOption?.title}
-                </span>
-              </div>
-              <span className="font-mono text-[11px] text-fg-secondary">
-                Step 2: Fill Details
+            <div className="relative z-10 mb-6 pb-4 border-b border-white/[0.08] flex items-center gap-3">
+              <span className="text-sm sm:text-base font-semibold text-fg">
+                {activeOption?.title}
               </span>
             </div>
 
@@ -884,7 +865,7 @@ export default function ContactPageClient() {
                 Recent Studio Work
               </h2>
               <p className="text-xs text-fg-secondary mt-1">
-                A preview of custom projects crafted by the SketchShaper modeling team.
+                A preview of custom projects crafted by the Sketch shaper modeling team.
               </p>
             </div>
             <Link

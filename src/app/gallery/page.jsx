@@ -5,7 +5,7 @@ import { buildPageMetadata } from "@/utils/seo";
 
 export const metadata = buildPageMetadata({
   title: "Render Gallery",
-  description: "Artwork submitted by creators using SketchShaper assets.",
+  description: "Artwork submitted by creators using Sketch shaper assets.",
   pathname: "/gallery",
 });
 

@@ -3,6 +3,8 @@ const nextConfig = {
   reactStrictMode: true,
   experimental: {
     cpus: 1,
+    // Some upload originals are 3-6 MB PNGs; the default 7s can time out on slow links
+    imgOptTimeoutInSeconds: 12,
   },
 
   images: {

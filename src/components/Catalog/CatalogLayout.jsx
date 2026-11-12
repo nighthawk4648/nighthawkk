@@ -590,7 +590,7 @@ export default function CatalogLayout({
                     ? currentSubCategory.name
                     : currentCategory
                       ? currentCategory.name
-                      : "Sketchshaper"}
+                      : "Sketch shaper"}
                 </h1>
               </div>
 
@@ -960,7 +960,7 @@ export default function CatalogLayout({
 
                   return (
                     <React.Fragment key={asset.id}>
-                      <article className="bg-surface/30 hover:bg-surface/50 border border-white/[0.08] hover:border-white/20 rounded-xl overflow-hidden flex flex-col group transition-all duration-300 shadow-md hover:shadow-xl relative">
+                      <article className="bg-surface/30 hover:bg-surface/50 border border-white/[0.08] hover:border-white/20 rounded-xl overflow-hidden flex flex-col group transition-all duration-300 shadow-md hover:shadow-xl hover:-translate-y-0.5 relative">
                         {/* Top 4:3 Image Stage */}
                         <Link
                           href={href}

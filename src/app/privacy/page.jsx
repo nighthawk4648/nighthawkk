@@ -29,7 +29,7 @@ export async function generateMetadata() {
   const page = await getPrivacyPage();
   const title =
     cleanText(page?.meta_title, 200) ||
-    `${page?.title || "Privacy Policy"} - SketchShaper`;
+    `${page?.title || "Privacy Policy"} - Sketch shaper`;
   const description =
     cleanText(page?.meta_description, 160) ||
     cleanText(page?.short_description || page?.content || "", 160) ||

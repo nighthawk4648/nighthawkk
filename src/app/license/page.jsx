@@ -41,11 +41,11 @@ export async function generateMetadata() {
   const page = await getLicensePage();
   const title =
     cleanText(page?.meta_title, 200) ||
-    `${page?.title || "License"} - SketchShaper`;
+    `${page?.title || "License"} - Sketch shaper`;
   const description =
     cleanText(page?.meta_description, 160) ||
     cleanText(page?.short_description || page?.content || "", 160) ||
-    "Creative Commons Zero (CC0) and platform licensing terms for SketchShaper assets.";
+    "Creative Commons Zero (CC0) and platform licensing terms for Sketch shaper assets.";
 
   return {
     ...buildPageMetadata({ title, description, pathname: "/license" }),
@@ -72,7 +72,7 @@ export default async function LicensePage() {
     title: page.title || "License",
     description:
       page.short_description ||
-      "Creative Commons Zero (CC0) and platform licensing terms for SketchShaper assets.",
+      "Creative Commons Zero (CC0) and platform licensing terms for Sketch shaper assets.",
     pathname: "/license",
   });
 

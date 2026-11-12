@@ -13,13 +13,13 @@ export const metadata = buildPageMetadata({
 const blogListingSchema = {
   "@context": "https://schema.org",
   "@type": "Blog",
-  name: "SketchShaper Articles & Knowledge Base",
+  name: "Sketch shaper Articles & Knowledge Base",
   url: "https://www.sketchshaper.com/blog",
   description:
     "Curated architectural 3D workflows, PBR texturing guides, lighting breakdowns, rendering tips, and SketchUp tutorials.",
   publisher: {
     "@type": "Organization",
-    name: "SketchShaper",
+    name: "Sketch shaper",
     url: "https://www.sketchshaper.com",
     logo: "https://www.sketchshaper.com/assets/navbar/navbar_logo.png",
   },

@@ -12,7 +12,7 @@ import { JsonLd, generateBreadcrumbSchema } from "@/utils/schema";
 export const metadata = buildPageMetadata({
   title: "About Us & Team",
   description:
-    "Learn about SketchShaper, our creative team, and our mission to provide high-quality SketchUp 3D models, textures, and plugins.",
+    "Learn about Sketch shaper, our creative team, and our mission to provide high-quality SketchUp 3D models, textures, and plugins.",
   pathname: "/about-us",
 });
 
@@ -21,13 +21,13 @@ const aboutPageSchema = {
   "@graph": [
     {
       "@type": "AboutPage",
-      name: "About Us & Team - SketchShaper",
+      name: "About Us & Team - Sketch shaper",
       url: "https://www.sketchshaper.com/about-us",
       description:
-        "Learn about SketchShaper, our creative team, and our mission to provide high-quality SketchUp 3D models, textures, and plugins.",
+        "Learn about Sketch shaper, our creative team, and our mission to provide high-quality SketchUp 3D models, textures, and plugins.",
       mainEntity: {
         "@type": "Organization",
-        name: "SketchShaper",
+        name: "Sketch shaper",
         url: "https://www.sketchshaper.com",
         founder: {
           "@type": "Person",
@@ -62,7 +62,7 @@ const AboutUs = async () => {
       <JsonLd data={aboutPageSchema} />
       <JsonLd data={breadcrumbsSchema} />
       <p className="text-l font-light text-justify max-w-4xl">
-        Sketch Shaper offers a free library of high-quality SketchUp 3D models
+        Sketch shaper offers a free library of high-quality SketchUp 3D models
         and textures. Our collection includes diverse textures and detailed
         models to enhance your creative projects. Whether you're an artist,
         designer, or developer, you'll find the assets you need to bring your
@@ -114,7 +114,7 @@ const AboutUs = async () => {
             What We Offer
           </p>
           <p className="text-sm text-justify text-gray-300 mt-2">
-            At Sketch Shaper, we pride ourselves on the quality and diversity of
+            At Sketch shaper, we pride ourselves on the quality and diversity of
             our asset library. Our collection includes:
             <br />
             <br />

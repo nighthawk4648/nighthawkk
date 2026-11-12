@@ -176,7 +176,7 @@ const BlogsPage = ({ initialData = null }) => {
                 </div>
 
                 <div className="mt-6 pt-4 border-t border-white/[0.08] text-xs font-mono text-fg-secondary flex items-center justify-between">
-                  <span>By {featuredArticle.name || "SketchShaper"}</span>
+                  <span>By {featuredArticle.name || "Sketch shaper"}</span>
                   <Link
                     href={`/blog/${featuredArticle.slug || slugify(featuredArticle.title)}-${featuredArticle.id}`}
                     className="text-action hover:underline inline-flex items-center gap-1 font-medium group-hover:translate-x-0.5 transition-transform"
@@ -399,7 +399,7 @@ const BlogsPage = ({ initialData = null }) => {
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center text-fg-secondary/50 font-mono text-xs">
-                            SketchShaper Article
+                            Sketch shaper Article
                           </div>
                         )}
                       </div>
@@ -418,7 +418,7 @@ const BlogsPage = ({ initialData = null }) => {
                         </span>
                         <span>&bull;</span>
                         <span className="truncate max-w-[120px]">
-                          {article.name || "SketchShaper"}
+                          {article.name || "Sketch shaper"}
                         </span>
                       </div>
 

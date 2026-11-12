@@ -175,7 +175,7 @@ export default function SupportDesk() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group shrink-0 rounded-full bg-action px-3.5 py-1.5 sm:px-4 sm:py-2 text-[11px] sm:text-xs font-semibold text-canvas shadow-sm transition-colors hover:bg-action-hover focus:outline-none focus:ring-2 focus:ring-action/50 active:bg-action-pressed"
-                aria-label="Chat with the SketchShaper support desk on WhatsApp"
+                aria-label="Chat with the Sketch shaper support desk on WhatsApp"
               >
                 Chat now <span aria-hidden="true">&rarr;</span>
               </a>

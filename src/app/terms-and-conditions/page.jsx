@@ -29,11 +29,11 @@ export async function generateMetadata() {
   const page = await getTermsPage();
   const title =
     cleanText(page?.meta_title, 200) ||
-    `${page?.title || "Terms and Conditions"} - SketchShaper`;
+    `${page?.title || "Terms and Conditions"} - Sketch shaper`;
   const description =
     cleanText(page?.meta_description, 160) ||
     cleanText(page?.short_description || page?.content || "", 160) ||
-    "Read the terms and conditions for using SketchShaper 3D models and services.";
+    "Read the terms and conditions for using Sketch shaper 3D models and services.";
 
   return {
     ...buildPageMetadata({
@@ -63,7 +63,7 @@ export default async function TermsAndCondition() {
     title: page.title || "Terms and Conditions",
     description:
       page.short_description ||
-      "Read the terms and conditions for using SketchShaper 3D models and services.",
+      "Read the terms and conditions for using Sketch shaper 3D models and services.",
     pathname: "/terms-and-conditions",
   });
 

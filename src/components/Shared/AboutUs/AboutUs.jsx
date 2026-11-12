@@ -46,7 +46,7 @@ const AboutUs = ({ aboutUs }) => {
         <div className="absolute inset-0 -z-10 opacity-15 pointer-events-none">
           <Image
             src={coverUrl}
-            alt={aboutUs?.title || "About SketchShaper"}
+            alt={aboutUs?.title || "About Sketch shaper"}
             fill
             sizes="100vw"
             className="object-cover"

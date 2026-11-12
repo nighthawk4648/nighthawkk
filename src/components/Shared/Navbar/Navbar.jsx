@@ -179,7 +179,7 @@ export default function Navbar({
             {/* Wordmark */}
             <Link
               href="/"
-              className="flex items-center text-lg sm:text-xl font-medium tracking-tight-brand select-none group font-sans shrink-0"
+              className="flex items-center text-lg sm:text-xl font-medium tracking-tight-brand gap-[0.25em] select-none group font-sans shrink-0"
             >
               <span className="text-fg group-hover:text-fg/90 transition-colors">
                 Sketch

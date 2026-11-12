@@ -1,15 +1,25 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FiLayers } from "react-icons/fi";
+import { FiLayers, FiArrowRight } from "react-icons/fi";
 import { buildAssetPath } from "@/utils/buildAssetPath";
 import { getOriginalImageUrl } from "@/utils/imageUrl";
 import { cleanText } from "@/utils/seo";
+import slugify from "@/utils/slugify";
+
+const focusRing =
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action";
+
+function subCategoryPath(sub) {
+  const cat = sub?.category;
+  if (!sub?.id || !cat?.id) return null;
+  return `/${cat.slug || slugify(cat.name || "")}-${cat.id}/${sub.slug || slugify(sub.name || "")}-${sub.id}`;
+}
 
 /**
- * Editorial internal-linking section: a grid of asset cards.
+ * Editorial internal-linking section: a grid of compact asset cards.
  * Renders nothing when there are no assets.
  *
- * Every link goes through buildAssetPath (canonical 3-tier URL).
+ * Every asset link goes through buildAssetPath (canonical 3-tier URL).
  */
 const LinkedAssetsSection = ({ assets, title, eyebrow, className = "" }) => {
   const items = Array.isArray(assets) ? assets.filter((a) => a?.id) : [];
@@ -18,70 +28,79 @@ const LinkedAssetsSection = ({ assets, title, eyebrow, className = "" }) => {
   return (
     <section
       aria-label={title}
-      className={`bg-surface/30 backdrop-blur-2xl rounded-panel border border-white/[0.08] p-5 shadow-2xl shadow-black/40 overflow-hidden relative space-y-4 ${className}`}
+      className={`bg-surface/30 backdrop-blur-2xl rounded-panel border border-white/[0.08] p-4 sm:p-5 shadow-2xl shadow-black/40 overflow-hidden relative space-y-4 ${className}`}
     >
       <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] via-transparent to-action/[0.02] pointer-events-none" />
 
       <div className="flex items-center justify-between gap-3 pb-3 border-b border-white/[0.08] relative z-10">
-        <div className="flex items-center gap-2 min-w-0">
+        <h2 className="text-xs font-mono uppercase tracking-wider text-action font-semibold flex items-center gap-2 min-w-0">
           <span className="w-2 h-2 rounded-full bg-action flex-shrink-0" />
-          <h2 className="text-xs font-mono uppercase tracking-wider text-action font-semibold flex items-center gap-2">
-            <FiLayers className="w-3.5 h-3.5 flex-shrink-0" />
-            <span>
-              {title} ({items.length})
-            </span>
-          </h2>
-        </div>
+          <FiLayers className="w-3.5 h-3.5 flex-shrink-0" />
+          <span className="truncate">{title}</span>
+          <span className="text-fg-secondary/60 font-normal">· {items.length}</span>
+        </h2>
         {eyebrow && (
-          <span className="hidden sm:inline text-[10px] font-mono text-fg-secondary/70 uppercase">
+          <span className="hidden sm:inline text-[10px] font-mono text-fg-secondary/70 uppercase flex-shrink-0">
             {eyebrow}
           </span>
         )}
       </div>
 
-      <ul className="grid grid-cols-2 sm:grid-cols-3 gap-3 relative z-10">
+      <ul className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2.5 relative z-10">
         {items.map((item) => {
-          const name = cleanText(item.name, 40) || "Untitled asset";
+          const name = cleanText(item.name, 60) || "Untitled asset";
           const isPaid = item.access_type === "paid";
-          const subName = item.sub_category?.name;
+          const href = buildAssetPath(item);
+          const subName = item.sub_category?.name?.trim();
+          const subHref = subCategoryPath(item.sub_category);
 
           return (
-            <li key={item.id}>
+            <li
+              key={item.id}
+              className="group flex flex-col rounded-xl overflow-hidden border border-white/10 bg-canvas/60 shadow-md shadow-black/30 transition-all duration-300 hover:-translate-y-0.5 hover:border-action/40 hover:shadow-lg hover:shadow-action/5"
+            >
               <Link
-                href={buildAssetPath(item)}
-                className="group block rounded-xl overflow-hidden border border-white/10 bg-canvas/60 hover:border-action/40 transition-colors duration-200"
+                href={href}
+                tabIndex={-1}
+                className="relative block aspect-[4/3] w-full bg-[radial-gradient(circle_at_50%_45%,rgba(79,219,134,0.10),transparent_70%)]"
               >
-                <div className="relative aspect-[4/3] w-full bg-canvas">
-                  {item.cover && (
-                    <Image
-                      src={getOriginalImageUrl(item.cover)}
-                      alt={item.cover_alt?.trim() || name}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      sizes="(max-width: 640px) 50vw, 200px"
-                    />
-                  )}
-                  <span
-                    className={`absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold font-mono border backdrop-blur-sm ${
-                      isPaid
-                        ? "text-extension border-extension-tintLine bg-extension-tintBg/80"
-                        : "text-action border-action-tintLine bg-action-tintBg"
-                    }`}
-                  >
-                    {isPaid ? "PRO" : "FREE"}
-                  </span>
-                </div>
-                <div className="p-2.5 space-y-0.5">
-                  <p className="text-xs text-fg font-medium leading-snug line-clamp-2">
-                    {name}
-                  </p>
-                  {subName && (
-                    <p className="text-[10px] font-mono text-fg-secondary truncate">
-                      {subName}
-                    </p>
-                  )}
-                </div>
+                {item.cover && (
+                  <Image
+                    src={getOriginalImageUrl(item.cover)}
+                    alt={item.cover_alt?.trim() || name}
+                    fill
+                    className="object-contain p-2.5 drop-shadow-[0_6px_12px_rgba(0,0,0,0.6)] transition-transform duration-500 ease-out group-hover:scale-[1.45]"
+                    sizes="(max-width: 640px) 50vw, 200px"
+                  />
+                )}
+                <span
+                  className={`absolute top-2 left-2 px-1.5 py-0.5 rounded-full text-[9px] font-semibold font-mono border backdrop-blur-sm ${
+                    isPaid
+                      ? "text-extension-tintFg border-extension-tintLine bg-extension-tintBg/90"
+                      : "text-action border-action-tintLine bg-action-tintBg/90"
+                  }`}
+                >
+                  {isPaid ? "PRO ✦" : "FREE"}
+                </span>
               </Link>
+
+              <div className="flex flex-1 flex-col gap-1.5 p-2 border-t border-white/[0.06]">
+                <Link
+                  href={href}
+                  className={`text-xs text-fg font-medium leading-snug line-clamp-2 rounded-sm transition-colors hover:text-action ${focusRing}`}
+                >
+                  {name}
+                </Link>
+                {subName && subHref && (
+                  <Link
+                    href={subHref}
+                    className={`self-end mt-auto inline-flex items-center gap-1 max-w-full text-xs font-mono text-fg-secondary rounded-sm transition-colors hover:text-action ${focusRing}`}
+                  >
+                    <span className="truncate">{subName}</span>
+                    <FiArrowRight className="w-3 h-3 flex-shrink-0" />
+                  </Link>
+                )}
+              </div>
             </li>
           );
         })}

@@ -72,7 +72,7 @@ export function generateWebsiteAndOrgSchema(socialUrls = []) {
       {
         "@type": "WebSite",
         "@id": `${SITE_URL}/#website`,
-        name: "SketchShaper",
+        name: "Sketch shaper",
         url: SITE_URL,
         description: "Free & Pro 3D Models, Textures, and Plugins for SketchUp",
         publisher: {
@@ -90,7 +90,7 @@ export function generateWebsiteAndOrgSchema(socialUrls = []) {
       {
         "@type": "Organization",
         "@id": `${SITE_URL}/#organization`,
-        name: "SketchShaper",
+        name: "Sketch shaper",
         url: SITE_URL,
         logo: {
           "@type": "ImageObject",
@@ -152,7 +152,7 @@ export function generateAssetSchema(asset, { category, subCategory, pathname }) 
     category: `${catName} > ${subName}`,
     brand: {
       "@type": "Brand",
-      name: "SketchShaper",
+      name: "Sketch shaper",
     },
     offers: {
       "@type": "Offer",
@@ -218,7 +218,7 @@ export function generateSoftwareAppSchema({
     image,
     publisher: {
       "@type": "Organization",
-      name: "SketchShaper",
+      name: "Sketch shaper",
       url: SITE_URL,
     },
     offers: {
@@ -243,7 +243,7 @@ export function generateWebPageSchema({ title, description, pathname = "/" }) {
     url: fullUrl,
     publisher: {
       "@type": "Organization",
-      name: "SketchShaper",
+      name: "Sketch shaper",
       url: SITE_URL,
     },
   };

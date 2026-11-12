@@ -64,6 +64,10 @@ test("buildPageMetadata applies title branding, canonicals, and robots rules", (
   });
 
   assert.equal(metadata.title, "Filtered catalog");
+  assert.equal(
+    buildPageMetadata({ title: "Chair 3D Model | SKP File | Sketch Shaper" }).title,
+    "Chair 3D Model | SKP File",
+  );
   assert.equal(metadata.alternates.canonical, "https://www.sketchshaper.com/models");
   assert.deepEqual(
     { index: metadata.robots.index, follow: metadata.robots.follow },
