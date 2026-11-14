@@ -7,18 +7,6 @@ const allowedTags = new Set([
 
 const allowedAttributes = new Set(["href", "target", "rel", "src", "alt", "title", "class", "id", "style", "width", "height"]);
 
-const decodeHtmlEntities = (input) => {
-  if (!input) return "";
-
-  return String(input)
-    .replace(/&nbsp;/gi, " ")
-    .replace(/&amp;/gi, "&")
-    .replace(/&lt;/gi, "<")
-    .replace(/&gt;/gi, ">")
-    .replace(/&quot;/gi, '"')
-    .replace(/&#39;/gi, "'");
-};
-
 const sanitizeAttributes = (attributeString, tagName = "") => {
   if (!attributeString) return "";
 
@@ -96,8 +84,8 @@ const sanitizeAttributes = (attributeString, tagName = "") => {
 export function sanitizeHtml(html) {
   if (!html) return "";
 
-  const decodedHtml = decodeHtmlEntities(html);
-  const withoutUnsafeTags = decodedHtml
+  // Entities stay encoded: decoding &lt;b&gt; first would turn escaped sample code into live tags
+  const withoutUnsafeTags = String(html)
     .replace(/<!--[\s\S]*?-->/g, "")
     .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
     .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")

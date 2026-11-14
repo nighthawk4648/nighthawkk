@@ -3,9 +3,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import useSWR from "swr";
+import { EXTENSION_DOWNLOAD_BASELINE } from "@/utils/constants";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
-const DOWNLOAD_COUNT_BASELINE = 39350; // Baseline download count
 const fetcher = (url) => fetch(url).then((res) => res.json());
 
 const ExtensionPage = ({ initialData }) => {
@@ -31,7 +31,7 @@ const ExtensionPage = ({ initialData }) => {
   }, []);
 
   const totalDownloads =
-    DOWNLOAD_COUNT_BASELINE + (downloadData?.data?.count || 0);
+    EXTENSION_DOWNLOAD_BASELINE + (downloadData?.data?.count || 0);
 
   const handleDownload = () => {
     // 1. Immediately increment the counter on screen (optimistic UI update)

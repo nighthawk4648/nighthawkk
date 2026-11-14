@@ -15,7 +15,10 @@ const getData = async (path, options = {}) => {
       signal: options.signal || AbortSignal.timeout(timeoutMs),
       ...options,
     };
+    // These are ours, not fetch options
     delete fetchOptions.timeout;
+    delete fetchOptions.tags;
+    delete fetchOptions.revalidate;
 
     if (!options.cache && !options.next) {
       fetchOptions.next = {
@@ -54,5 +57,9 @@ const getData = async (path, options = {}) => {
     throw error;
   }
 };
+
+// For data a page can live without: a backend failure becomes null instead of an error page
+export const getOptional = (path, options) =>
+  getData(path, options).catch(() => null);
 
 export default getData;

@@ -8,10 +8,10 @@ import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 import { getOriginalImageUrl } from "@/utils/imageUrl";
 import { formatDate } from "@/utils/formateDate";
 import { stripHtml, estimateReadingTime } from "@/utils/sanitizeHtml";
-import slugify from "@/utils/slugify";
 import BlogHorizontalAd from "@/components/Blog/BlogHorizontalAd";
 import BlogGutterAd from "@/components/Blog/BlogGutterAd";
 import AdUnit from "@/components/Shared/GoogleAdsense/AdUnit";
+import { blogPath } from "@/utils/paths";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
@@ -114,7 +114,7 @@ const BlogsPage = ({ initialData = null }) => {
 
                 <div className="relative z-10">
                   <Link
-                    href={`/blog/${featuredArticle.slug || slugify(featuredArticle.title)}-${featuredArticle.id}`}
+                    href={blogPath(featuredArticle)}
                     className="block"
                   >
                     <div className="aspect-[16/9] w-full rounded-[14px] overflow-hidden mb-6 bg-canvas/80 border border-white/10 relative shadow-inner">
@@ -170,7 +170,7 @@ const BlogsPage = ({ initialData = null }) => {
                 <div className="mt-6 pt-4 border-t border-white/[0.08] text-xs font-mono text-fg-secondary flex items-center justify-between">
                   <span>By {featuredArticle.name || "Sketch shaper"}</span>
                   <Link
-                    href={`/blog/${featuredArticle.slug || slugify(featuredArticle.title)}-${featuredArticle.id}`}
+                    href={blogPath(featuredArticle)}
                     className="text-action hover:underline inline-flex items-center gap-1 font-medium group-hover:translate-x-0.5 transition-transform"
                   >
                     <span>Read full article</span>
@@ -182,53 +182,7 @@ const BlogsPage = ({ initialData = null }) => {
               {/* Right Stacked Column: Alternating Compact Articles, Ad, and Promo */}
               <div className="flex flex-col gap-5 sm:gap-6 justify-between h-full">
                 {/* 1. First Compact Article */}
-                {compactArticles[0] && (
-                  <Link
-                    key={compactArticles[0].id}
-                    href={`/blog/${compactArticles[0].slug || slugify(compactArticles[0].title)}-${compactArticles[0].id}`}
-                    className="p-4 sm:p-5 rounded-card border border-white/[0.08] hover:border-action/40 bg-surface/30 hover:bg-surface/50 backdrop-blur-2xl transition-all duration-300 flex items-center gap-4 group shadow-lg shadow-black/10 relative overflow-hidden"
-                  >
-                    <div className="w-24 sm:w-28 h-20 sm:h-24 rounded-[12px] bg-canvas/80 border border-white/10 flex-shrink-0 relative overflow-hidden">
-                      {compactArticles[0].image ? (
-                        <Image
-                          src={getOriginalImageUrl(compactArticles[0].image)}
-                          alt={
-                            compactArticles[0].image_alt?.trim() ||
-                            compactArticles[0].title ||
-                            "Article thumbnail"
-                          }
-                          width={112}
-                          height={96}
-                          className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-[10px] font-mono text-fg-secondary/50 p-2 text-center">
-                          Article
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-xs font-mono text-fg-secondary mb-1 flex items-center gap-2">
-                        <span className="text-action">Guide</span>
-                        <span>&bull;</span>
-                        <span>
-                          {estimateReadingTime(
-                            compactArticles[0].short_description ||
-                              compactArticles[0].paragraph_one,
-                          )}
-                        </span>
-                      </div>
-                      <h3 className="text-sm sm:text-base font-semibold text-fg group-hover:text-action transition-colors leading-snug line-clamp-2 mb-1">
-                        {compactArticles[0].title}
-                      </h3>
-                      <span className="text-[11px] font-mono text-fg-secondary/70">
-                        {compactArticles[0].created_at
-                          ? formatDate(compactArticles[0].created_at)
-                          : ""}
-                      </span>
-                    </div>
-                  </Link>
-                )}
+                {compactArticles[0] && <CompactArticle article={compactArticles[0]} />}
 
                 {/* 2. Horizontal Ad #1 (Between Blog 1 and Blog 2) */}
                 <BlogHorizontalAd
@@ -238,53 +192,7 @@ const BlogsPage = ({ initialData = null }) => {
                 />
 
                 {/* 3. Second Compact Article */}
-                {compactArticles[1] && (
-                  <Link
-                    key={compactArticles[1].id}
-                    href={`/blog/${compactArticles[1].slug || slugify(compactArticles[1].title)}-${compactArticles[1].id}`}
-                    className="p-4 sm:p-5 rounded-card border border-white/[0.08] hover:border-action/40 bg-surface/30 hover:bg-surface/50 backdrop-blur-2xl transition-all duration-300 flex items-center gap-4 group shadow-lg shadow-black/10 relative overflow-hidden"
-                  >
-                    <div className="w-24 sm:w-28 h-20 sm:h-24 rounded-[12px] bg-canvas/80 border border-white/10 flex-shrink-0 relative overflow-hidden">
-                      {compactArticles[1].image ? (
-                        <Image
-                          src={getOriginalImageUrl(compactArticles[1].image)}
-                          alt={
-                            compactArticles[1].image_alt?.trim() ||
-                            compactArticles[1].title ||
-                            "Article thumbnail"
-                          }
-                          width={112}
-                          height={96}
-                          className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-[10px] font-mono text-fg-secondary/50 p-2 text-center">
-                          Article
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-xs font-mono text-fg-secondary mb-1 flex items-center gap-2">
-                        <span className="text-action">Guide</span>
-                        <span>&bull;</span>
-                        <span>
-                          {estimateReadingTime(
-                            compactArticles[1].short_description ||
-                              compactArticles[1].paragraph_one,
-                          )}
-                        </span>
-                      </div>
-                      <h3 className="text-sm sm:text-base font-semibold text-fg group-hover:text-action transition-colors leading-snug line-clamp-2 mb-1">
-                        {compactArticles[1].title}
-                      </h3>
-                      <span className="text-[11px] font-mono text-fg-secondary/70">
-                        {compactArticles[1].created_at
-                          ? formatDate(compactArticles[1].created_at)
-                          : ""}
-                      </span>
-                    </div>
-                  </Link>
-                )}
+                {compactArticles[1] && <CompactArticle article={compactArticles[1]} />}
 
                 {/* 4. Official SketchShaper Extension Promo Card */}
                 <div className="p-4 sm:p-5 rounded-card border border-white/[0.08] hover:border-action/40 bg-surface/30 hover:bg-surface/40 backdrop-blur-2xl flex flex-col justify-between shadow-lg transition-all duration-300 relative overflow-hidden group">
@@ -373,7 +281,7 @@ const BlogsPage = ({ initialData = null }) => {
 
                   <div className="relative z-10 flex flex-col justify-between h-full">
                     <Link
-                      href={`/blog/${article.slug || slugify(article.title)}-${article.id}`}
+                      href={blogPath(article)}
                       className="block"
                     >
                       <div className="aspect-[16/10] w-full rounded-[14px] overflow-hidden mb-5 bg-canvas/80 border border-white/10 relative shadow-inner">
@@ -427,7 +335,7 @@ const BlogsPage = ({ initialData = null }) => {
 
                     <div className="mt-5 pt-4 border-t border-white/[0.08] text-xs font-mono text-action flex items-center justify-between">
                       <Link
-                        href={`/blog/${article.slug || slugify(article.title)}-${article.id}`}
+                        href={blogPath(article)}
                         className="hover:underline flex items-center gap-1 group-hover:translate-x-0.5 transition-transform"
                       >
                         <span>Read article</span>
@@ -522,6 +430,47 @@ const BlogsPage = ({ initialData = null }) => {
   </main>
 );
 };
+
+// Small side card used next to the featured article
+function CompactArticle({ article }) {
+  return (
+    <Link
+      href={blogPath(article)}
+      className="p-4 sm:p-5 rounded-card border border-white/[0.08] hover:border-action/40 bg-surface/30 hover:bg-surface/50 backdrop-blur-2xl transition-all duration-300 flex items-center gap-4 group shadow-lg shadow-black/10 relative overflow-hidden"
+    >
+      <div className="w-24 sm:w-28 h-20 sm:h-24 rounded-[12px] bg-canvas/80 border border-white/10 flex-shrink-0 relative overflow-hidden">
+        {article.image ? (
+          <Image
+            src={getOriginalImageUrl(article.image)}
+            alt={article.image_alt?.trim() || article.title || "Article thumbnail"}
+            width={112}
+            height={96}
+            className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-[10px] font-mono text-fg-secondary/50 p-2 text-center">
+            Article
+          </div>
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="text-xs font-mono text-fg-secondary mb-1 flex items-center gap-2">
+          <span className="text-action">Guide</span>
+          <span>&bull;</span>
+          <span>
+            {estimateReadingTime(article.short_description || article.paragraph_one)}
+          </span>
+        </div>
+        <h3 className="text-sm sm:text-base font-semibold text-fg group-hover:text-action transition-colors leading-snug line-clamp-2 mb-1">
+          {article.title}
+        </h3>
+        <span className="text-[11px] font-mono text-fg-secondary/70">
+          {article.created_at ? formatDate(article.created_at) : ""}
+        </span>
+      </div>
+    </Link>
+  );
+}
 
 // Native in-feed ad card matching blog card dimensions and glass styling
 function BlogFeedAd() {

@@ -1,6 +1,6 @@
-import slugify from "@/utils/slugify";
 import Link from "next/link";
 import React from "react";
+import { categoryPath } from "@/utils/paths";
 
 const Footer = ({ categories = [], footerPages = [], socials = [] }) => {
   // SVG Icons
@@ -124,7 +124,7 @@ const Footer = ({ categories = [], footerPages = [], socials = [] }) => {
               {categories?.map((category) => (
                 <li key={category?.id}>
                   <Link
-                    href={`/${category?.slug || slugify(category?.name)}-${category?.id}`}
+                    href={categoryPath(category)}
                     className="text-sm text-fg-secondary hover:text-action transition-colors inline-block"
                   >
                     {category?.name}

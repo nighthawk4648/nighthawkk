@@ -2,6 +2,7 @@ export const revalidate = 300;
 
 import SubCategoryDetails from "@/components/SubCategory/SubCategoryDetails/SubCategoryDetails";
 import { notFound, redirect, permanentRedirect } from "next/navigation";
+import getData from "@/utils/getData";
 import { buildPageMetadata, cleanText } from "@/utils/seo";
 import { validateAsset, notFoundMeta } from "@/utils/validateSlug";
 import buildAssetPath from "@/utils/buildAssetPath";
@@ -105,11 +106,33 @@ const Page = async ({ params, searchParams }) => {
     { name: asset.name, url: canonicalPath },
   ]);
 
+  // Up to 5 neighbours in the same sub-category; the list is cached, and a failure just hides the section
+  const siblingsRes = asset.sub_category_id
+    ? await getData(`sub-categories/${asset.sub_category_id}`).catch(() => null)
+    : null;
+  const siblings = (siblingsRes?.data?.assets || []).filter((a) => a.id !== asset.id);
+  const start = Math.max(
+    0,
+    (siblingsRes?.data?.assets || []).findIndex((a) => a.id === asset.id),
+  );
+  const relatedAssets = [...siblings.slice(start), ...siblings.slice(0, start)]
+    .slice(0, 5)
+    .map(({ id, name, slug, cover, cover_alt, access_type, size, file }) => ({
+      id,
+      name,
+      slug,
+      cover,
+      cover_alt,
+      access_type,
+      size,
+      file: file && { file_size: file.file_size },
+    }));
+
   return (
     <div className="">
       <JsonLd data={productSchema} />
       <JsonLd data={breadcrumbsSchema} />
-      <SubCategoryDetails assetDetails={asset} />
+      <SubCategoryDetails assetDetails={asset} relatedAssets={relatedAssets} />
     </div>
   );
 };

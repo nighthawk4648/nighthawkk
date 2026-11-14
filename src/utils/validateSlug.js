@@ -56,6 +56,10 @@ export const validateCategory = cache(async (categoryParam) => {
   return categoryData;
 });
 
+// A sub-category only lives under its own category (guards /textures-4/chairs-24)
+export const belongsToCategory = (subCategory, category) =>
+  Number(subCategory?.category_id) === Number(category?.id);
+
 // ─── SubCategory page: /category-slug-{id}/subcategory-slug-{id} ───
 export const validateSubCategory = cache(async (categoryParam, subCategoryParam) => {
   const decodedCat = safeDecode(categoryParam);
@@ -75,6 +79,7 @@ export const validateSubCategory = cache(async (categoryParam, subCategoryParam)
     revalidate: 300,
   });
   if (!subCategoryData?.data) return null;
+  if (!belongsToCategory(subCategoryData.data, categoryData.data)) return null;
 
   const subSlug = (
     subCategoryData.data.slug ||

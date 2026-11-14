@@ -1,19 +1,15 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import slugify from "@/utils/slugify";
 import { formatDate } from "@/utils/formateDate";
 import { stripHtml } from "@/utils/sanitizeHtml";
+import { getOriginalImageUrl } from "@/utils/imageUrl";
+import { blogPath } from "@/utils/paths";
 
 export default function ArticlesSection({ blogs = [] }) {
   if (!blogs || blogs.length === 0) {
     return null;
   }
-
-  const getOriginalImageUrl = (imagePath) => {
-    if (!imagePath) return "";
-    return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
-  };
 
   // Only take real database blog posts (up to 3 latest)
   const realArticles = blogs.slice(-3).reverse().map((blog) => ({
@@ -23,7 +19,7 @@ export default function ArticlesSection({ blogs = [] }) {
     author: blog.name || "Sketch shaper",
     date: formatDate(blog.created_at) || "Recent",
     image: blog.image ? getOriginalImageUrl(blog.image) : null,
-    href: `/blog/${blog.slug || slugify(blog.title)}-${blog.id}`,
+    href: blogPath(blog),
   }));
 
   const gridClass =

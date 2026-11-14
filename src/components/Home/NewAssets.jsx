@@ -3,16 +3,10 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import slugify from "@/utils/slugify";
 import { buildAssetPath } from "@/utils/buildAssetPath";
+import { getOriginalImageUrl } from "@/utils/imageUrl";
 
 export default function NewAssets({ assets = [], totalAssetsCount = 0 }) {
-  const getOriginalImageUrl = (imagePath) => {
-    if (!imagePath) return "";
-    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) return imagePath;
-    return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE || ""}${imagePath}`;
-  };
-
   // Latest assets arrive newest-first from the server. Skip any asset with a missing
   // category or subcategory name. No fallbacks.
   const displayAssets = React.useMemo(

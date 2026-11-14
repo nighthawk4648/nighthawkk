@@ -4,7 +4,7 @@ import { buildPageMetadata } from "@/utils/seo";
 import { JsonLd, generateBreadcrumbSchema } from "@/utils/schema";
 
 export const metadata = buildPageMetadata({
-  title: "Commission Custom 3D & Architectural Projects | Sketch shaper Studio",
+  title: "Commission Custom 3D & Architectural Projects",
   description:
     "Request custom 3D modeling, full interior design & exterior architectural scenes, SketchUp plugins, and realistic PBR material sets directly from the Sketch shaper studio.",
   pathname: "/contact",

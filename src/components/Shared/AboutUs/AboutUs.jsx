@@ -1,13 +1,10 @@
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import Image from "next/image";
 import React from "react";
+import { getOriginalImageUrl } from "@/utils/imageUrl";
 
 const AboutUs = ({ aboutUs }) => {
   if (!aboutUs) return null;
-
-  const getOriginalImageUrl = (imagePath) => {
-    return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE || ""}${imagePath}`;
-  };
 
   const coverUrl = aboutUs?.cover
     ? getOriginalImageUrl(aboutUs.cover)

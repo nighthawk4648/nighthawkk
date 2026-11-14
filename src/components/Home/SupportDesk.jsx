@@ -10,7 +10,7 @@ export default function SupportDesk() {
   const cardRef = useRef(null);
   const glowRef = useRef(null);
 
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", message: "", website: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState({ visible: false, message: "", success: true });
 
@@ -106,7 +106,7 @@ export default function SupportDesk() {
         message: "Request received — the studio desk will follow up shortly.",
         success: true,
       });
-      setFormData({ name: "", email: "", message: "" });
+      setFormData({ name: "", email: "", message: "", website: "" });
     } catch (err) {
       console.error("Support request error:", err);
       setFeedback({
@@ -185,6 +185,19 @@ export default function SupportDesk() {
           {/* Right Column: Commissioning / Request Form */}
           <div className="rounded-xl sm:rounded-2xl border border-white/10 bg-canvas/60 p-4 sm:p-8 shadow-xl backdrop-blur-xl">
             <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5" noValidate>
+              {/* Honeypot for bots: off-screen, and the backend drops any message that fills it */}
+              <div aria-hidden="true" className="absolute -left-[9999px] top-auto h-px w-px overflow-hidden">
+                <label htmlFor="support-website">Website</label>
+                <input
+                  id="support-website"
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={formData.website}
+                  onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                />
+              </div>
               <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2">
                 <div>
                   <label

@@ -1,15 +1,11 @@
 import React from "react";
 import Image from "next/image";
+import { getOriginalImageUrl } from "@/utils/imageUrl";
 
 const SupportedBy = ({ supportedby = [] }) => {
   if (!supportedby || supportedby.length === 0) {
     return null;
   }
-
-  const getOriginalImageUrl = (imagePath) => {
-    if (!imagePath) return "";
-    return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE || ""}${imagePath}`;
-  };
 
   return (
     <section

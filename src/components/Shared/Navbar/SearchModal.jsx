@@ -3,8 +3,9 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import slugify from "@/utils/slugify";
 import { buildAssetPath } from "@/utils/buildAssetPath";
+import { categoryPath } from "@/utils/paths";
+import { getOriginalImageUrl } from "@/utils/imageUrl";
 
 // Module-scope LRU cache: survives unmounts, capped at 40 entries
 const SEARCH_CACHE_MAX = 40;
@@ -113,13 +114,12 @@ export default function SearchModal({
       }
     }, 140);
 
-    return () => clearTimeout(timeoutId);
+    return () => {
+      clearTimeout(timeoutId);
+      // A slower earlier request must not overwrite results for a newer query
+      abortControllerRef.current?.abort();
+    };
   }, [query]);
-
-  const getOriginalImageUrl = (imagePath) => {
-    if (!imagePath) return "";
-    return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE || ""}${imagePath}`;
-  };
 
   const handleSelect = (url) => {
     onClose();
@@ -312,7 +312,7 @@ export default function SearchModal({
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       {categories.map((cat) => {
-                        const url = cat.slug || `/${slugify(cat.name)}-${cat.id}`;
+                        const url = cat.slug || categoryPath(cat);
                         const isSelected =
                           flatItems[selectedIndex]?.id === `cat-${cat.id}`;
 

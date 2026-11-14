@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import { EXTENSION_DOWNLOAD_BASELINE } from "@/utils/constants";
 import Link from "next/link";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
-const BASELINE_DOWNLOADS = 39350;
 
 export default function ExtensionBanner({ initialDownloads = 0 }) {
   const [downloadCount, setDownloadCount] = useState(
-    BASELINE_DOWNLOADS + (Number(initialDownloads) || 0),
+    EXTENSION_DOWNLOAD_BASELINE + (Number(initialDownloads) || 0),
   );
   const [isDownloading, setIsDownloading] = useState(false);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
@@ -29,7 +29,7 @@ export default function ExtensionBanner({ initialDownloads = 0 }) {
         .then((res) => (res.ok ? res.json() : null))
         .then((data) => {
           if (data?.data?.count != null) {
-            setDownloadCount(BASELINE_DOWNLOADS + data.data.count);
+            setDownloadCount(EXTENSION_DOWNLOAD_BASELINE + data.data.count);
           }
         })
         .catch((err) => console.error("Extension counter error:", err));

@@ -3,11 +3,12 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import slugify from "@/utils/slugify";
 import { usePatreonAuth } from "@/contexts/PatreonAuthContext";
 import { formatAssetSize } from "@/utils/formatAssetSize";
 import dynamic from "next/dynamic";
+import { getOriginalImageUrl } from "@/utils/imageUrl";
+import { categoryPath } from "@/utils/paths";
+import { buildAssetPath } from "@/utils/buildAssetPath";
 
 const preloadSearchModal = () => import("./SearchModal");
 
@@ -19,9 +20,7 @@ const SearchModal = dynamic(() => import("./SearchModal"), {
 export default function Navbar({
   categories = [],
   featuredAsset = null,
-  footerPages = [],
 }) {
-  const router = useRouter();
   const { user, isAuthenticated, login, logout } = usePatreonAuth();
 
   const [isBrowseOpen, setIsBrowseOpen] = useState(false);
@@ -90,11 +89,6 @@ export default function Navbar({
     };
   }, []);
 
-  const getOriginalImageUrl = (imagePath) => {
-    if (!imagePath) return "";
-    return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
-  };
-
   // Extract top categories for the Browse flyout (sorted: 3D models -> Textures -> Plugins)
   const sortedCategories = useMemo(() => {
     return [...categories].sort(
@@ -132,7 +126,7 @@ export default function Navbar({
   const featuredSize = formatAssetSize(featuredAsset) || STOCKHOLM_SOFA.size;
   const featuredAssetHref =
     featuredAsset && featuredCategory && featuredSubCategory
-      ? `/${featuredCategory.slug || slugify(featuredCategory.name)}/${featuredSubCategory.slug || slugify(featuredSubCategory.name)}/${featuredAsset.slug || slugify(featuredAsset.name)}-${featuredAsset.id}`
+      ? buildAssetPath(featuredAsset)
       : STOCKHOLM_SOFA.href;
 
   return (
@@ -273,7 +267,7 @@ export default function Navbar({
                             return (
                               <Link
                                 key={category.id}
-                                href={`/${category.slug || slugify(category.name)}-${category.id}`}
+                                href={categoryPath(category)}
                                 onClick={() => setIsBrowseOpen(false)}
                                 className="flex items-center justify-between p-2.5 rounded-lg hover:bg-surface-raised group transition-colors"
                               >
@@ -311,21 +305,13 @@ export default function Navbar({
                           className="block rounded-lg overflow-hidden border border-line bg-surface group cursor-pointer hover:border-action/50 transition-colors"
                         >
                           <div className="aspect-video relative overflow-hidden bg-surface-raised">
-                            {featuredCover ? (
-                              <Image
-                                src={getOriginalImageUrl(featuredCover)}
-                                alt={featuredName}
-                                fill
-                                sizes="(max-width: 768px) 100vw, 320px"
-                                className="object-cover group-hover:scale-105 transition-transform duration-300"
-                              />
-                            ) : (
-                              <img
-                                src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=600&q=80"
-                                alt={featuredName}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                              />
-                            )}
+                            <Image
+                              src={getOriginalImageUrl(featuredCover)}
+                              alt={featuredName}
+                              fill
+                              sizes="(max-width: 768px) 100vw, 320px"
+                              className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
                             <span className="absolute top-2 left-2 px-2 py-0.5 rounded text-[11px] font-mono bg-action-tintBg text-action-tintFg border border-action-tintLine">
                               {featuredAccessType === "paid"
                                 ? "PRO"
@@ -540,7 +526,7 @@ export default function Navbar({
                 {topCategories.map((cat) => (
                   <Link
                     key={cat.id}
-                    href={`/${cat.slug || slugify(cat.name)}-${cat.id}`}
+                    href={categoryPath(cat)}
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="p-2 rounded hover:bg-surface-raised text-fg-secondary hover:text-action truncate"
                   >
@@ -559,7 +545,6 @@ export default function Navbar({
           isOpen={isSearchOpen}
           initialQuery={initialSearchQuery}
           onClose={() => setIsSearchOpen(false)}
-          categories={categories}
         />
       )}
     </>

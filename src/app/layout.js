@@ -1,6 +1,6 @@
 import Footer from "@/components/Shared/Footer/Footer";
 import Navbar from "@/components/Shared/Navbar/Navbar";
-import getData from "@/utils/getData";
+import getData, { getOptional } from "@/utils/getData";
 import "./globals.css";
 
 import { GoogleAnalytics } from "@next/third-parties/google";
@@ -60,7 +60,8 @@ export async function generateMetadata() {
 
 export default async function RootLayout({ children }) {
   const categoriesPromise = getData("categories/nav");
-  const featuredAssetPromise = getData("assets/247");
+  // Only the navbar's featured card: the navbar has its own fallback if this fails
+  const featuredAssetPromise = getOptional("assets/247");
   const footerPagesPromise = getData("pages");
   const socialsPromise = getData("social");
 
@@ -93,7 +94,7 @@ export default async function RootLayout({ children }) {
     },
   };
 
-  // Only show full-screen error if the primary backend connection completely failed
+  // getData throws on backend failures (global-error.jsx handles those); null here means the nav data is missing (404)
   if (!categories) {
     return (
       <html
@@ -133,7 +134,6 @@ export default async function RootLayout({ children }) {
           <Navbar
             categories={categories?.data || []}
             featuredAsset={featuredCard || null}
-            footerPages={footerPages?.data || []}
           />
 
           {children}

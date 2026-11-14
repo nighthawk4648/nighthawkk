@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FiLayers } from "react-icons/fi";
 import { getOriginalImageUrl } from "@/utils/imageUrl";
 import { stripHtml } from "@/utils/sanitizeHtml";
-import slugify from "@/utils/slugify";
+import { blogPath } from "@/utils/paths";
 
 /**
  * Similar Articles Grid (3 Cards) — matches SketchShaper CAD dark glass aesthetic.
@@ -29,7 +29,7 @@ export default function BlogSimilarArticles({ articles = [] }) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
         {items.map((item) => {
-          const href = `/blog/${item.slug || slugify(item.title)}-${item.id}`;
+          const href = blogPath(item);
 
           return (
             <Link

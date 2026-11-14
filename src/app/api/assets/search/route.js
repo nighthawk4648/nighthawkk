@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import slugify from "@/utils/slugify";
 import { buildAssetPath } from "@/utils/buildAssetPath";
+import { categoryPath } from "@/utils/paths";
 
 export const dynamic = "force-dynamic";
 
@@ -104,7 +105,7 @@ export async function GET(request) {
     const category = filteredCategories.slice(0, 5).map((item) => ({
       id: item.id,
       name: item.name,
-      slug: `/${item.slug || slugify(item.name)}-${item.id}`,
+      slug: categoryPath(item),
     }));
 
     // Known category fallbacks

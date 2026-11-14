@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { usePatreonAuth } from "@/contexts/PatreonAuthContext";
+import { safeReturnPath } from "@/utils/safeReturnPath";
 
 function PatreonCallbackContent() {
   const router = useRouter();
@@ -15,10 +16,10 @@ function PatreonCallbackContent() {
 
   const getReturnUrl = () => {
     const fromParam = searchParams.get("returnUrl");
-    if (fromParam) return fromParam;
+    if (fromParam) return safeReturnPath(fromParam);
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem("patreon_return_url");
-      if (stored) return stored;
+      if (stored) return safeReturnPath(stored);
     }
     return "/";
   };

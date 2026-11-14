@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
-import { optimizedImageUrl } from "@/utils/imageUrl";
+import { getOriginalImageUrl, optimizedImageUrl } from "@/utils/imageUrl";
 import { useState, useEffect, useCallback } from "react";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
@@ -10,12 +10,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 export const Gallery = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
 
-  const getOriginalImageUrl = (imagePath) => {
-    if (!imagePath) return "";
-    return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE || ""}${imagePath}`;
-  };
-
-  const fetchGalleryImages = async (page, limit) => {
+  const fetchGalleryImages = useCallback(async (page, limit) => {
     try {
       const response = await fetch(
         `${API_BASE_URL}/gallery/pages?page=${page}&limit=${limit}&order=desc`
@@ -36,7 +31,7 @@ export const Gallery = () => {
       console.error("Error fetching gallery images:", error);
       throw error;
     }
-  };
+  }, []);
 
   const {
     data: images,

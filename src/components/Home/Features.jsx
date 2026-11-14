@@ -3,14 +3,10 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import slugify from "@/utils/slugify";
+import { getOriginalImageUrl } from "@/utils/imageUrl";
+import { categoryPath } from "@/utils/paths";
 
 export default function Features({ categories = [] }) {
-  const getOriginalImageUrl = (imagePath) => {
-    if (!imagePath) return "";
-    return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
-  };
-
   // Sort categories by id to match original production order
   const sortedCategories = React.useMemo(() => {
     if (!categories || categories.length === 0) return [];
@@ -60,7 +56,7 @@ export default function Features({ categories = [] }) {
           return (
             <Link
               key={category.id}
-              href={`/${category.slug || slugify(category.name)}-${category.id}`}
+              href={categoryPath(category)}
               className="w-[170px] xs:w-[180px] sm:w-auto sm:flex-1 flex-shrink-0 snap-start flex flex-col sm:flex-row items-center sm:items-center text-center sm:text-left gap-2 sm:gap-5 lg:gap-6 p-3 sm:p-5 lg:p-6 rounded-xl sm:rounded-2xl lg:rounded-[22px] bg-surface/75 border border-line hover:border-action/50 transition-all duration-300 shadow-sm group cursor-pointer"
             >
               {/* Spherical Preview Orb (Scaled to 56px on mobile) */}

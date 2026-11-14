@@ -2,7 +2,7 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import slugify from "./slugify.js";
 import buildAssetPath from "./buildAssetPath.js";
-import { safeDecode } from "./validateSlug.js";
+import { safeDecode, belongsToCategory } from "./validateSlug.js";
 
 describe("Frontend Slug Routing, Self-Healing URLs & Canonicalization", () => {
   describe("Category URL Resolution", () => {
@@ -26,6 +26,15 @@ describe("Frontend Slug Routing, Self-Healing URLs & Canonicalization", () => {
   });
 
   describe("SubCategory URL Resolution", () => {
+    it("only accepts a subcategory under its own category", () => {
+      const sub = { id: 24, category_id: 3 };
+      assert.equal(belongsToCategory(sub, { id: 3 }), true);
+      assert.equal(belongsToCategory(sub, { id: "3" }), true);
+      assert.equal(belongsToCategory(sub, { id: 4 }), false);
+      assert.equal(belongsToCategory({ id: 24 }, { id: 3 }), false);
+      assert.equal(belongsToCategory(null, { id: 3 }), false);
+    });
+
     it("prioritizes custom subcategory slug and parent category slug", () => {
       const cat = { id: 1, name: "Architecture", slug: "arch" };
       const sub = { id: 12, name: "Modern Sofas", slug: "sofas" };

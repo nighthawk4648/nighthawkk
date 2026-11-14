@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import getData from "./getData.js";
+import getData, { getOptional } from "./getData.js";
 
 process.env.API_URL_INTERNAL = "http://backend.test";
 
@@ -35,4 +35,17 @@ test("200 returns the data", async () => {
   );
   assert.deepEqual(result, { data: { id: 1 } });
   assert.equal(logged.length, 0);
+});
+
+test("getOptional turns a backend failure into null", async () => {
+  const realFetch = globalThis.fetch;
+  const realError = console.error;
+  globalThis.fetch = async () => new Response("{}", { status: 500 });
+  console.error = () => {};
+  try {
+    assert.equal(await getOptional("assets/1"), null);
+  } finally {
+    globalThis.fetch = realFetch;
+    console.error = realError;
+  }
 });

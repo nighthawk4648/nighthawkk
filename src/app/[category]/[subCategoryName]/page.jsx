@@ -46,6 +46,14 @@ export async function generateMetadata({ params, searchParams }) {
   });
 }
 
+// The client only needs these fields, not the sub-categories and assets they carry
+const pickCatalogFields = ({ id, name, slug, short_description }) => ({
+  id,
+  name,
+  slug,
+  short_description,
+});
+
 const Page = async ({ params, searchParams }) => {
   const { category, subCategoryName } = await params;
   const resolvedSearchParams = await searchParams;
@@ -117,8 +125,8 @@ const Page = async ({ params, searchParams }) => {
       <SingleSubCategoryPage
         categoryId={categoryId}
         subCategoryId={subCategoryId}
-        initialCategoryData={result?.categoryData}
-        initialSubCategoryData={result?.subCategoryData}
+        initialCategoryData={{ data: pickCatalogFields(result.categoryData.data) }}
+        initialSubCategoryData={{ data: pickCatalogFields(result.subCategoryData.data) }}
         navCategories={navData?.data || []}
         serverAssets={paginatedAssets}
         currentPage={currentPage}

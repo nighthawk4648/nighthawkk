@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getOriginalImageUrl } from "@/utils/imageUrl";
 import { stripHtml } from "@/utils/sanitizeHtml";
-import slugify from "@/utils/slugify";
+import { blogPath } from "@/utils/paths";
 
 /**
  * Option B: High-Impact "Up Next" Hero Card
@@ -19,7 +19,7 @@ import slugify from "@/utils/slugify";
 export default function BlogNextArticle({ article }) {
   if (!article || !article.id) return null;
 
-  const href = `/blog/${article.slug || slugify(article.title)}-${article.id}`;
+  const href = blogPath(article);
 
   return (
     <section aria-label="Next article" className="my-10">

@@ -14,7 +14,7 @@ import {
 
 export default function RbzConverterClient() {
   const [file, setFile] = useState(null);
-  const [status, setStatus] = useState("idle"); // idle | converting | success | error
+  const [status, setStatus] = useState("idle"); // idle | success | error
   const [errorMessage, setErrorMessage] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
@@ -59,7 +59,8 @@ export default function RbzConverterClient() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  // An .rbz is a renamed .zip, so the file never leaves the browser
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!file) {
       setStatus("error");
@@ -67,39 +68,17 @@ export default function RbzConverterClient() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
-    setStatus("converting");
+    const downloadUrl = URL.createObjectURL(file);
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = file.name.replace(/\.zip$/i, ".rbz");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(downloadUrl);
+
+    setStatus("success");
     setErrorMessage("");
-
-    try {
-      const response = await fetch("/api/convert", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Conversion failed on the server.");
-      }
-
-      const blob = await response.blob();
-      const downloadUrl = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = downloadUrl;
-      link.download = file.name.replace(/\.zip$/i, ".rbz");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(downloadUrl);
-
-      setStatus("success");
-    } catch (err) {
-      console.error("Conversion error:", err);
-      setStatus("error");
-      setErrorMessage(
-        err.message || "An unexpected error occurred during conversion."
-      );
-    }
   };
 
   const formatFileSize = (bytes) => {
@@ -216,26 +195,15 @@ export default function RbzConverterClient() {
             {/* Action Button */}
             <button
               type="submit"
-              disabled={status === "converting" || !file}
+              disabled={!file}
               className={`w-full py-3.5 px-6 rounded-full font-semibold text-sm transition-all flex items-center justify-center gap-2 shadow-lg ${
-                status === "converting" || !file
+                !file
                   ? "bg-surface-raised text-fg-secondary/50 border border-line cursor-not-allowed"
                   : "bg-action hover:bg-action-hover active:bg-action-pressed text-canvas shadow-action/20 hover:scale-[1.01] cursor-pointer"
               }`}
             >
-              {status === "converting" ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-canvas border-t-transparent rounded-full animate-spin" />
-                  <span>Converting Archive...</span>
-                </>
-              ) : (
-                <>
-                  <FiDownload className="w-4 h-4" />
-                  <span>
-                    Convert &amp; Download .RBZ
-                  </span>
-                </>
-              )}
+              <FiDownload className="w-4 h-4" />
+              <span>Convert &amp; Download .RBZ</span>
             </button>
           </form>
         </div>
@@ -263,7 +231,7 @@ export default function RbzConverterClient() {
             <h3 className="text-sm font-semibold text-fg">Convert to RBZ</h3>
           </div>
           <p className="text-xs text-fg-secondary leading-relaxed">
-            Upload the archive above. Our converter checks the header integrity and packages the archive as a valid SketchUp Extension archive.
+            Select the archive above. It is renamed to .rbz, the package format SketchUp installs, right in your browser, so nothing is uploaded.
           </p>
         </div>
 

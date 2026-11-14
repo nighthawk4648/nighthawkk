@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import slugify from "@/utils/slugify";
 import { buildAssetPath } from "@/utils/buildAssetPath";
 import {
   FiSearch,
@@ -22,6 +21,9 @@ import InFeedAd from "@/components/Shared/GoogleAdsense/InFeedAd";
 import ResponsiveBannerAd from "@/components/Shared/GoogleAdsense/ResponsiveBannerAd";
 import CatalogGridAd from "@/components/Shared/GoogleAdsense/CatalogGridAd";
 import { formatAssetSize } from "@/utils/formatAssetSize";
+import { getOriginalImageUrl } from "@/utils/imageUrl";
+import { categoryPath, subCategoryPath } from "@/utils/paths";
+import { ITEMS_PER_PAGE, hasActiveFilters } from "@/utils/catalogPagination";
 
 // Nav tree rows carry a count; full rows carry the asset list. Accept both.
 const countAssets = (sub) => sub?._count?.assets ?? sub?.assets?.length ?? 0;
@@ -42,11 +44,6 @@ export default function CatalogLayout({
   const router = useRouter();
   const searchInputRef = useRef(null);
   const catalogTopRef = useRef(null);
-
-  // Pagination Configuration (21 models + 3 in-grid ads = 24 total cards)
-  const ITEMS_PER_PAGE = 21;
-
-  const isServerDriven = serverAssets !== null;
 
   // States
   const [searchInputValue, setSearchInputValue] = useState(
@@ -128,64 +125,13 @@ export default function CatalogLayout({
     }));
   };
 
-  const getOriginalImageUrl = (imagePath) => {
-    if (!imagePath) return "";
-    if (imagePath.startsWith("http://") || imagePath.startsWith("https://"))
-      return imagePath;
-    return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE || ""}${imagePath}`;
-  };
-
-  // Aggregate assets based on page scope (fallback when serverAssets is null)
-  const rawAssets = useMemo(() => {
-    if (isServerDriven) return [];
-
-    if (activeSubCategoryId && initialSubCategoryData?.data?.assets) {
-      const catName = initialCategoryData?.data?.name || "Sketchup 3D models";
-      const subName = initialSubCategoryData?.data?.name || "Models";
-      return (initialSubCategoryData.data.assets || []).map((a) => ({
-        ...a,
-        category_name: catName,
-        sub_category_name: subName,
-      }));
-    }
-
-    if (activeCategoryId && initialCategoryData?.data?.sub_categories) {
-      const catName = initialCategoryData.data.name;
-      return (initialCategoryData.data.sub_categories || []).flatMap((sub) =>
-        (sub?.assets || []).map((a) => ({
-          ...a,
-          category_name: catName,
-          sub_category_name: sub.name,
-        })),
-      );
-    }
-
-    return [];
-  }, [
-    isServerDriven,
-    activeCategoryId,
-    activeSubCategoryId,
-    initialCategoryData,
-    initialSubCategoryData,
-  ]);
-
-  // Display derivations: models to render, active page, total pages, and total count
-  const displayAssets = isServerDriven
-    ? serverAssets || []
-    : rawAssets.slice(0, ITEMS_PER_PAGE);
+  // Display derivations: the server already filtered, sorted and sliced this page
+  const displayAssets = serverAssets || [];
   const displayPage = page || 1;
-  const displayTotalPages = isServerDriven
-    ? (serverTotalPages ?? 0)
-    : Math.max(0, Math.ceil(rawAssets.length / ITEMS_PER_PAGE));
-  const displayTotalCount = isServerDriven
-    ? (serverTotalCount ?? displayAssets.length)
-    : rawAssets.length;
+  const displayTotalPages = serverTotalPages ?? 0;
+  const displayTotalCount = serverTotalCount ?? displayAssets.length;
 
-  const hasActiveFilters = Boolean(
-    (activeFilters.search && activeFilters.search.trim()) ||
-    (activeFilters.access && activeFilters.access !== "all") ||
-    (activeFilters.sort && activeFilters.sort !== "newest"),
-  );
+  const filtersActive = hasActiveFilters(activeFilters);
 
   // Current active labels for breadcrumbs
   const currentCategory = useMemo(() => {
@@ -446,7 +392,7 @@ export default function CatalogLayout({
               }`}
             >
               <Link
-                href={`/${cat.slug || slugify(cat.name)}-${cat.id}`}
+                href={categoryPath(cat)}
                 onClick={() => onItemClick?.()}
                 className="flex items-center gap-2.5 min-w-0 flex-1"
               >
@@ -502,7 +448,7 @@ export default function CatalogLayout({
                   return (
                     <Link
                       key={sub.id}
-                      href={`/${cat.slug || slugify(cat.name)}-${cat.id}/${sub.slug || slugify(sub.name)}-${sub.id}`}
+                      href={subCategoryPath(cat, sub)}
                       onClick={() => onItemClick?.()}
                       className={`flex items-center justify-between py-1.5 px-2.5 rounded-md text-xs transition-all ${
                         isSubActive
@@ -670,7 +616,7 @@ export default function CatalogLayout({
                   return (
                     <Link
                       key={cat.id}
-                      href={`/${cat.slug || slugify(cat.name)}-${cat.id}`}
+                      href={categoryPath(cat)}
                       className={`min-h-[36px] py-2 px-3 rounded-xl text-xs font-mono flex items-center gap-2 transition-all cursor-pointer ${
                         isCatActive
                           ? "bg-action text-black font-semibold shadow-md shadow-action/25 border border-action"
@@ -712,7 +658,7 @@ export default function CatalogLayout({
                   <div className="flex flex-wrap gap-1.5">
                     {/* "All" in current category */}
                     <Link
-                      href={`/${currentCategory.slug || slugify(currentCategory.name)}-${currentCategory.id}`}
+                      href={categoryPath(currentCategory)}
                       className={`min-h-[32px] py-1.5 px-3 rounded-lg text-xs font-mono flex items-center gap-1.5 transition-all cursor-pointer ${
                         !activeSubCategoryId
                           ? "bg-action text-black font-semibold shadow-xs border border-action"
@@ -730,7 +676,7 @@ export default function CatalogLayout({
                       return (
                         <Link
                           key={sub.id}
-                          href={`/${currentCategory.slug || slugify(currentCategory.name)}-${currentCategory.id}/${sub.slug || slugify(sub.name)}-${sub.id}`}
+                          href={subCategoryPath(currentCategory, sub)}
                           className={`min-h-[32px] py-1.5 px-2.5 rounded-lg text-xs font-mono flex items-center gap-1.5 transition-all cursor-pointer ${
                             isSubActive
                               ? "bg-action text-black font-semibold shadow-xs border border-action"
@@ -1035,16 +981,16 @@ export default function CatalogLayout({
                   <FiPackage className="w-6 h-6 text-action" />
                 </div>
                 <h3 className="text-sm font-semibold text-fg font-sans">
-                  {hasActiveFilters
+                  {filtersActive
                     ? "No 3D models match your criteria"
                     : "No models uploaded to this category yet"}
                 </h3>
                 <p className="text-xs text-fg-secondary max-w-sm mx-auto font-mono">
-                  {hasActiveFilters
+                  {filtersActive
                     ? "Try clearing your search terms, toggling the access tier, or switching categories."
                     : "Check back soon or explore our other 3D asset categories from the sidebar."}
                 </p>
-                {hasActiveFilters && (
+                {filtersActive && (
                   <button
                     type="button"
                     onClick={handleResetFilters}

@@ -93,6 +93,10 @@ const Page = async ({ params, searchParams }) => {
   const paginatedAssets =
     totalCount === 0 ? [] : filteredAssets.slice(start, start + ITEMS_PER_PAGE);
 
+  // The client only needs the category's own fields, not every sub-category's assets
+  const { id, name, slug, short_description } = categoryData.data;
+  const catalogCategory = { id, name, slug, short_description };
+
   const breadcrumbsSchema = generateBreadcrumbSchema([
     { name: "Home", url: "/" },
     { name: catName, url: `/${category}` },
@@ -111,7 +115,7 @@ const Page = async ({ params, searchParams }) => {
       <JsonLd data={collectionSchema} />
       <JsonLd data={breadcrumbsSchema} />
       <SubCategory
-        subCategoriesByCategoryId={categoryData}
+        subCategoriesByCategoryId={{ data: catalogCategory }}
         navCategories={navData?.data || []}
         serverAssets={paginatedAssets}
         currentPage={currentPage}

@@ -1,6 +1,6 @@
 import getData from "@/utils/getData";
-import slugify from "@/utils/slugify";
 import { buildAssetPath } from "@/utils/buildAssetPath";
+import { categoryPath, subCategoryPath, blogPath } from "@/utils/paths";
 import { cleanText } from "@/utils/seo";
 
 // Revalidate sitemap dynamically every 24 hours
@@ -144,7 +144,7 @@ export default async function sitemap() {
     if (!cat?.name || !cat?.id) continue;
     const catImage = toAbsoluteImageUrl(cat.image);
     dynamicRoutes.push({
-      url: `${baseUrl}/${cat.slug || slugify(cat.name)}-${cat.id}`,
+      url: `${baseUrl}${categoryPath(cat)}`,
       lastModified: parseDate(cat.updated_at || cat.created_at, now),
       changeFrequency: "daily",
       priority: 0.9,
@@ -160,7 +160,7 @@ export default async function sitemap() {
 
     const subImage = toAbsoluteImageUrl(sub.image);
     dynamicRoutes.push({
-      url: `${baseUrl}/${parentCategory.slug || slugify(parentCategory.name)}-${parentCategory.id}/${sub.slug || slugify(sub.name)}-${sub.id}`,
+      url: `${baseUrl}${subCategoryPath(parentCategory, sub)}`,
       lastModified: parseDate(sub.updated_at || sub.created_at, now),
       changeFrequency: "daily",
       priority: 0.85,
@@ -214,7 +214,7 @@ export default async function sitemap() {
     if (bgImg && !blogImages.includes(bgImg)) blogImages.push(bgImg);
 
     dynamicRoutes.push({
-      url: `${baseUrl}/blog/${blog.slug || slugify(blog.title)}-${blog.id}`,
+      url: `${baseUrl}${blogPath(blog)}`,
       lastModified: parseDate(blog.updated_at || blog.created_at, now),
       changeFrequency: "weekly",
       priority: 0.8,

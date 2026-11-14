@@ -2,12 +2,12 @@ import { getOriginalImageUrl } from "@/utils/imageUrl";
 import { formatDate } from "@/utils/formateDate";
 import getData from "@/utils/getData";
 import { sanitizeHtml, stripHtml, estimateReadingTime } from "@/utils/sanitizeHtml";
-import slugify from "@/utils/slugify";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { notFound } from "next/navigation";
 import { buildPageMetadata, cleanText } from "@/utils/seo";
+import { JsonLd, generateBreadcrumbSchema } from "@/utils/schema";
 import { notFoundMeta } from "@/utils/validateSlug";
 import { FiArrowLeft, FiCalendar, FiClock, FiUser } from "react-icons/fi";
 import BlogLeftRail from "@/components/Blog/BlogLeftRail";
@@ -18,6 +18,7 @@ import BlogNextArticle from "@/components/Blog/BlogNextArticle";
 import BlogSimilarArticles from "@/components/Blog/BlogSimilarArticles";
 import LinkedAssetsSection from "@/components/Shared/LinkedAssets/LinkedAssetsSection";
 import { getBlogRecommendations } from "@/utils/blogRecommendations";
+import { blogPath } from "@/utils/paths";
 
 function extractHeadingsAndInjectIds(sections) {
   const toc = [];
@@ -103,7 +104,7 @@ export async function generateMetadata({ params }) {
     ...buildPageMetadata({
       title,
       description,
-      pathname: `/blog/${post.slug || slugify(post.title)}-${post.id}`,
+      pathname: blogPath(post),
       image: post.image,
       imageAlt: post.title,
       type: "article",
@@ -169,7 +170,7 @@ const BlogDetailPage = async ({ params }) => {
   const fullText = processedSections.map((s) => s.html).join(" ");
   const readingTime = estimateReadingTime(fullText);
 
-  const canonicalUrl = `https://www.sketchshaper.com/blog/${post.slug || slugify(post.title)}-${post.id}`;
+  const canonicalUrl = `https://www.sketchshaper.com${blogPath(post)}`;
 
   const normalizedAuthor = (post?.name || "")
     .toLowerCase()
@@ -221,46 +222,17 @@ const BlogDetailPage = async ({ params }) => {
     publisher: publisherObject,
   };
 
-  const breadcrumbLd = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: "https://www.sketchshaper.com",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Articles",
-        item: "https://www.sketchshaper.com/blog",
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: post.title,
-        item: canonicalUrl,
-      },
-    ],
-  };
+  const breadcrumbLd = generateBreadcrumbSchema([
+    { name: "Home", url: "/" },
+    { name: "Articles", url: "/blog" },
+    { name: post.title, url: canonicalUrl },
+  ]);
 
   return (
     <article className="min-h-screen text-fg font-sans px-4 py-8 sm:px-6 md:px-8 xl:px-10 md:py-14 relative">
       {/* JSON-LD Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(blogPostingLd).replace(/</g, "\\u003c"),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(breadcrumbLd).replace(/</g, "\\u003c"),
-        }}
-      />
+      <JsonLd data={blogPostingLd} />
+      <JsonLd data={breadcrumbLd} />
       <div className="w-full max-w-[1560px] mx-auto relative z-10">
         <div className="flex justify-center gap-8 2xl:gap-12 items-start">
           {/* Left Rail (Sticky Table of Contents + Share) */}

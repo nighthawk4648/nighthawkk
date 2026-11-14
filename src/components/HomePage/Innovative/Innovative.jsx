@@ -1,14 +1,11 @@
 import Image from "next/image";
 import React from "react";
+import { getOriginalImageUrl } from "@/utils/imageUrl";
 
 const Innovative = ({ innovatives = [] }) => {
   if (!innovatives || innovatives.length === 0) {
     return null;
   }
-
-  const getOriginalImageUrl = (imagePath) => {
-    return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE || ""}${imagePath}`;
-  };
 
   return (
     <section className="w-full px-4 md:px-[0.5in] py-4 sm:py-8 lg:py-12 space-y-4 sm:space-y-8">

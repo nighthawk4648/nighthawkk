@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import { getOriginalImageUrl } from "@/utils/imageUrl";
 
 export default function HeroSection({
   totalModels = 4280,
@@ -49,11 +50,6 @@ export default function HeroSection({
 
     touchStartX.current = null;
     touchEndX.current = null;
-  };
-
-  const getOriginalImageUrl = (imagePath) => {
-    if (!imagePath) return "";
-    return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE}${imagePath}`;
   };
 
   const hasRealSlides = Array.isArray(sliders) && sliders.length > 0;

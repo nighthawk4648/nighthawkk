@@ -1,5 +1,5 @@
 import Extension from './extension';
-import getData from '@/utils/getData';
+import { getOptional } from '@/utils/getData';
 import { buildPageMetadata } from '@/utils/seo';
 import {
   JsonLd,
@@ -49,7 +49,7 @@ const extensionFaqs = [
 ];
 
 export default async function Page() {
-  const downloadData = await getData('extension-downloads/MyExtension');
+  const downloadData = await getOptional('extension-downloads/MyExtension');
 
   const faqStructuredData = {
     '@context': 'https://schema.org',

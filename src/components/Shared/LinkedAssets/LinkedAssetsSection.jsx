@@ -4,15 +4,14 @@ import { FiLayers, FiArrowRight } from "react-icons/fi";
 import { buildAssetPath } from "@/utils/buildAssetPath";
 import { getOriginalImageUrl } from "@/utils/imageUrl";
 import { cleanText } from "@/utils/seo";
-import slugify from "@/utils/slugify";
+import { subCategoryPath } from "@/utils/paths";
 
 const focusRing =
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-action";
 
-function subCategoryPath(sub) {
+function subCategoryHref(sub) {
   const cat = sub?.category;
-  if (!sub?.id || !cat?.id) return null;
-  return `/${cat.slug || slugify(cat.name || "")}-${cat.id}/${sub.slug || slugify(sub.name || "")}-${sub.id}`;
+  return sub?.id && cat?.id ? subCategoryPath(cat, sub) : null;
 }
 
 /**
@@ -52,7 +51,7 @@ const LinkedAssetsSection = ({ assets, title, eyebrow, className = "" }) => {
           const isPaid = item.access_type === "paid";
           const href = buildAssetPath(item);
           const subName = item.sub_category?.name?.trim();
-          const subHref = subCategoryPath(item.sub_category);
+          const subHref = subCategoryHref(item.sub_category);
 
           return (
             <li

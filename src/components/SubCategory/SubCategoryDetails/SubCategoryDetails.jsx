@@ -2,9 +2,7 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { optimizedImageUrl } from "@/utils/imageUrl";
-import useSWR from "swr";
-import { fetcher } from "@/utils/swrFetcher";
+import { optimizedImageUrl, getOriginalImageUrl } from "@/utils/imageUrl";
 import slugify from "@/utils/slugify";
 import { buildAssetPath } from "@/utils/buildAssetPath";
 import { usePatreonAuth } from "@/contexts/PatreonAuthContext";
@@ -36,7 +34,7 @@ import InFeedAd from "@/components/Shared/GoogleAdsense/InFeedAd";
 import ResponsiveBannerAd from "@/components/Shared/GoogleAdsense/ResponsiveBannerAd";
 import { formatAssetSize } from "@/utils/formatAssetSize";
 
-const SubCategoryDetails = ({ assetDetails }) => {
+const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
   const [mounted, setMounted] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [shaderMode, setShaderMode] = useState("beauty"); // "beauty" | "clay" | "wireframe"
@@ -75,12 +73,6 @@ const SubCategoryDetails = ({ assetDetails }) => {
     setTimeout(() => {
       setToast((current) => (current?.message === message ? null : current));
     }, 3200);
-  };
-
-  const getOriginalImageUrl = (imagePath) => {
-    if (!imagePath) return "";
-    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) return imagePath;
-    return `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL_FOR_IMAGE || ""}${imagePath}`;
   };
 
   // Combine cover and gallery images so the primary cover is always slide #1
@@ -305,50 +297,25 @@ const SubCategoryDetails = ({ assetDetails }) => {
     }, 1200);
   };
 
-  // Fetch related assets from the same sub-category
-  const { data: relatedAssetsData } = useSWR(
-    assetDetails?.sub_category_id
-      ? `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/sub-categories/${assetDetails.sub_category_id}`
-      : null,
-    fetcher,
-    { revalidateOnFocus: false, revalidateOnReconnect: false }
-  );
-
-  // Filter related assets (exclude current asset and take up to 5 so slot #3 can be an in-feed ad)
-  const relatedAssets = useMemo(() => {
-    return (
-      relatedAssetsData?.data?.assets
-        ?.filter((asset) => asset.id !== assetDetails?.id)
-        ?.sort(() => 0.5 - Math.random())
-        ?.slice(0, 5) || []
-    );
-  }, [relatedAssetsData, assetDetails?.id]);
-
   // Breadcrumb taxonomy variables
   const categoryName =
     assetDetails?.sub_category?.category?.name ||
-    relatedAssetsData?.data?.category?.name ||
     "Sketchup 3D models";
   const categorySlug =
     assetDetails?.sub_category?.category?.slug ||
-    relatedAssetsData?.data?.category?.slug ||
     slugify(categoryName);
   const categoryId =
     assetDetails?.sub_category?.category?.id ||
-    relatedAssetsData?.data?.category?.id ||
     "1";
   const subCategoryName =
     assetDetails?.sub_category?.name ||
-    relatedAssetsData?.data?.name ||
     "3D Models";
   const subCategorySlug =
     assetDetails?.sub_category?.slug ||
-    relatedAssetsData?.data?.slug ||
     slugify(subCategoryName);
   const subCategoryId =
     assetDetails?.sub_category?.id ||
     assetDetails?.sub_category_id ||
-    relatedAssetsData?.data?.id ||
     "";
 
   // Formatted file size
@@ -366,6 +333,17 @@ const SubCategoryDetails = ({ assetDetails }) => {
   }, [shaderMode]);
 
   const activeImage = displayImages[activeImageIndex] || displayImages[0];
+
+  const renderRelatedCard = (asset) => (
+    <RelatedAssetCard
+      key={asset.id}
+      asset={asset}
+      categoryName={categoryName}
+      categorySlug={categorySlug}
+      subCategoryName={subCategoryName}
+      subCategorySlug={subCategorySlug}
+    />
+  );
 
   return (
     <div className="w-full min-h-screen text-fg font-sans pt-6 sm:pt-10 pb-20 px-4 sm:px-6 md:px-[0.5in] relative overflow-hidden bg-transparent">
@@ -946,73 +924,12 @@ const SubCategoryDetails = ({ assetDetails }) => {
             {/* 6-Column Grid: 5 Models + 1 Native In-Feed Ad at Card #3 */}
             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3.5">
               
-              {/* Card #1 */}
-              {relatedAssets[0] && (
-                <RelatedAssetCard
-                  asset={relatedAssets[0]}
-                  categoryName={categoryName}
-                  categorySlug={categorySlug}
-                  subCategoryName={subCategoryName}
-                  subCategorySlug={subCategorySlug}
-                  getOriginalImageUrl={getOriginalImageUrl}
-                  onDownloadClick={showToast}
-                />
-              )}
-
-              {/* Card #2 */}
-              {relatedAssets[1] && (
-                <RelatedAssetCard
-                  asset={relatedAssets[1]}
-                  categoryName={categoryName}
-                  categorySlug={categorySlug}
-                  subCategoryName={subCategoryName}
-                  subCategorySlug={subCategorySlug}
-                  getOriginalImageUrl={getOriginalImageUrl}
-                  onDownloadClick={showToast}
-                />
-              )}
+              {relatedAssets.slice(0, 2).map(renderRelatedCard)}
 
               {/* Card #3: OFFICIAL EXTENSION PROMOTION CARD */}
               <ExtensionPromoCard />
 
-              {/* Card #4 */}
-              {relatedAssets[2] && (
-                <RelatedAssetCard
-                  asset={relatedAssets[2]}
-                  categoryName={categoryName}
-                  categorySlug={categorySlug}
-                  subCategoryName={subCategoryName}
-                  subCategorySlug={subCategorySlug}
-                  getOriginalImageUrl={getOriginalImageUrl}
-                  onDownloadClick={showToast}
-                />
-              )}
-
-              {/* Card #5 */}
-              {relatedAssets[3] && (
-                <RelatedAssetCard
-                  asset={relatedAssets[3]}
-                  categoryName={categoryName}
-                  categorySlug={categorySlug}
-                  subCategoryName={subCategoryName}
-                  subCategorySlug={subCategorySlug}
-                  getOriginalImageUrl={getOriginalImageUrl}
-                  onDownloadClick={showToast}
-                />
-              )}
-
-              {/* Card #6 */}
-              {relatedAssets[4] && (
-                <RelatedAssetCard
-                  asset={relatedAssets[4]}
-                  categoryName={categoryName}
-                  categorySlug={categorySlug}
-                  subCategoryName={subCategoryName}
-                  subCategorySlug={subCategorySlug}
-                  getOriginalImageUrl={getOriginalImageUrl}
-                  onDownloadClick={showToast}
-                />
-              )}
+              {relatedAssets.slice(2, 5).map(renderRelatedCard)}
 
             </div>
           </div>
@@ -1389,8 +1306,6 @@ function RelatedAssetCard({
   categorySlug,
   subCategoryName,
   subCategorySlug,
-  getOriginalImageUrl,
-  onDownloadClick,
 }) {
   const assetSize = formatAssetSize(asset);
 

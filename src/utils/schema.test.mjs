@@ -35,7 +35,7 @@ test("generateBreadcrumbSchema builds valid Schema.org ListItem hierarchy", () =
   );
 });
 
-test("generateWebsiteAndOrgSchema includes Sitelinks SearchAction and Organization logo", () => {
+test("generateWebsiteAndOrgSchema includes WebSite and Organization logo (no SearchAction: the site has no crawlable search URL)", () => {
   const schema = generateWebsiteAndOrgSchema(["https://twitter.com/sketchshaper"]);
   assert.equal(schema["@graph"].length, 2);
 
@@ -43,8 +43,7 @@ test("generateWebsiteAndOrgSchema includes Sitelinks SearchAction and Organizati
   const org = schema["@graph"].find((item) => item["@type"] === "Organization");
 
   assert.ok(website);
-  assert.equal(website.potentialAction["@type"], "SearchAction");
-  assert.ok(website.potentialAction.target.urlTemplate.includes("search_term_string"));
+  assert.equal(website.potentialAction, undefined);
 
   assert.ok(org);
   assert.equal(org.name, "Sketch shaper");

@@ -51,7 +51,7 @@ export function generateBreadcrumbSchema(items = []) {
 }
 
 /**
- * Generates Schema.org WebSite with SearchAction + Organization
+ * Generates Schema.org WebSite + Organization
  */
 export function generateWebsiteAndOrgSchema(socialUrls = []) {
   const defaultSocials = [
@@ -77,14 +77,6 @@ export function generateWebsiteAndOrgSchema(socialUrls = []) {
         description: "Free & Pro 3D Models, Textures, and Plugins for SketchUp",
         publisher: {
           "@id": `${SITE_URL}/#organization`,
-        },
-        potentialAction: {
-          "@type": "SearchAction",
-          target: {
-            "@type": "EntryPoint",
-            urlTemplate: `${SITE_URL}/api/assets/search?q={search_term_string}`,
-          },
-          "query-input": "required name=search_term_string",
         },
       },
       {

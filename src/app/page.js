@@ -7,7 +7,7 @@ import ArticlesSection from "@/components/Home/ArticlesSection";
 import AboutUs from "@/components/Shared/AboutUs/AboutUs";
 import SupportDesk from "@/components/Home/SupportDesk";
 import SupportedBy from "@/components/Shared/SupportedBy/SupportedBy";
-import getData from "@/utils/getData";
+import getData, { getOptional } from "@/utils/getData";
 import { buildPageMetadata } from "@/utils/seo";
 import { JsonLd, generateWebsiteAndOrgSchema } from "@/utils/schema";
 
@@ -22,7 +22,7 @@ export default async function Home() {
   const carouselsPromise = getData("sliders");
   const categoriesPromise = getData("categories/nav");
   const latestAssetsPromise = getData("assets/pages?page=1&limit=18&order=desc");
-  const extensionPromise = getData("extension-downloads/MyExtension");
+  const extensionPromise = getOptional("extension-downloads/MyExtension");
   const blogsPromise = getData("blogs");
   const supportedByPromise = getData("supportedby");
   const innovativesPromise = getData("innovative");
