@@ -52,6 +52,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
   const [isDescExpanded, setIsDescExpanded] = useState(false);
   const [isLongDesc, setIsLongDesc] = useState(false);
   const descRef = useRef(null);
+  const touchStartRef = useRef({ x: 0, y: 0 });
 
   const { token, user, login, logout } = usePatreonAuth();
 
@@ -205,9 +206,14 @@ const SubCategoryDetails = ({ assetDetails }) => {
     setIsDragging(false);
   };
 
-  // Touch handlers for mobile
+  // Touch handlers for mobile (drag-pan when zoomed, swipe-angle when 1x)
   const handleTouchStart = (e) => {
-    if (zoomLevel <= 1 || !e.touches[0]) return;
+    if (!e.touches[0]) return;
+    touchStartRef.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    };
+    if (zoomLevel <= 1) return;
     setIsDragging(true);
     setDragStart({
       x: e.touches[0].clientX - panPosition.x,
@@ -223,8 +229,23 @@ const SubCategoryDetails = ({ assetDetails }) => {
     });
   };
 
-  const handleTouchEnd = () => {
-    setIsDragging(false);
+  const handleTouchEnd = (e) => {
+    if (isDragging) {
+      setIsDragging(false);
+      return;
+    }
+    // Horizontal swipe to flip camera angles on mobile when not zoomed
+    if (zoomLevel <= 1 && e.changedTouches && e.changedTouches[0]) {
+      const deltaX = e.changedTouches[0].clientX - touchStartRef.current.x;
+      const deltaY = e.changedTouches[0].clientY - touchStartRef.current.y;
+      if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+        if (deltaX > 0) {
+          handlePrevAngle();
+        } else {
+          handleNextAngle();
+        }
+      }
+    }
   };
 
   // Keyboard navigation
@@ -416,8 +437,8 @@ const SubCategoryDetails = ({ assetDetails }) => {
             {/* 3D Viewport Stage Container */}
             <div className="bg-surface/50 border border-line rounded-2xl overflow-hidden shadow-2xl relative">
               
-              {/* Top Floating Controls */}
-              <div className="absolute top-4 inset-x-4 z-20 flex items-center justify-start pointer-events-none">
+              {/* Top Floating Controls (Shader modes - hidden on mobile) */}
+              <div className="absolute top-4 inset-x-4 z-20 hidden sm:flex items-center justify-start pointer-events-none">
                 
                 {/* Top-Left Floating Control Bar (Shader modes) */}
                 <div className="bg-surface-raised/90 backdrop-blur-md border border-line p-1 rounded-xl flex items-center gap-1 shadow-lg pointer-events-auto">
@@ -473,7 +494,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
 
               {/* Main Canvas Stage */}
               <div
-                className={`aspect-[16/10] sm:aspect-[16/9] bg-gradient-to-b from-surface/20 to-canvas/80 flex items-center justify-center relative overflow-hidden select-none group/canvas ${
+                className={`aspect-[4/3] sm:aspect-[16/9] bg-gradient-to-b from-surface/20 to-canvas/80 flex items-center justify-center relative overflow-hidden select-none group/canvas ${
                   zoomLevel > 1 ? (isDragging ? "cursor-grabbing" : "cursor-grab") : ""
                 }`}
                 onMouseDown={handleMouseDown}
@@ -494,12 +515,12 @@ const SubCategoryDetails = ({ assetDetails }) => {
                   }`}
                 />
 
-                {/* Left Navigation Arrow */}
+                {/* Left Navigation Arrow (hidden on mobile, tap thumbs or swipe) */}
                 {displayImages.length > 1 && (
                   <button
                     type="button"
                     onClick={handlePrevAngle}
-                    className="absolute left-3.5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/60 hover:bg-black/90 text-white/80 hover:text-white border border-white/15 backdrop-blur-md flex items-center justify-center transition-all shadow-xl hover:scale-110 active:scale-95 cursor-pointer"
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/60 hover:bg-black/90 text-white/80 hover:text-white border border-white/15 backdrop-blur-md hidden sm:flex items-center justify-center transition-all shadow-xl hover:scale-110 active:scale-95 cursor-pointer"
                     aria-label="Previous camera angle"
                     title="Previous Angle (← key)"
                   >
@@ -507,12 +528,12 @@ const SubCategoryDetails = ({ assetDetails }) => {
                   </button>
                 )}
 
-                {/* Right Navigation Arrow */}
+                {/* Right Navigation Arrow (hidden on mobile, tap thumbs or swipe) */}
                 {displayImages.length > 1 && (
                   <button
                     type="button"
                     onClick={handleNextAngle}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/60 hover:bg-black/90 text-white/80 hover:text-white border border-white/15 backdrop-blur-md flex items-center justify-center transition-all shadow-xl hover:scale-110 active:scale-95 cursor-pointer"
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/60 hover:bg-black/90 text-white/80 hover:text-white border border-white/15 backdrop-blur-md hidden sm:flex items-center justify-center transition-all shadow-xl hover:scale-110 active:scale-95 cursor-pointer"
                     aria-label="Next camera angle"
                     title="Next Angle (→ key)"
                   >
@@ -520,54 +541,58 @@ const SubCategoryDetails = ({ assetDetails }) => {
                   </button>
                 )}
 
-                {/* Stage Zoom & Fullscreen Toolbar */}
+                {/* Stage Zoom & Fullscreen Toolbar (Zoom hidden on mobile, Fullscreen accessible) */}
                 <div className="absolute bottom-4 right-4 z-20 flex items-center gap-1.5 bg-black/70 backdrop-blur-md border border-white/15 rounded-lg p-1 shadow-2xl">
-                  {/* Zoom Out */}
-                  <button
-                    type="button"
-                    onClick={() => handleZoomChange(-0.5)}
-                    disabled={zoomLevel <= 1}
-                    className="p-1.5 rounded-md text-fg-secondary hover:text-fg hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
-                    title="Zoom Out"
-                  >
-                    <FiZoomOut className="w-4 h-4" />
-                  </button>
-
-                  {/* Zoom Percentage */}
-                  <span className="text-[11px] font-mono px-1.5 text-fg min-w-[42px] text-center select-none font-medium">
-                    {Math.round(zoomLevel * 100)}%
-                  </span>
-
-                  {/* Zoom In */}
-                  <button
-                    type="button"
-                    onClick={() => handleZoomChange(0.5)}
-                    disabled={zoomLevel >= 3}
-                    className="p-1.5 rounded-md text-fg-secondary hover:text-fg hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
-                    title="Zoom In"
-                  >
-                    <FiZoomIn className="w-4 h-4" />
-                  </button>
-
-                  {/* Reset Zoom */}
-                  {zoomLevel > 1 && (
+                  {/* Desktop Zoom Toolbar */}
+                  <div className="hidden sm:flex items-center gap-1.5">
+                    {/* Zoom Out */}
                     <button
                       type="button"
-                      onClick={handleResetZoom}
-                      className="p-1.5 rounded-md text-fg-secondary hover:text-fg hover:bg-white/10 transition-colors cursor-pointer"
-                      title="Reset Zoom"
+                      onClick={() => handleZoomChange(-0.5)}
+                      disabled={zoomLevel <= 1}
+                      className="p-1.5 rounded-md text-fg-secondary hover:text-fg hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+                      title="Zoom Out"
                     >
-                      <FiRotateCcw className="w-3.5 h-3.5" />
+                      <FiZoomOut className="w-4 h-4" />
                     </button>
-                  )}
 
-                  <div className="w-px h-4 bg-white/20 my-auto mx-0.5" />
+                    {/* Zoom Percentage */}
+                    <span className="text-[11px] font-mono px-1.5 text-fg min-w-[42px] text-center select-none font-medium">
+                      {Math.round(zoomLevel * 100)}%
+                    </span>
+
+                    {/* Zoom In */}
+                    <button
+                      type="button"
+                      onClick={() => handleZoomChange(0.5)}
+                      disabled={zoomLevel >= 3}
+                      className="p-1.5 rounded-md text-fg-secondary hover:text-fg hover:bg-white/10 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer"
+                      title="Zoom In"
+                    >
+                      <FiZoomIn className="w-4 h-4" />
+                    </button>
+
+                    {/* Reset Zoom */}
+                    {zoomLevel > 1 && (
+                      <button
+                        type="button"
+                        onClick={handleResetZoom}
+                        className="p-1.5 rounded-md text-fg-secondary hover:text-fg hover:bg-white/10 transition-colors cursor-pointer"
+                        title="Reset Zoom"
+                      >
+                        <FiRotateCcw className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+
+                    <div className="w-px h-4 bg-white/20 my-auto mx-0.5" />
+                  </div>
 
                   {/* Fullscreen Inspect Button */}
                   <button
                     type="button"
                     onClick={() => setIsFullscreen(true)}
                     className="p-1.5 rounded-md text-fg-secondary hover:text-action hover:bg-white/10 transition-colors cursor-pointer"
+                    aria-label="Fullscreen inspection"
                     title="Fullscreen Lightbox Inspection"
                   >
                     <FiMaximize className="w-4 h-4" />
@@ -611,7 +636,7 @@ const SubCategoryDetails = ({ assetDetails }) => {
               </div>
 
               {/* Bottom Angle Carousel */}
-              <div className="p-3 bg-surface/70 border-t border-line flex items-center gap-2">
+              <div className="p-3 bg-surface/70 border-t border-line flex items-center gap-2 overflow-x-auto no-scrollbar">
                 <span className="text-[10px] font-mono uppercase text-fg-secondary/70 mr-1 hidden sm:inline">
                   Camera:
                 </span>
@@ -1390,7 +1415,7 @@ function RelatedAssetCard({
               fill
               loading="lazy"
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16.6vw"
-              className="object-contain p-2 group-hover:scale-[1.15] transition-transform duration-500 ease-out drop-shadow-[0_6px_14px_rgba(0,0,0,0.65)]"
+              className="object-contain p-2 group-hover:scale-[1.20] transition-transform duration-500 ease-out drop-shadow-[0_6px_14px_rgba(0,0,0,0.65)]"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-fg-secondary/40 font-mono text-[10px]">

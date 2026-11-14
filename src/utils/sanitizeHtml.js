@@ -132,3 +132,11 @@ export function stripHtml(html, maxLength = 160) {
 
   return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
 }
+
+export function estimateReadingTime(content, wordsPerMinute = 200) {
+  if (!content) return "3 min read";
+  const text = stripHtml(content, 100000);
+  const words = text ? text.trim().split(/\s+/).filter(Boolean).length : 0;
+  const minutes = Math.ceil(words / wordsPerMinute);
+  return `${Math.max(1, minutes)} min read`;
+}

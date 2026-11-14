@@ -1,7 +1,7 @@
 import { getOriginalImageUrl } from "@/utils/imageUrl";
 import { formatDate } from "@/utils/formateDate";
 import getData from "@/utils/getData";
-import { sanitizeHtml, stripHtml } from "@/utils/sanitizeHtml";
+import { sanitizeHtml, stripHtml, estimateReadingTime } from "@/utils/sanitizeHtml";
 import slugify from "@/utils/slugify";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,14 +14,10 @@ import BlogLeftRail from "@/components/Blog/BlogLeftRail";
 import BlogRightRailAd from "@/components/Blog/BlogRightRailAd";
 import BlogMobileToc from "@/components/Blog/BlogMobileToc";
 import BlogHorizontalAd from "@/components/Blog/BlogHorizontalAd";
+import BlogNextArticle from "@/components/Blog/BlogNextArticle";
+import BlogSimilarArticles from "@/components/Blog/BlogSimilarArticles";
 import LinkedAssetsSection from "@/components/Shared/LinkedAssets/LinkedAssetsSection";
-
-function estimateReadingTime(content) {
-  const text = stripHtml(content, 100000);
-  const words = text ? text.trim().split(/\s+/).filter(Boolean).length : 0;
-  const minutes = Math.ceil(words / 200);
-  return `${Math.max(1, minutes)} min read`;
-}
+import { getBlogRecommendations } from "@/utils/blogRecommendations";
 
 function extractHeadingsAndInjectIds(sections) {
   const toc = [];
@@ -126,13 +122,28 @@ const BlogDetailPage = async ({ params }) => {
     notFound();
   }
 
-  const blog = await getData(`blogs/${id}`);
+  const blogPromise = getData(`blogs/${id}`);
+  const allBlogsPromise = getData("blogs").catch((e) => {
+    console.warn("Failed to fetch all blogs for recommendations:", e?.message);
+    return null;
+  });
+
+  const [blog, allBlogsRes] = await Promise.all([
+    blogPromise,
+    allBlogsPromise,
+  ]);
 
   if (!blog?.data) {
     notFound();
   }
 
   const post = blog.data;
+
+  // Determine Next Article (Option B) and Similar Articles via tested pure calculation
+  const { nextArticle, similarArticles } = getBlogRecommendations(
+    post,
+    allBlogsRes?.data
+  );
 
   // Filter out empty sections, literal "undefined" strings, and blank markup
   const rawSections = [
@@ -327,9 +338,6 @@ const BlogDetailPage = async ({ params }) => {
               </div>
             )}
 
-            {/* In-Article Horizontal Ad directly after the Hero Image */}
-            <BlogHorizontalAd slot="2114378043" />
-
             {/* Mobile / Tablet Collapsible Table of Contents */}
             <BlogMobileToc tocItems={tocItems} />
 
@@ -340,6 +348,7 @@ const BlogDetailPage = async ({ params }) => {
                   const hasHtml = /<[a-z][\s\S]*>/i.test(section.html);
                   const isLead = section.key === "short_description";
                   const showAdAfter =
+                    section.key === "short_description" ||
                     section.key === "paragraph_one" ||
                     section.key === "paragraph_two" ||
                     section.key === "paragraph_three";
@@ -406,28 +415,14 @@ const BlogDetailPage = async ({ params }) => {
                 className="my-10"
               />
 
+              {/* Up Next Article (Option B) */}
+              <BlogNextArticle article={nextArticle} />
+
+              {/* Similar Articles Grid (3 Cards) */}
+              <BlogSimilarArticles articles={similarArticles} />
+
               {/* Bottom In-Article Horizontal Ad */}
               <BlogHorizontalAd slot="2114378043" className="mt-10 !mb-8" />
-
-              {/* Bottom Footer CTA in Frosted Glass Card */}
-              <footer className="mt-8 p-6 sm:p-8 rounded-card border border-white/[0.08] bg-surface/30 backdrop-blur-2xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] via-transparent to-action/[0.02] pointer-events-none" />
-                <div className="relative z-10">
-                  <h4 className="text-fg font-semibold text-base">
-                    Enjoyed this article?
-                  </h4>
-                  <p className="text-fg-secondary text-xs sm:text-sm mt-0.5">
-                    Discover more guides, free 3D models, and rendering tips.
-                  </p>
-                </div>
-                <Link
-                  href="/blog"
-                  className="relative z-10 px-4 py-2.5 rounded-full bg-surface-raised/60 hover:bg-surface-raised text-fg text-xs font-mono transition-colors duration-200 border border-white/10 flex items-center gap-2 flex-shrink-0 hover:border-white/20 backdrop-blur-sm"
-                >
-                  <FiArrowLeft className="w-3.5 h-3.5" />
-                  <span>Explore all articles</span>
-                </Link>
-              </footer>
             </div>
           </div>
 

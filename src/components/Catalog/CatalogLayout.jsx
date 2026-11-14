@@ -975,7 +975,7 @@ export default function CatalogLayout({
                               loading={index === 0 ? "eager" : "lazy"}
                               fetchPriority={index === 0 ? "high" : "auto"}
                               sizes="(max-width: 640px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                              className="object-contain p-2 group-hover:scale-[1.15] transition-transform duration-500 ease-out drop-shadow-[0_6px_14px_rgba(0,0,0,0.65)]"
+                              className="object-contain p-2 group-hover:scale-[1.20] transition-transform duration-500 ease-out drop-shadow-[0_6px_14px_rgba(0,0,0,0.65)]"
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center text-fg-secondary/40 font-mono text-[10px]">

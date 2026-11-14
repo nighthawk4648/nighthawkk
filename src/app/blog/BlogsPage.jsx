@@ -7,21 +7,13 @@ import { FiSearch } from "react-icons/fi";
 import { useInfiniteScroll } from "@/hooks/useInfiniteScroll";
 import { getOriginalImageUrl } from "@/utils/imageUrl";
 import { formatDate } from "@/utils/formateDate";
-import { stripHtml } from "@/utils/sanitizeHtml";
+import { stripHtml, estimateReadingTime } from "@/utils/sanitizeHtml";
 import slugify from "@/utils/slugify";
 import BlogHorizontalAd from "@/components/Blog/BlogHorizontalAd";
 import BlogGutterAd from "@/components/Blog/BlogGutterAd";
 import AdUnit from "@/components/Shared/GoogleAdsense/AdUnit";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
-
-function estimateReadingTime(content) {
-  if (!content) return "3 min read";
-  const text = stripHtml(content, 100000);
-  const words = text ? text.trim().split(/\s+/).filter(Boolean).length : 0;
-  const minutes = Math.ceil(words / 200);
-  return `${Math.max(1, minutes)} min read`;
-}
 
 const BlogsPage = ({ initialData = null }) => {
   const [searchQuery, setSearchQuery] = useState("");
