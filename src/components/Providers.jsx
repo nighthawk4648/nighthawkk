@@ -1,11 +1,11 @@
 'use client';
 
-import { PatreonAuthProvider } from '@/contexts/PatreonAuthContext';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 export default function Providers({ children }) {
   return (
-    <PatreonAuthProvider>
+    <AuthProvider>
       {children}
-    </PatreonAuthProvider>
+    </AuthProvider>
   );
 }

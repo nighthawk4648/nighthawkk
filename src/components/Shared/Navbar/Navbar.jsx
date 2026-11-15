@@ -3,7 +3,9 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePatreonAuth } from "@/contexts/PatreonAuthContext";
+import { usePathname } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import { patreonStartUrl } from "@/utils/authApi";
 import { formatAssetSize } from "@/utils/formatAssetSize";
 import dynamic from "next/dynamic";
 import { getOriginalImageUrl } from "@/utils/imageUrl";
@@ -21,7 +23,8 @@ export default function Navbar({
   categories = [],
   featuredAsset = null,
 }) {
-  const { user, isAuthenticated, login, logout } = usePatreonAuth();
+  const { user: siteUser, loading: siteLoading, signOut } = useAuth();
+  const pathname = usePathname();
 
   const [isBrowseOpen, setIsBrowseOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -364,63 +367,55 @@ export default function Navbar({
 
             {/* Patreon Control Container */}
             <div className="relative" ref={userMenuRef}>
-              {isAuthenticated && user ? (
-                /* Signed In (Pro) State */
+              {siteUser ? (
+                /* Signed in with an email account */
                 <div>
                   <button
                     type="button"
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                     className="flex items-center gap-2 glass-panel px-3 py-1 rounded-full border border-line hover:border-action transition-all cursor-pointer"
                   >
-                    <div className="w-6 h-6 rounded-full bg-action/20 border border-action text-action flex items-center justify-center text-xs font-bold overflow-hidden">
-                      {user.image_url ? (
-                        <img
-                          src={user.image_url}
-                          alt={user.full_name || "User"}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span>
-                          {(user.full_name || user.email || "U")
-                            .charAt(0)
-                            .toUpperCase()}
-                        </span>
-                      )}
+                    <div className="w-6 h-6 rounded-full bg-action/20 border border-action text-action flex items-center justify-center text-xs font-bold">
+                      {(siteUser.name || siteUser.email).charAt(0).toUpperCase()}
                     </div>
                     <span className="text-xs font-medium text-fg hidden sm:inline max-w-[100px] truncate">
-                      {user.full_name?.split(" ")[0] || "Patron"}
+                      {siteUser.name?.split(" ")[0] || siteUser.email.split("@")[0]}
                     </span>
-                    <span className="text-[10px] font-mono font-semibold bg-action text-canvas px-1.5 py-0.2 rounded">
-                      PRO
-                    </span>
+                    {siteUser.isPro && (
+                      <span className="text-[10px] font-mono font-semibold bg-action text-canvas px-1.5 py-0.2 rounded">
+                        PRO
+                      </span>
+                    )}
                   </button>
 
-                  {/* User Dropdown Popover */}
                   {isUserMenuOpen && (
                     <div className="absolute right-0 mt-2 w-56 !bg-surface/95 backdrop-blur-2xl rounded-card p-3 shadow-2xl border border-line-strong z-50 text-fg">
                       <div className="px-3 py-2 border-b border-line mb-2">
                         <div className="text-xs font-medium text-fg truncate">
-                          {user.full_name || "Patron Member"}
+                          {siteUser.name || "Your account"}
                         </div>
                         <div className="text-[11px] font-mono text-fg-secondary truncate">
-                          {user.email || "Active Supporter"}
+                          {siteUser.email}
                         </div>
+                        {!siteUser.emailVerified && (
+                          <div className="mt-1 text-[11px] text-fg-secondary">
+                            Email not confirmed yet
+                          </div>
+                        )}
                       </div>
-                      <Link
-                        href="https://www.patreon.com"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <a
+                        href={patreonStartUrl(pathname)}
                         className="block px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
                       >
-                        Manage Patreon Membership &rarr;
-                      </Link>
+                        {siteUser.patreonLinked ? "Refresh Patreon status" : "Connect Patreon"} &rarr;
+                      </a>
                       <button
                         type="button"
                         onClick={() => {
                           setIsUserMenuOpen(false);
-                          logout();
+                          signOut();
                         }}
-                        className="w-full text-left px-3 py-1.5 text-xs text-danger hover:bg-surface-raised rounded transition-colors mt-1"
+                        className="w-full text-left px-3 py-1.5 text-xs text-danger hover:bg-surface-raised rounded transition-colors"
                       >
                         Sign Out
                       </button>
@@ -428,23 +423,13 @@ export default function Navbar({
                   )}
                 </div>
               ) : (
-                /* Signed Out State (Default) */
-                <button
-                  type="button"
-                  onClick={() => login()}
-                  className="glass-panel text-fg hover:bg-surface-raised hover:text-white px-3.5 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-2 border border-line"
+                /* Signed Out State (Default); hidden until we know, so it does not flash for signed-in visitors */
+                <Link
+                  href="/login"
+                  className={`glass-panel text-fg hover:bg-surface-raised hover:text-white px-3.5 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-2 border border-line ${siteLoading ? "invisible" : ""}`}
                 >
-                  <svg
-                    className="w-3.5 h-3.5 fill-[#FF424D] flex-shrink-0"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M15.386.5C10.743.5 6.96 4.283 6.96 8.926c0 4.606 3.783 8.352 8.426 8.352 4.607 0 8.353-3.746 8.353-8.352C23.739 4.283 19.993.5 15.386.5zm-14.886 23h4.63v-23H.5v23z" />
-                  </svg>
-                  <span className="hidden sm:inline">
-                    Sign in with Patreon
-                  </span>
-                  <span className="sm:hidden">Sign in</span>
-                </button>
+                  Sign in
+                </Link>
               )}
             </div>
           </div>

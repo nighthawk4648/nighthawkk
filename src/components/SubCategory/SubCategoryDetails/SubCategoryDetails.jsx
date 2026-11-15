@@ -5,7 +5,8 @@ import Link from "next/link";
 import { optimizedImageUrl, getOriginalImageUrl } from "@/utils/imageUrl";
 import slugify from "@/utils/slugify";
 import { buildAssetPath } from "@/utils/buildAssetPath";
-import { usePatreonAuth } from "@/contexts/PatreonAuthContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { patreonStartUrl } from "@/utils/authApi";
 import {
   FiDownload,
   FiBox,
@@ -52,7 +53,7 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
   const descRef = useRef(null);
   const touchStartRef = useRef({ x: 0, y: 0 });
 
-  const { token, user, login, logout } = usePatreonAuth();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -64,8 +65,10 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
     }
   }, [assetDetails?.short_description]);
 
-  const isAuthenticated = mounted && !!token && !!user;
-  const isPatron = isAuthenticated && !!user?.is_active_patron;
+  const isAuthenticated = mounted && !!user;
+  const isPatron = isAuthenticated && !!user.isPro;
+  // Where to come back to after signing in
+  const here = typeof window !== "undefined" ? window.location.pathname + window.location.search : "/";
 
   // Toast notification helper
   const showToast = (message, type = "info") => {
@@ -272,7 +275,7 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
   const handleDownload = () => {
     if (!assetDetails?.id) return;
 
-    // If it is a paid asset and user is not an active patron, open the Patreon modal
+    // PRO models need a signed-in PRO account; everything else downloads directly
     if (assetDetails?.access_type === "paid" && !isPatron) {
       setShowModal(true);
       return;
@@ -280,9 +283,8 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
 
     setIsDownloading(true);
 
-    const tokenQuery =
-      assetDetails?.access_type === "paid" && token ? `?token=${token}` : "";
-    const downloadUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/assets/${assetDetails.id}/download${tokenQuery}`;
+    // The session cookie proves who is downloading; no token goes in the URL
+    const downloadUrl = `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/assets/${assetDetails.id}/download`;
 
     const a = document.createElement("a");
     a.style.display = "none";
@@ -834,7 +836,7 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
                       className="w-full bg-[#FF424D] hover:bg-[#E63A42] active:scale-[0.99] text-white font-semibold text-sm py-3.5 px-4 rounded-xl shadow-lg shadow-red-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer font-sans"
                     >
                       <FiLock className="w-4 h-4" />
-                      <span>Unlock with Patreon</span>
+                      <span>Sign in to Unlock</span>
                     </button>
                   )
                 ) : (
@@ -961,13 +963,13 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
               </div>
 
               <h2 className="text-2xl font-semibold tracking-tight-h2 font-sans text-fg">
-                {isAuthenticated ? "Become an Active Patron" : "Unlock with Patreon"}
+                {isAuthenticated ? "Become an Active Patron" : "Sign in to download"}
               </h2>
 
               <p className="text-xs sm:text-sm text-fg-secondary leading-relaxed">
                 {isAuthenticated
                   ? "Your account is not linked to an active Patreon subscription. Subscribe now to unlock this model and all premium 3D assets!"
-                  : "To access our premium 3D models, please login with your Patreon account. Your membership supports new daily SketchUp uploads."}
+                  : "PRO models are for our Patreon supporters. Sign in or create a free account first, then connect your Patreon."}
               </p>
 
               <div className="rounded-xl border border-line bg-canvas/50 p-4 space-y-2.5">
@@ -992,29 +994,37 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
 
               <div className="pt-2 flex flex-col space-y-2.5">
                 {isAuthenticated ? (
-                  <a
-                    href="https://www.patreon.com/sketchshaper"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full bg-[#FF424D] hover:bg-[#E63A42] text-white font-mono text-xs uppercase tracking-wider font-semibold py-3.5 px-6 rounded-full flex items-center justify-center gap-2 transition-all shadow-lg"
-                  >
-                    <span>Subscribe on Patreon</span>
-                  </a>
+                  <>
+                    <a
+                      href="https://www.patreon.com/sketchshaper"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full bg-[#FF424D] hover:bg-[#E63A42] text-white font-mono text-xs uppercase tracking-wider font-semibold py-3.5 px-6 rounded-full flex items-center justify-center gap-2 transition-all shadow-lg"
+                    >
+                      <span>Subscribe on Patreon</span>
+                    </a>
+                    <a
+                      href={patreonStartUrl(here)}
+                      className="text-center text-xs font-mono text-action hover:underline py-1"
+                    >
+                      {user.patreonLinked ? "Just subscribed? Refresh my Patreon status" : "Already a patron? Connect your Patreon"}
+                    </a>
+                  </>
                 ) : (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowModal(false);
-                      login(
-                        typeof window !== "undefined"
-                          ? window.location.pathname
-                          : undefined
-                      );
-                    }}
-                    className="w-full bg-[#FF424D] hover:bg-[#E63A42] text-white font-mono text-xs uppercase tracking-wider font-semibold py-3.5 px-6 rounded-full flex items-center justify-center gap-2 transition-all shadow-lg cursor-pointer"
-                  >
-                    <span>Login with Patreon</span>
-                  </button>
+                  <>
+                    <a
+                      href={`/login?next=${encodeURIComponent(here)}`}
+                      className="w-full bg-action hover:bg-action-hover text-canvas font-mono text-xs uppercase tracking-wider font-semibold py-3.5 px-6 rounded-full flex items-center justify-center gap-2 transition-all shadow-lg"
+                    >
+                      <span>Sign in or create an account</span>
+                    </a>
+                    <a
+                      href={patreonStartUrl(here)}
+                      className="w-full bg-[#FF424D] hover:bg-[#E63A42] text-white font-mono text-xs uppercase tracking-wider font-semibold py-3.5 px-6 rounded-full flex items-center justify-center gap-2 transition-all shadow-lg"
+                    >
+                      <span>Continue with Patreon</span>
+                    </a>
+                  </>
                 )}
 
                 <button
@@ -1030,7 +1040,7 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
                     type="button"
                     onClick={() => {
                       setShowModal(false);
-                      logout();
+                      signOut();
                     }}
                     className="text-fg-secondary/60 hover:text-danger text-xs font-mono transition-colors cursor-pointer text-center"
                   >

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { usePatreonAuth } from "@/contexts/PatreonAuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 /**
  * Consolidated Google AdSense Unit
@@ -23,9 +23,9 @@ export default function AdUnit({
   const pushedRef = useRef(false);
   const [mounted, setMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const { user, isAuthenticated, loading } = usePatreonAuth();
+  const { user, loading } = useAuth();
 
-  const isPatron = isAuthenticated && !!user?.is_active_patron;
+  const isPatron = !!user?.isPro;
   const isProduction =
     process.env.NODE_ENV === "production" ||
     process.env.NEXT_PUBLIC_ENABLE_ADSENSE === "true";

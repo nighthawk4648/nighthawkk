@@ -2,14 +2,14 @@
 
 import React from "react";
 import AdUnit from "@/components/Shared/GoogleAdsense/AdUnit";
-import { usePatreonAuth } from "@/contexts/PatreonAuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function BlogRightRailAd({
   slot = "2445550536",
   className = "",
 }) {
-  const { user, isAuthenticated, loading } = usePatreonAuth();
-  const isPatron = isAuthenticated && !!user?.is_active_patron;
+  const { user, loading } = useAuth();
+  const isPatron = !!user?.isPro;
 
   // Ad-free experience for Patreon supporters
   if (!loading && isPatron) {
