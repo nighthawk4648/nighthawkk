@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { SiPatreon } from "react-icons/si";
 import { patreonStartUrl, PATREON_JOIN_URL, PATREON_MANAGE_URL } from "@/utils/authApi";
+import { membershipKind, proUntilText } from "@/utils/membership";
 import { formatAssetSize } from "@/utils/formatAssetSize";
 import dynamic from "next/dynamic";
 import { getOriginalImageUrl } from "@/utils/imageUrl";
@@ -26,6 +27,7 @@ export default function Navbar({
 }) {
   const { user: siteUser, loading: siteLoading, signOut, openAuth } = useAuth();
   const pathname = usePathname();
+  const kind = membershipKind(siteUser);
 
   const [isBrowseOpen, setIsBrowseOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -404,33 +406,51 @@ export default function Navbar({
                           </div>
                         )}
                       </div>
-                      {siteUser.isPro ? (
-                        <a
-                          href={PATREON_MANAGE_URL}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
+                      {kind === "blocked" ? (
+                        <Link
+                          href="/contact"
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="block px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
                         >
-                          <SiPatreon aria-hidden="true" className="w-3 h-3" />
-                          {siteUser.membershipTier ? `Membership: ${siteUser.membershipTier}` : "Membership"}
-                        </a>
+                          PRO access is paused &middot; contact us &rarr;
+                        </Link>
                       ) : (
-                        <a
-                          href={PATREON_JOIN_URL}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
-                        >
-                          <SiPatreon aria-hidden="true" className="w-3 h-3" />
-                          Become a member
-                        </a>
+                        <>
+                          {kind === "manual" && (
+                            <div className="px-3 py-1.5 text-xs text-fg">
+                              PRO &middot; {proUntilText(siteUser)}
+                            </div>
+                          )}
+                          {kind === "patreon" && (
+                            <a
+                              href={PATREON_MANAGE_URL}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
+                            >
+                              <SiPatreon aria-hidden="true" className="w-3 h-3" />
+                              {siteUser.membershipTier ? `Membership: ${siteUser.membershipTier}` : "Membership"}
+                            </a>
+                          )}
+                          {kind === "free" && (
+                            <a
+                              href={PATREON_JOIN_URL}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
+                            >
+                              <SiPatreon aria-hidden="true" className="w-3 h-3" />
+                              Become a member
+                            </a>
+                          )}
+                          <a
+                            href={patreonStartUrl(pathname)}
+                            className="block px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
+                          >
+                            {siteUser.patreonLinked ? "Refresh Patreon status" : "Connect Patreon"} &rarr;
+                          </a>
+                        </>
                       )}
-                      <a
-                        href={patreonStartUrl(pathname)}
-                        className="block px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
-                      >
-                        {siteUser.patreonLinked ? "Refresh Patreon status" : "Connect Patreon"} &rarr;
-                      </a>
                       <button
                         type="button"
                         onClick={() => {

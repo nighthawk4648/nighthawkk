@@ -8,6 +8,7 @@ import slugify from "@/utils/slugify";
 import { buildAssetPath } from "@/utils/buildAssetPath";
 import { useAuth } from "@/contexts/AuthContext";
 import { patreonStartUrl, PATREON_JOIN_URL } from "@/utils/authApi";
+import { membershipKind } from "@/utils/membership";
 import {
   FiDownload,
   FiBox,
@@ -68,6 +69,7 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
 
   const isAuthenticated = mounted && !!user;
   const isPatron = isAuthenticated && !!user.isPro;
+  const isBlocked = isAuthenticated && membershipKind(user) === "blocked";
   // Where to come back to after signing in
   const here = typeof window !== "undefined" ? window.location.pathname + window.location.search : "/";
 
@@ -825,8 +827,8 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
                       onClick={() => setShowModal(true)}
                       className="w-full bg-[#FF424D] hover:bg-[#E63A42] active:scale-[0.99] text-white font-semibold text-sm py-3.5 px-4 rounded-xl shadow-lg shadow-red-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer font-sans"
                     >
-                      <SiPatreon className="w-4 h-4" />
-                      <span>Subscribe on Patreon to Unlock</span>
+                      {isBlocked ? <FiLock className="w-4 h-4" /> : <SiPatreon className="w-4 h-4" />}
+                      <span>{isBlocked ? "PRO access is paused" : "Subscribe on Patreon to Unlock"}</span>
                     </button>
                   ) : (
                     <button
@@ -962,15 +964,18 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
               </div>
 
               <h2 className="text-2xl font-semibold tracking-tight-h2 font-sans text-fg">
-                {isAuthenticated ? "Become an Active Patron" : "Sign in to download"}
+                {isBlocked ? "PRO access is paused" : isAuthenticated ? "Become an Active Patron" : "Sign in to download"}
               </h2>
 
               <p className="text-xs sm:text-sm text-fg-secondary leading-relaxed">
-                {isAuthenticated
+                {isBlocked
+                  ? "PRO downloads are paused for your account. Please contact us and we will sort it out."
+                  : isAuthenticated
                   ? "Your account is not linked to an active Patreon subscription. Subscribe now to unlock this model and all premium 3D assets!"
                   : "PRO models are for our Patreon supporters. Sign in with Patreon or your email, or create a free account."}
               </p>
 
+              {!isBlocked && (
               <div className="rounded-xl border border-line bg-canvas/50 p-4 space-y-2.5">
                 <h3 className="font-mono text-xs uppercase tracking-wider text-action font-semibold">
                   What PRO Members Receive:
@@ -990,9 +995,18 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
                   </li>
                 </ul>
               </div>
+              )}
 
               <div className="pt-2 flex flex-col space-y-2.5">
-                {isAuthenticated ? (
+                {isBlocked ? (
+                  <Link
+                    href="/contact"
+                    onClick={() => setShowModal(false)}
+                    className="w-full bg-action hover:bg-action-hover text-canvas font-mono text-xs uppercase tracking-wider font-semibold py-3.5 px-6 rounded-full flex items-center justify-center gap-2 transition-all shadow-lg"
+                  >
+                    <span>Contact us</span>
+                  </Link>
+                ) : isAuthenticated ? (
                   <>
                     <a
                       href={PATREON_JOIN_URL}
