@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { SiPatreon } from "react-icons/si";
 import { optimizedImageUrl, getOriginalImageUrl } from "@/utils/imageUrl";
 import slugify from "@/utils/slugify";
 import { buildAssetPath } from "@/utils/buildAssetPath";
@@ -53,7 +54,7 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
   const descRef = useRef(null);
   const touchStartRef = useRef({ x: 0, y: 0 });
 
-  const { user, signOut } = useAuth();
+  const { user, signOut, openAuth } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -824,9 +825,7 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
                       onClick={() => setShowModal(true)}
                       className="w-full bg-[#FF424D] hover:bg-[#E63A42] active:scale-[0.99] text-white font-semibold text-sm py-3.5 px-4 rounded-xl shadow-lg shadow-red-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer font-sans"
                     >
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M15.386.524c-4.764 0-8.64 3.876-8.64 8.64 0 4.75 3.876 8.613 8.64 8.613 4.75 0 8.614-3.864 8.614-8.613C24 4.4 20.136.524 15.386.524M.003 23.537h4.22V.524H.003" />
-                      </svg>
+                      <SiPatreon className="w-4 h-4" />
                       <span>Subscribe on Patreon to Unlock</span>
                     </button>
                   ) : (
@@ -969,7 +968,7 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
               <p className="text-xs sm:text-sm text-fg-secondary leading-relaxed">
                 {isAuthenticated
                   ? "Your account is not linked to an active Patreon subscription. Subscribe now to unlock this model and all premium 3D assets!"
-                  : "PRO models are for our Patreon supporters. Sign in or create a free account first, then connect your Patreon."}
+                  : "PRO models are for our Patreon supporters. Sign in with Patreon or your email, or create a free account."}
               </p>
 
               <div className="rounded-xl border border-line bg-canvas/50 p-4 space-y-2.5">
@@ -1011,20 +1010,16 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
                     </a>
                   </>
                 ) : (
-                  <>
-                    <a
-                      href={`/login?next=${encodeURIComponent(here)}`}
-                      className="w-full bg-action hover:bg-action-hover text-canvas font-mono text-xs uppercase tracking-wider font-semibold py-3.5 px-6 rounded-full flex items-center justify-center gap-2 transition-all shadow-lg"
-                    >
-                      <span>Sign in or create an account</span>
-                    </a>
-                    <a
-                      href={patreonStartUrl(here)}
-                      className="w-full bg-[#FF424D] hover:bg-[#E63A42] text-white font-mono text-xs uppercase tracking-wider font-semibold py-3.5 px-6 rounded-full flex items-center justify-center gap-2 transition-all shadow-lg"
-                    >
-                      <span>Continue with Patreon</span>
-                    </a>
-                  </>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowModal(false);
+                      openAuth("login", here);
+                    }}
+                    className="w-full bg-action hover:bg-action-hover text-canvas font-mono text-xs uppercase tracking-wider font-semibold py-3.5 px-6 rounded-full flex items-center justify-center gap-2 transition-all shadow-lg cursor-pointer"
+                  >
+                    <span>Sign in or create an account</span>
+                  </button>
                 )}
 
                 <button

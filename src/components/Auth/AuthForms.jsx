@@ -4,17 +4,27 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { authRequest, patreonStartUrl } from "@/utils/authApi";
+import { FcGoogle } from "react-icons/fc";
+import { SiPatreon } from "react-icons/si";
+import { authRequest, googleStartUrl, patreonStartUrl } from "@/utils/authApi";
 import { safeReturnPath } from "@/utils/safeReturnPath";
 
 const inputClass =
   "w-full rounded-xl border border-white/10 bg-surface-raised/50 hover:border-white/20 px-4 py-3 text-sm text-fg placeholder:text-fg-secondary/50 outline-none transition-colors focus:border-action focus:ring-2 focus:ring-action/10";
 const buttonClass =
   "w-full rounded-full bg-action px-6 py-3 text-sm font-semibold text-canvas transition-colors hover:bg-action-hover active:bg-action-pressed disabled:cursor-not-allowed disabled:opacity-60";
+const socialClass =
+  "flex w-full items-center justify-center gap-3 rounded-full border border-line bg-surface-raised px-6 py-3 text-sm font-medium text-fg transition-colors hover:border-action";
 const linkClass = "text-action hover:underline";
 
-// Reasons the backend sends back after a Patreon sign-in did not finish (/login?error=...)
-const PATREON_ERRORS = {
+// Reasons the backend sends back after a Google or Patreon sign-in did not finish (/login?error=...)
+const PROVIDER_ERRORS = {
+  google_denied: "Google sign-in was cancelled.",
+  google_failed: "Google sign-in did not work. Please try again.",
+  google_email_unverified: "Google could not confirm your email address. Please sign in with your email and password.",
+  google_in_use: "That Google account is already connected to a different account.",
+  google_no_email: "Google did not share your email address. Please allow email access and try again.",
+  google_unavailable: "Google sign-in is not available right now. Please use another option.",
   patreon_denied: "Patreon sign-in was cancelled.",
   patreon_failed: "Patreon sign-in did not work. Please try again.",
   patreon_email_unverified: "Your Patreon email is not verified. Verify it on Patreon, or sign in with your email and password.",
@@ -22,16 +32,27 @@ const PATREON_ERRORS = {
   patreon_no_email: "Patreon did not share your email address. Please allow email access and try again.",
 };
 
+// Page layout (used by /login, /signup and the email-link pages)
 function AuthCard({ title, subtitle, children, footer }) {
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-12 sm:py-16 text-fg">
       <div className="w-full max-w-md rounded-[28px] bg-surface/80 border border-line p-6 sm:p-10 shadow-2xl backdrop-blur-md">
-        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight font-sans mb-2">{title}</h1>
-        {subtitle && <p className="text-sm text-fg-secondary leading-relaxed mb-6">{subtitle}</p>}
-        {children}
-        {footer && <div className="mt-6 text-center text-xs text-fg-secondary">{footer}</div>}
+        <Panel title={title} subtitle={subtitle} footer={footer}>{children}</Panel>
       </div>
     </div>
+  );
+}
+
+// The content of a sign-in box, shared by the pages and the popup
+function Panel({ title, subtitle, children, footer, modal = false }) {
+  const Heading = modal ? "h2" : "h1";
+  return (
+    <>
+      <Heading id="auth-title" className="text-2xl sm:text-3xl font-semibold tracking-tight font-sans mb-2">{title}</Heading>
+      {subtitle && <p className="text-sm text-fg-secondary leading-relaxed mb-6">{subtitle}</p>}
+      {children}
+      {footer && <div className="mt-6 text-center text-xs text-fg-secondary">{footer}</div>}
+    </>
   );
 }
 
@@ -75,39 +96,68 @@ function useSubmit(action) {
   return { busy, error, submit };
 }
 
-export function LoginForm() {
-  const router = useRouter();
-  const params = useSearchParams();
-  const next = safeReturnPath(params.get("next"));
-  const patreonError = PATREON_ERRORS[params.get("error")];
-  const { user, setUser } = useAuth();
+// Google, Patreon, then "or": the same for signing in and signing up (each creates the account when it is new)
+function SocialOptions({ next }) {
+  return (
+    <>
+      <div className="space-y-3">
+        <a href={googleStartUrl(next)} className={socialClass}>
+          <FcGoogle className="h-5 w-5" /> Continue with Google
+        </a>
+        <a href={patreonStartUrl(next)} className={socialClass}>
+          <SiPatreon className="h-4 w-4 text-[#FF424D]" /> Continue with Patreon
+        </a>
+      </div>
+      <div className="my-6 flex items-center gap-3 text-[11px] font-mono uppercase text-fg-secondary/70">
+        <span className="h-px flex-1 bg-line" /> or <span className="h-px flex-1 bg-line" />
+      </div>
+    </>
+  );
+}
 
-  useEffect(() => {
-    if (user) router.replace(next);
-  }, [user, next, router]);
+// Moves between sign in and sign up: a button inside the popup, a normal link on the pages
+function SwitchLink({ mode, next, onSwitch, children }) {
+  if (onSwitch) {
+    return (
+      <button type="button" onClick={() => onSwitch(mode)} className={linkClass}>
+        {children}
+      </button>
+    );
+  }
+  const path = mode === "signup" ? "/signup" : "/login";
+  return (
+    <Link href={next === "/" ? path : `${path}?next=${encodeURIComponent(next)}`} className={linkClass}>
+      {children}
+    </Link>
+  );
+}
 
+export function SignInPanel({ next, modal = false, onSwitch, onDone, urlError }) {
+  const { setUser } = useAuth();
   const { busy, error, submit } = useSubmit(async (form) => {
     const res = await authRequest("/login", {
       body: { email: form.get("email"), password: form.get("password") },
     });
-    if (res.ok) setUser(res.data.user);
+    if (res.ok) {
+      setUser(res.data.user);
+      onDone?.();
+    }
     return res;
   });
 
   return (
-    <AuthCard
+    <Panel
+      modal={modal}
       title="Sign in"
       subtitle="Sign in to download models and keep your account in one place."
-      footer={
-        <>
-          New here? <Link href="/signup" className={linkClass}>Create an account</Link>
-        </>
-      }
+      footer={<>New here? <SwitchLink mode="signup" next={next} onSwitch={onSwitch}>Create an account</SwitchLink></>}
     >
+      {urlError && <div className="mb-4"><Message>{urlError}</Message></div>}
+      <SocialOptions next={next} />
       <form onSubmit={submit} className="space-y-4" noValidate>
         <Field label="Email" id="email" type="email" autoComplete="email" required placeholder="you@example.com" />
         <Field label="Password" id="password" type="password" autoComplete="current-password" required />
-        {(error || patreonError) && <Message>{error || patreonError}</Message>}
+        {error && <Message>{error}</Message>}
         <button type="submit" disabled={busy} className={buttonClass}>
           {busy ? "Signing in..." : "Sign in"}
         </button>
@@ -115,21 +165,11 @@ export function LoginForm() {
           <Link href="/forgot-password" className={linkClass}>Forgot your password?</Link>
         </div>
       </form>
-
-      <div className="my-6 flex items-center gap-3 text-[11px] font-mono uppercase text-fg-secondary/70">
-        <span className="h-px flex-1 bg-line" /> or <span className="h-px flex-1 bg-line" />
-      </div>
-      <a
-        href={patreonStartUrl(next)}
-        className="block w-full rounded-full border border-line bg-surface-raised px-6 py-3 text-center text-sm font-medium text-fg transition-colors hover:border-action"
-      >
-        Continue with Patreon
-      </a>
-    </AuthCard>
+    </Panel>
   );
 }
 
-export function SignUpForm() {
+export function SignUpPanel({ next, modal = false, onSwitch }) {
   const [sentTo, setSentTo] = useState("");
   const [resent, setResent] = useState("");
 
@@ -149,7 +189,7 @@ export function SignUpForm() {
 
   if (sentTo) {
     return (
-      <AuthCard title="Check your email" footer={<Link href="/login" className={linkClass}>Back to sign in</Link>}>
+      <Panel modal={modal} title="Check your email" footer={<SwitchLink mode="login" next={next} onSwitch={onSwitch}>Back to sign in</SwitchLink>}>
         <div className="space-y-4">
           <Message type="success">
             We sent a confirmation link to <strong>{sentTo}</strong>. It works for 24 hours.
@@ -160,20 +200,18 @@ export function SignUpForm() {
           </p>
           {resent && <p className="text-xs text-fg-secondary">{resent}</p>}
         </div>
-      </AuthCard>
+      </Panel>
     );
   }
 
   return (
-    <AuthCard
+    <Panel
+      modal={modal}
       title="Create your account"
-      subtitle="Free to join. Confirm your email to keep your account safe."
-      footer={
-        <>
-          Already have an account? <Link href="/login" className={linkClass}>Sign in</Link>
-        </>
-      }
+      subtitle="Free to join. Use Google, Patreon or your email."
+      footer={<>Already have an account? <SwitchLink mode="login" next={next} onSwitch={onSwitch}>Sign in</SwitchLink></>}
     >
+      <SocialOptions next={next} />
       <form onSubmit={submit} className="space-y-4" noValidate>
         <Field label="Name (optional)" id="name" type="text" autoComplete="name" maxLength={100} />
         <Field label="Email" id="email" type="email" autoComplete="email" required placeholder="you@example.com" />
@@ -183,7 +221,44 @@ export function SignUpForm() {
           {busy ? "Creating account..." : "Create account"}
         </button>
       </form>
-    </AuthCard>
+    </Panel>
+  );
+}
+
+// /login and /signup: the same panels on their own page
+function PageShell({ children }) {
+  return (
+    <div className="min-h-[70vh] flex items-center justify-center px-4 py-12 sm:py-16 text-fg">
+      <div className="w-full max-w-md rounded-[28px] bg-surface/80 border border-line p-6 sm:p-10 shadow-2xl backdrop-blur-md">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+export function LoginForm() {
+  const router = useRouter();
+  const params = useSearchParams();
+  const next = safeReturnPath(params.get("next"));
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) router.replace(next);
+  }, [user, next, router]);
+
+  return (
+    <PageShell>
+      <SignInPanel next={next} urlError={PROVIDER_ERRORS[params.get("error")]} onDone={() => router.replace(next)} />
+    </PageShell>
+  );
+}
+
+export function SignUpForm() {
+  const next = safeReturnPath(useSearchParams().get("next"));
+  return (
+    <PageShell>
+      <SignUpPanel next={next} />
+    </PageShell>
   );
 }
 

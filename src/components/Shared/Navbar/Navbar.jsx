@@ -23,7 +23,7 @@ export default function Navbar({
   categories = [],
   featuredAsset = null,
 }) {
-  const { user: siteUser, loading: siteLoading, signOut } = useAuth();
+  const { user: siteUser, loading: siteLoading, signOut, openAuth } = useAuth();
   const pathname = usePathname();
 
   const [isBrowseOpen, setIsBrowseOpen] = useState(false);
@@ -424,12 +424,28 @@ export default function Navbar({
                 </div>
               ) : (
                 /* Signed Out State (Default); hidden until we know, so it does not flash for signed-in visitors */
-                <Link
-                  href="/login"
-                  className={`glass-panel text-fg hover:bg-surface-raised hover:text-white px-3.5 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-2 border border-line ${siteLoading ? "invisible" : ""}`}
-                >
-                  Sign in
-                </Link>
+                <div className={`flex items-center gap-2 ${siteLoading ? "invisible" : ""}`}>
+                  <Link
+                    href="/login"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      openAuth("login");
+                    }}
+                    className="hidden sm:inline-flex px-3 py-1.5 rounded-full text-xs font-medium text-fg-secondary hover:text-fg hover:bg-surface-raised transition-colors"
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    href="/signup"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      openAuth("signup");
+                    }}
+                    className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-action text-canvas hover:bg-action-hover active:bg-action-pressed transition-colors"
+                  >
+                    Sign up
+                  </Link>
+                </div>
               )}
             </div>
           </div>
@@ -501,6 +517,32 @@ export default function Navbar({
               >
                 SketchUp Extension
               </Link>
+              {!siteUser && (
+                <>
+                  <Link
+                    href="/login"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setIsMobileMenuOpen(false);
+                      openAuth("login");
+                    }}
+                    className="p-2 rounded hover:bg-surface-raised"
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    href="/signup"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setIsMobileMenuOpen(false);
+                      openAuth("signup");
+                    }}
+                    className="p-2 rounded hover:bg-surface-raised"
+                  >
+                    Create an account
+                  </Link>
+                </>
+              )}
             </div>
 
             <div className="border-t border-line pt-3">

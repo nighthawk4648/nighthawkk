@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SiPatreon } from "react-icons/si";
 import React from "react";
 import { categoryPath } from "@/utils/paths";
 
@@ -41,9 +42,7 @@ const Footer = ({ categories = [], footerPages = [], socials = [] }) => {
       </svg>
     ),
     patreon: (
-      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M15.386.524c-4.764 0-8.64 3.876-8.64 8.64 0 4.75 3.876 8.613 8.64 8.613 4.75 0 8.614-3.864 8.614-8.613C24 4.4 20.136.524 15.386.524M.003 23.537h4.22V.524H.003" />
-      </svg>
+      <SiPatreon className="w-4 h-4" />
     ),
     tiktok: (
       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
