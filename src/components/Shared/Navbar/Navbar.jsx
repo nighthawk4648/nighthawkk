@@ -5,7 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { patreonStartUrl } from "@/utils/authApi";
+import { SiPatreon } from "react-icons/si";
+import { patreonStartUrl, PATREON_JOIN_URL, PATREON_MANAGE_URL } from "@/utils/authApi";
 import { formatAssetSize } from "@/utils/formatAssetSize";
 import dynamic from "next/dynamic";
 import { getOriginalImageUrl } from "@/utils/imageUrl";
@@ -403,6 +404,27 @@ export default function Navbar({
                           </div>
                         )}
                       </div>
+                      {siteUser.isPro ? (
+                        <a
+                          href={PATREON_MANAGE_URL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
+                        >
+                          <SiPatreon aria-hidden="true" className="w-3 h-3" />
+                          {siteUser.membershipTier ? `Membership: ${siteUser.membershipTier}` : "Membership"}
+                        </a>
+                      ) : (
+                        <a
+                          href={PATREON_JOIN_URL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
+                        >
+                          <SiPatreon aria-hidden="true" className="w-3 h-3" />
+                          Become a member
+                        </a>
+                      )}
                       <a
                         href={patreonStartUrl(pathname)}
                         className="block px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
@@ -431,20 +453,19 @@ export default function Navbar({
                       e.preventDefault();
                       openAuth("login");
                     }}
-                    className="hidden sm:inline-flex px-3 py-1.5 rounded-full text-xs font-medium text-fg-secondary hover:text-fg hover:bg-surface-raised transition-colors"
+                    className="hidden sm:inline-flex px-3.5 py-1.5 rounded-full text-xs font-semibold bg-action text-canvas hover:bg-action-hover active:bg-action-pressed transition-colors"
                   >
                     Sign in
                   </Link>
-                  <Link
-                    href="/signup"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      openAuth("signup");
-                    }}
-                    className="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-action text-canvas hover:bg-action-hover active:bg-action-pressed transition-colors"
+                  <a
+                    href={PATREON_JOIN_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#FF424D] text-white hover:bg-[#E63A42] transition-colors"
                   >
-                    Sign up
-                  </Link>
+                    <SiPatreon aria-hidden="true" className="w-3 h-3" />
+                    Become a member
+                  </a>
                 </div>
               )}
             </div>
@@ -530,17 +551,15 @@ export default function Navbar({
                   >
                     Sign in
                   </Link>
-                  <Link
-                    href="/signup"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setIsMobileMenuOpen(false);
-                      openAuth("signup");
-                    }}
-                    className="p-2 rounded hover:bg-surface-raised"
+                  <a
+                    href={PATREON_JOIN_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 rounded hover:bg-surface-raised flex items-center gap-2"
                   >
-                    Create an account
-                  </Link>
+                    <SiPatreon aria-hidden="true" className="w-3 h-3" />
+                    Become a member
+                  </a>
                 </>
               )}
             </div>

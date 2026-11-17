@@ -7,7 +7,7 @@ import { optimizedImageUrl, getOriginalImageUrl } from "@/utils/imageUrl";
 import slugify from "@/utils/slugify";
 import { buildAssetPath } from "@/utils/buildAssetPath";
 import { useAuth } from "@/contexts/AuthContext";
-import { patreonStartUrl } from "@/utils/authApi";
+import { patreonStartUrl, PATREON_JOIN_URL } from "@/utils/authApi";
 import {
   FiDownload,
   FiBox,
@@ -995,7 +995,7 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
                 {isAuthenticated ? (
                   <>
                     <a
-                      href="https://www.patreon.com/sketchshaper"
+                      href={PATREON_JOIN_URL}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-full bg-[#FF424D] hover:bg-[#E63A42] text-white font-mono text-xs uppercase tracking-wider font-semibold py-3.5 px-6 rounded-full flex items-center justify-center gap-2 transition-all shadow-lg"

@@ -1,5 +1,9 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
+// Patreon's own pages: the plans/join page (set up on Patreon) and where a patron manages their plan
+export const PATREON_JOIN_URL = "https://www.patreon.com/sketchshaper/join";
+export const PATREON_MANAGE_URL = "https://www.patreon.com/settings/memberships";
+
 // Full-page link that starts "Continue with Patreon" and brings the visitor back to `next`
 export const patreonStartUrl = (next = "/") =>
   `${API_BASE_URL}/patreon/start?next=${encodeURIComponent(next)}`;
