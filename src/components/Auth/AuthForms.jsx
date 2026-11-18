@@ -6,7 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { FcGoogle } from "react-icons/fc";
 import { SiPatreon } from "react-icons/si";
-import { authRequest, googleStartUrl, patreonStartUrl } from "@/utils/authApi";
+import { approveExtension, authRequest, googleStartUrl, patreonStartUrl } from "@/utils/authApi";
+import { cleanConnectCode, forgetConnect, recallConnectPath, rememberConnect } from "@/utils/extensionConnect";
 import { safeReturnPath } from "@/utils/safeReturnPath";
 
 const inputClass =
@@ -288,11 +289,14 @@ export function VerifyEmailForm() {
     return <AuthCard title="Confirming your email..."><p className="text-sm text-fg-secondary">One moment.</p></AuthCard>;
   }
   if (state === "done") {
+    const connectPath = recallConnectPath(); // they came here from the SketchUp extension
     return (
       <AuthCard title="Email confirmed">
         <div className="space-y-4">
           <Message type="success">Thank you. Your email is confirmed and you are signed in.</Message>
-          <Link href="/" className={`${buttonClass} block text-center`}>Go to the home page</Link>
+          <Link href={connectPath || "/"} className={`${buttonClass} block text-center`}>
+            {connectPath ? "Continue to SketchUp" : "Go to the home page"}
+          </Link>
         </div>
       </AuthCard>
     );
@@ -305,6 +309,136 @@ export function VerifyEmailForm() {
     >
       <p className="text-xs text-fg-secondary">Sign in and we will offer to send a fresh link, or create the account again with the same email.</p>
     </AuthCard>
+  );
+}
+
+// /extension/connect: the SketchUp extension sends people here to sign in or sign up, then press Connect
+export function ExtensionConnectForm() {
+  const params = useSearchParams();
+  const { user, loading, setUser, signOut } = useAuth();
+  const linkCode = cleanConnectCode(params.get("code"));
+  const wantsPatreon = params.get("patreon") === "1"; // sent here to link Patreon to this account
+  const [typed, setTyped] = useState("");
+  const [mode, setMode] = useState(params.get("mode") === "signup" ? "signup" : "login");
+  const [connected, setConnected] = useState(false);
+  const [resent, setResent] = useState("");
+  const code = linkCode || cleanConnectCode(typed);
+  const next = `/extension/connect${wantsPatreon ? "?patreon=1" : linkCode ? `?code=${linkCode}` : ""}`;
+
+  useEffect(() => {
+    if (linkCode) rememberConnect(linkCode);
+  }, [linkCode]);
+
+  // Someone who confirmed their email in another tab comes back here already signed in
+  useEffect(() => {
+    if (user?.emailVerified) return undefined;
+    const recheck = () =>
+      authRequest("/me", { method: "GET" }).then((res) => {
+        if (res.data?.user) setUser(res.data.user);
+      });
+    window.addEventListener("focus", recheck);
+    return () => window.removeEventListener("focus", recheck);
+  }, [user, setUser]);
+
+  const { busy, error, submit } = useSubmit(async () => {
+    const res = await approveExtension(code);
+    if (res.ok) {
+      forgetConnect();
+      setConnected(true);
+    }
+    return res;
+  });
+
+  if (loading) return <PageShell><p className="text-sm text-fg-secondary">One moment.</p></PageShell>;
+
+  if (connected) {
+    return (
+      <PageShell>
+        <Panel title="SketchUp is connected">
+          <Message type="success">You are all set. Close this page and go back to SketchUp.</Message>
+        </Panel>
+      </PageShell>
+    );
+  }
+
+  if (!user) {
+    return (
+      <PageShell>
+        <div className="mb-6"><Message type="success">Sign in or create your account to connect SketchUp.</Message></div>
+        {mode === "signup" ? <SignUpPanel next={next} onSwitch={setMode} /> : <SignInPanel next={next} onSwitch={setMode} />}
+      </PageShell>
+    );
+  }
+
+  if (wantsPatreon) {
+    return (
+      <PageShell>
+        <Panel
+          title={user.patreonLinked ? "Patreon is connected" : "Connect your Patreon"}
+          subtitle={`Signed in as ${user.name || user.email}.`}
+          footer={<button type="button" onClick={signOut} className={linkClass}>Use a different account</button>}
+        >
+          {user.patreonLinked ? (
+            <Message type="success">Go back to SketchUp and press &quot;check again&quot;.</Message>
+          ) : (
+            <a href={patreonStartUrl(next)} className={socialClass}>
+              <SiPatreon className="h-4 w-4 text-[#FF424D]" /> Connect Patreon
+            </a>
+          )}
+        </Panel>
+      </PageShell>
+    );
+  }
+
+  if (!user.emailVerified) {
+    const resend = async () => {
+      const res = await authRequest("/resend-verification", { body: { email: user.email } });
+      setResent(res.ok ? "We sent another link." : res.message);
+    };
+    return (
+      <PageShell>
+        <Panel title="Confirm your email first" subtitle={`Open the link we sent to ${user.email}, then come back to this page.`}>
+          <button type="button" onClick={resend} className={buttonClass}>Send the link again</button>
+          {resent && <p className="mt-3 text-xs text-fg-secondary">{resent}</p>}
+        </Panel>
+      </PageShell>
+    );
+  }
+
+  return (
+    <PageShell>
+      <Panel
+        title="Connect to SketchUp"
+        subtitle={`Signed in as ${user.name || user.email}.`}
+        footer={<button type="button" onClick={signOut} className={linkClass}>Use a different account</button>}
+      >
+        <form onSubmit={submit} className="space-y-4" noValidate>
+          {linkCode ? (
+            <div className="rounded-xl border border-line bg-surface-raised/50 px-4 py-4 text-center font-mono text-2xl font-semibold tracking-[0.3em]">
+              {linkCode}
+            </div>
+          ) : (
+            <Field
+              label="Code shown in SketchUp"
+              id="code"
+              type="text"
+              autoComplete="off"
+              maxLength={6}
+              value={typed}
+              onChange={(e) => setTyped(e.target.value.toUpperCase())}
+              placeholder="A1B2C3"
+            />
+          )}
+          <p className="text-xs leading-relaxed text-fg-secondary">
+            Only press Connect if this same code is showing in your own SketchUp window right now.
+          </p>
+          {error && <Message>{error}</Message>}
+          <button type="submit" disabled={busy || !code} className={buttonClass}>
+            {busy ? "Connecting..." : "Connect"}
+          </button>
+        </form>
+      </Panel>
+    </PageShell>
   );
 }
 

@@ -12,10 +12,10 @@ export const patreonStartUrl = (next = "/") =>
 export const googleStartUrl = (next = "/") =>
   `${API_BASE_URL}/google/start?next=${encodeURIComponent(next)}`;
 
-// Talks to the backend's /auth routes. The session lives in an HttpOnly cookie, so the browser must send credentials.
-export async function authRequest(path, { method = "POST", body } = {}) {
+// The session lives in an HttpOnly cookie, so the browser must send credentials.
+async function apiRequest(path, { method = "POST", body } = {}) {
   try {
-    const res = await fetch(`${API_BASE_URL}/auth${path}`, {
+    const res = await fetch(`${API_BASE_URL}${path}`, {
       method,
       credentials: "include",
       headers: body ? { "Content-Type": "application/json" } : undefined,
@@ -27,3 +27,9 @@ export async function authRequest(path, { method = "POST", body } = {}) {
     return { ok: false, status: 0, message: "Could not reach the server. Please try again." };
   }
 }
+
+// Talks to the backend's /auth routes
+export const authRequest = (path, options) => apiRequest(`/auth${path}`, options);
+
+// The signed-in visitor connects the SketchUp window that shows this code
+export const approveExtension = (code) => apiRequest("/extension/approve", { body: { code } });
