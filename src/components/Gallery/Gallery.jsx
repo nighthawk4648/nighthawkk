@@ -7,7 +7,7 @@ import { useState, useEffect, useCallback } from "react";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
-export const Gallery = () => {
+export const Gallery = ({ initialData = null }) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
 
   const fetchGalleryImages = useCallback(async (page, limit) => {
@@ -39,7 +39,7 @@ export const Gallery = () => {
     hasMore,
     error,
     observerTarget,
-  } = useInfiniteScroll(fetchGalleryImages, 12);
+  } = useInfiniteScroll(fetchGalleryImages, 12, initialData);
 
   const selectedImage =
     selectedImageIndex !== null ? images[selectedImageIndex] : null;

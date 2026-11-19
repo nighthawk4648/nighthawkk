@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { authRequest } from "@/utils/authApi";
+import { rememberAuth } from "@/utils/authNote";
 
 const AuthContext = createContext(null);
 
@@ -19,6 +20,7 @@ export function AuthProvider({ children }) {
     authRequest("/me", { method: "GET" }).then((res) => {
       if (!alive) return;
       setUserState(res.data?.user || null);
+      rememberAuth(res.data?.user);
       setLoading(false);
     });
     return () => {
@@ -29,12 +31,14 @@ export function AuthProvider({ children }) {
   // Signing in closes the popup
   const setUser = useCallback((next) => {
     setUserState(next);
+    rememberAuth(next);
     if (next) setAuthModal((m) => ({ ...m, open: false }));
   }, []);
 
   const signOut = useCallback(async () => {
     await authRequest("/logout");
     setUserState(null);
+    rememberAuth(null);
   }, []);
 
   // `next` is where Patreon sends the visitor back to; by default the page they are on

@@ -55,7 +55,7 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
   const descRef = useRef(null);
   const touchStartRef = useRef({ x: 0, y: 0 });
 
-  const { user, signOut, openAuth } = useAuth();
+  const { user, loading: authLoading, signOut, openAuth } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -834,7 +834,7 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
                     <button
                       type="button"
                       onClick={() => setShowModal(true)}
-                      className="w-full bg-[#FF424D] hover:bg-[#E63A42] active:scale-[0.99] text-white font-semibold text-sm py-3.5 px-4 rounded-xl shadow-lg shadow-red-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer font-sans"
+                      className={`w-full bg-[#FF424D] hover:bg-[#E63A42] active:scale-[0.99] text-white font-semibold text-sm py-3.5 px-4 rounded-xl shadow-lg shadow-red-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer font-sans ${authLoading ? "auth-pending" : ""}`}
                     >
                       <FiLock className="w-4 h-4" />
                       <span>Sign in to Unlock</span>

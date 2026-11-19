@@ -18,7 +18,7 @@ export default function BlogRightRailAd({
 
   return (
     <aside
-      className={`hidden xl:flex flex-col w-[240px] 2xl:w-[300px] shrink-0 sticky top-24 z-10 ${className}`}
+      className={`ad-slot hidden xl:flex flex-col w-[240px] 2xl:w-[300px] shrink-0 sticky top-24 z-10 ${className}`}
       aria-label="Advertisement rail"
     >
       <div className="flex items-center justify-between mb-2 px-1">

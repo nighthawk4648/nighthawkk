@@ -48,7 +48,7 @@ export default function Features({ categories = [] }) {
 
       {/* Categories Layout: Compact Mobile Horizontal Snap Carousel -> Desktop 3-Pillar Grid */}
       <div className="flex lg:grid lg:grid-cols-3 gap-2.5 sm:gap-6 lg:gap-8 items-stretch w-full overflow-x-auto lg:overflow-visible snap-x snap-mandatory scrollbar-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] -mx-4 px-4 sm:mx-0 sm:px-0 pb-2">
-        {sortedCategories.slice(0, 3).map((category) => {
+        {sortedCategories.map((category) => {
           const imageUrl = category.image
             ? getOriginalImageUrl(category.image)
             : "/assets/homepage/secondSection/features.png";

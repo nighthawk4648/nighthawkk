@@ -49,7 +49,9 @@ export default function CatalogLayout({
   const [searchInputValue, setSearchInputValue] = useState(
     activeFilters.search || "",
   );
-  const [expandedCategories, setExpandedCategories] = useState({});
+  const [expandedCategories, setExpandedCategories] = useState(() =>
+    activeCategoryId ? { [Number(activeCategoryId)]: true } : {},
+  );
   const [mounted, setMounted] = useState(false);
   const [isOverviewExpanded, setIsOverviewExpanded] = useState(false);
   const [isLongDescription, setIsLongDescription] = useState(false);

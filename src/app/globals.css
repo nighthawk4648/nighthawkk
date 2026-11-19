@@ -373,3 +373,14 @@ select:focus-visible {
   white-space: pre-line;
   word-break: break-word;
 }
+
+/* Until the server says who is signed in: signed-out visitors (the default) see the page as it is.
+   A saved note (data-auth, see utils/authNote.js) hides what would change, keeping its space. */
+html[data-auth="in"] .auth-pending,
+html[data-auth="pro"] .auth-pending {
+  visibility: hidden;
+}
+/* PRO members never see ads */
+html[data-auth="pro"] .ad-slot {
+  display: none;
+}

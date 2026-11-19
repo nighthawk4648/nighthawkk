@@ -19,7 +19,7 @@ export default function BlogHorizontalAd({
   }
 
   return (
-    <div className={`my-8 w-full ${className}`} aria-label="Horizontal advertisement">
+    <div className={`ad-slot my-8 w-full ${className}`} aria-label="Horizontal advertisement">
       <div className="flex items-center justify-between mb-2 px-1">
         <span className="font-mono text-[9px] uppercase tracking-wider text-fg-secondary/50 font-medium">
           Advertisement

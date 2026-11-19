@@ -6,6 +6,7 @@ import "./globals.css";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { ErrorFallback } from "@/components/Shared/ErrorFallback/ErrorFallback";
 import Providers from "@/components/Providers";
+import { AUTH_NOTE_SCRIPT } from "@/utils/authNote";
 import localFont from "next/font/local";
 import { cleanText } from "@/utils/seo";
 
@@ -111,9 +112,12 @@ export default async function RootLayout({ children }) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} antialiased font-sans`}
     >
       <head>
+        {/* data-cfasync: Cloudflare must not delay it, it has to run before the first paint */}
+        <script data-cfasync="false" dangerouslySetInnerHTML={{ __html: AUTH_NOTE_SCRIPT }} />
         {process.env.NODE_ENV === "production" && (
           <>
             <link

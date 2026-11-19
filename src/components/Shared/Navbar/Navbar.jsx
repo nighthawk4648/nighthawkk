@@ -102,7 +102,8 @@ export default function Navbar({
     );
   }, [categories]);
 
-  const topCategories = sortedCategories.slice(0, 6);
+  // shortcut: the 4 oldest categories, pick which 4 when more are added
+  const topCategories = sortedCategories.slice(0, 4);
 
   // Featured Sofa metadata (Asset ID 247: /sketchup-3d-models/sofa/stockholm-sundhamn-beige-sofa-by-ikea-247)
   const STOCKHOLM_SOFA = {
@@ -466,7 +467,7 @@ export default function Navbar({
                 </div>
               ) : (
                 /* Signed Out State (Default); hidden until we know, so it does not flash for signed-in visitors */
-                <div className={`flex items-center gap-2 ${siteLoading ? "invisible" : ""}`}>
+                <div className={`flex items-center gap-2 ${siteLoading ? "auth-pending" : ""}`}>
                   <Link
                     href="/login"
                     onClick={(e) => {

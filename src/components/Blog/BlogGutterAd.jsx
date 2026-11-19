@@ -27,7 +27,7 @@ export default function BlogGutterAd({
 
   return (
     <aside
-      className={`hidden min-[1800px]:flex flex-col gap-[450px] w-[160px] shrink-0 pt-8 z-10 ${className}`}
+      className={`ad-slot hidden min-[1800px]:flex flex-col gap-[450px] w-[160px] shrink-0 pt-8 z-10 ${className}`}
       aria-label={`${position} advertisement gutter`}
     >
       {items.map((index) => (

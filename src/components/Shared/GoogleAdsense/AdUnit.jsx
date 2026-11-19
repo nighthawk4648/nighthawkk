@@ -107,8 +107,9 @@ export default function AdUnit({
     };
   }, [isVisible, slot, minRequiredWidth]);
 
-  // While mounting or while patron status is verifying, or if user is an active patron, render nothing
-  if (!mounted || loading || isPatron) {
+  // PRO members get no ads. The box is drawn from the start so the page does not jump when the
+  // server answers; a saved note (.ad-slot in globals.css) hides it for PRO members meanwhile.
+  if (isPatron) {
     return null;
   }
 
@@ -116,7 +117,7 @@ export default function AdUnit({
     return (
       <div
         ref={containerRef}
-        className={`relative z-10 w-full block text-center ${className}`}
+        className={`ad-slot relative z-10 w-full block text-center ${className}`}
       >
         {isProduction && isVisible && (
           <ins
@@ -142,7 +143,7 @@ export default function AdUnit({
   return (
     <div
       ref={containerRef}
-      className={`rounded-panel bg-surface/30 backdrop-blur-2xl border border-white/[0.08] shadow-xl relative w-full block ${minHeight} ${className}`}
+      className={`ad-slot rounded-panel bg-surface/30 backdrop-blur-2xl border border-white/[0.08] shadow-xl relative w-full block ${minHeight} ${className}`}
     >
       {/* Specular sheen gradient (pointer-events-none, never obscures ad) */}
       <div className="absolute inset-0 bg-gradient-to-br from-white/[0.03] via-transparent to-transparent pointer-events-none rounded-panel" />
