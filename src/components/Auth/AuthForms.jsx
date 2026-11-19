@@ -318,11 +318,10 @@ export function ExtensionConnectForm() {
   const { user, loading, setUser, signOut } = useAuth();
   const linkCode = cleanConnectCode(params.get("code"));
   const wantsPatreon = params.get("patreon") === "1"; // sent here to link Patreon to this account
-  const [typed, setTyped] = useState("");
   const [mode, setMode] = useState(params.get("mode") === "signup" ? "signup" : "login");
   const [connected, setConnected] = useState(false);
   const [resent, setResent] = useState("");
-  const code = linkCode || cleanConnectCode(typed);
+  const code = linkCode;
   const next = `/extension/connect${wantsPatreon ? "?patreon=1" : linkCode ? `?code=${linkCode}` : ""}`;
 
   useEffect(() => {
@@ -412,31 +411,23 @@ export function ExtensionConnectForm() {
         subtitle={`Signed in as ${user.name || user.email}.`}
         footer={<button type="button" onClick={signOut} className={linkClass}>Use a different account</button>}
       >
-        <form onSubmit={submit} className="space-y-4" noValidate>
-          {linkCode ? (
-            <div className="rounded-xl border border-line bg-surface-raised/50 px-4 py-4 text-center font-mono text-2xl font-semibold tracking-[0.3em]">
-              {linkCode}
-            </div>
-          ) : (
-            <Field
-              label="Code shown in SketchUp"
-              id="code"
-              type="text"
-              autoComplete="off"
-              maxLength={6}
-              value={typed}
-              onChange={(e) => setTyped(e.target.value.toUpperCase())}
-              placeholder="A1B2C3"
-            />
-          )}
-          <p className="text-xs leading-relaxed text-fg-secondary">
-            Only press Connect if this same code is showing in your own SketchUp window right now.
-          </p>
-          {error && <Message>{error}</Message>}
-          <button type="submit" disabled={busy || !code} className={buttonClass}>
-            {busy ? "Connecting..." : "Connect"}
-          </button>
-        </form>
+        {code ? (
+          // The code travels in the link from SketchUp; people never need to see or type it
+          <form onSubmit={submit} className="space-y-4" noValidate>
+            <p className="text-sm leading-relaxed text-fg-secondary">
+              Connect the Sketch shaper extension in SketchUp to this account?
+            </p>
+            <p className="text-xs leading-relaxed text-fg-secondary">
+              Only press Connect if you just pressed Sign in or Sign up in your own SketchUp.
+            </p>
+            {error && <Message>{error}</Message>}
+            <button type="submit" disabled={busy} className={buttonClass}>
+              {busy ? "Connecting..." : "Connect"}
+            </button>
+          </form>
+        ) : (
+          <Message>Open this page with the Sign in button in the Sketch shaper extension in SketchUp.</Message>
+        )}
       </Panel>
     </PageShell>
   );
