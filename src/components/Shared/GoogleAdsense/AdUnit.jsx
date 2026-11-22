@@ -3,6 +3,20 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 
+const AD_SCRIPT_SRC =
+  "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5557791257949251";
+
+// shortcut: the script loads only where an ad box shows (never for PRO), so AdSense Auto ads cannot run;
+// put the script back in layout.js before turning Auto ads on
+function loadAdScript() {
+  if (document.querySelector(`script[src="${AD_SCRIPT_SRC}"]`)) return;
+  const script = document.createElement("script");
+  script.async = true;
+  script.src = AD_SCRIPT_SRC;
+  script.crossOrigin = "anonymous";
+  document.head.appendChild(script);
+}
+
 /**
  * Consolidated Google AdSense Unit
  * Handles client mounting, Patreon ad-free bypass with loading guard,
@@ -93,6 +107,7 @@ export default function AdUnit({
         if (width >= minRequiredWidth && !insEl.hasAttribute("data-adsbygoogle-status")) {
           try {
             pushedRef.current = true;
+            loadAdScript();
             (window.adsbygoogle = window.adsbygoogle || []).push({});
           } catch (err) {
             console.error(`AdSense push error (slot ${slot}):`, err);

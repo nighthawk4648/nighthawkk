@@ -51,14 +51,14 @@ const Page = async ({ params }) => {
   }
 
   return (
-    <div className="min-h-[70vh] bg-gradient-to-b from-gray-950 via-gray-900 to-black text-gray-200 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-white mb-6">
+    <div className="w-full min-h-[70vh] text-fg font-sans py-8 sm:py-12 px-4 md:px-[0.5in]">
+      <div className="max-w-4xl mx-auto bg-surface/30 backdrop-blur-2xl rounded-panel border border-white/[0.08] p-6 sm:p-10 lg:p-12 shadow-2xl shadow-black/40">
+        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight-h2 text-fg pb-6 mb-8 border-b border-white/[0.08]">
           {footerPage.data.title || footerPage.data.name}
         </h1>
         {footerPage?.data?.content && (
           <div
-            className="prose prose-invert max-w-none text-gray-300 leading-relaxed space-y-4"
+            className="break-words text-fg/90 text-sm sm:text-base leading-relaxed [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:mb-4 [&_li]:mb-1.5 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:mt-6 [&_h2]:mb-3 [&_h2]:text-fg [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mt-5 [&_h3]:mb-2 [&_h3]:text-fg [&_a]:text-action [&_a]:underline"
             dangerouslySetInnerHTML={{ __html: sanitizeHtml(footerPage.data.content) }}
           />
         )}

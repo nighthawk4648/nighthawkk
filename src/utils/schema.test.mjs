@@ -80,6 +80,14 @@ test("generateAssetSchema outputs valid Product structure with free/paid offers 
   );
 });
 
+test("generateAssetSchema states no price for PRO models", () => {
+  const productSchema = generateAssetSchema(
+    { name: "PRO Sofa", access_type: "paid" },
+    { pathname: "/models-3/sofa-1/pro-sofa-9" },
+  );
+  assert.equal(productSchema.offers, undefined);
+});
+
 test("generateSoftwareAppSchema generates valid application details", () => {
   const appSchema = generateSoftwareAppSchema({
     name: "ZIP to RBZ Converter",

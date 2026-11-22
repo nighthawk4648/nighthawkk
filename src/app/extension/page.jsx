@@ -67,7 +67,7 @@ export default async function Page() {
   const softwareStructuredData = generateSoftwareAppSchema({
     name: 'Sketch shaper Extension for SketchUp',
     description:
-      'Native SketchUp extension providing direct in-viewport streaming of 1,500+ curated 3D architectural models and calibrated PBR textures into SketchUp 2022-2026.',
+      'Native SketchUp extension providing direct in-viewport streaming of curated 3D architectural models and calibrated PBR textures into SketchUp 2022-2026.',
     pathname: '/extension',
     applicationCategory: 'DesignApplication',
     operatingSystem: 'Windows 10/11 64-bit, macOS 12+ (Apple Silicon & Intel)',

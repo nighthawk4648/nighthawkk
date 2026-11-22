@@ -118,20 +118,6 @@ export default async function RootLayout({ children }) {
       <head>
         {/* data-cfasync: Cloudflare must not delay it, it has to run before the first paint */}
         <script data-cfasync="false" dangerouslySetInnerHTML={{ __html: AUTH_NOTE_SCRIPT }} />
-        {process.env.NODE_ENV === "production" && (
-          <>
-            <link
-              rel="preconnect"
-              href="https://fundingchoicesmessages.google.com"
-            />
-            <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com" />
-            <script
-              async
-              src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5557791257949251"
-              crossOrigin="anonymous"
-            ></script>
-          </>
-        )}
       </head>
       <body className={geistSans.className}>
         <Providers>

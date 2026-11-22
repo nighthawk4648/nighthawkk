@@ -892,7 +892,7 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
                 <div className="flex items-start gap-2">
                   <FiCheckCircle className="w-3.5 h-3.5 text-action shrink-0 mt-0.5" />
                   <span>
-                    <strong className="text-fg font-medium">Native SketchUp:</strong> Fully compatible with SketchUp 2017–2026.
+                    <strong className="text-fg font-medium">Native SketchUp:</strong> Fully compatible with SketchUp 2022–2026.
                   </span>
                 </div>
               </div>

@@ -67,6 +67,23 @@ export default async function Home() {
     ) || 0;
   const totalModels = totalAssets || 4280;
 
+  // NewAssets is a client component: send only the fields its cards read
+  const latestCards = (latestAssets?.data?.result || []).map(
+    ({ id, name, slug, cover, cover_alt, access_type, sub_category: sub }) => ({
+      id,
+      name,
+      slug,
+      cover,
+      cover_alt,
+      access_type,
+      sub_category: sub && {
+        name: sub.name,
+        slug: sub.slug,
+        category: sub.category && { name: sub.category.name, slug: sub.category.slug },
+      },
+    }),
+  );
+
   return (
     <main className="w-full overflow-x-hidden selection:bg-action selection:text-canvas">
       <JsonLd data={websiteSchema} />
@@ -87,7 +104,7 @@ export default async function Home() {
 
       {/* 5. New Assets Feed (Band #0E1611, Segmented Tabs, Responsive CAD Grid) */}
       <NewAssets
-        assets={latestAssets?.data?.result || []}
+        assets={latestCards}
         totalAssetsCount={totalAssets}
       />
 

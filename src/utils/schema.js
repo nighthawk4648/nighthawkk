@@ -146,15 +146,18 @@ export function generateAssetSchema(asset, { category, subCategory, pathname }) 
       "@type": "Brand",
       name: "Sketch shaper",
     },
-    offers: {
-      "@type": "Offer",
-      url: canonicalUrl,
-      price: isFree ? "0" : "5.00",
-      priceCurrency: "USD",
-      availability: "https://schema.org/InStock",
-      priceValidUntil: "2027-12-31",
-      itemCondition: "https://schema.org/NewCondition",
-    },
+    // PRO models come with a Patreon membership, not a per-model price, so they state no offer
+    ...(isFree && {
+      offers: {
+        "@type": "Offer",
+        url: canonicalUrl,
+        price: "0",
+        priceCurrency: "USD",
+        availability: "https://schema.org/InStock",
+        priceValidUntil: "2027-12-31",
+        itemCondition: "https://schema.org/NewCondition",
+      },
+    }),
     additionalProperty: [
       {
         "@type": "PropertyValue",
