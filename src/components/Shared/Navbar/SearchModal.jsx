@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { buildAssetPath } from "@/utils/buildAssetPath";
 import { categoryPath } from "@/utils/paths";
 import { getOriginalImageUrl } from "@/utils/imageUrl";
+import { useAuth } from "@/contexts/AuthContext";
+import { sawWall } from "@/utils/adBlock";
 
 // Module-scope LRU cache: survives unmounts, capped at 40 entries
 const SEARCH_CACHE_MAX = 40;
@@ -18,6 +20,7 @@ export default function SearchModal({
   onClose,
 }) {
   const router = useRouter();
+  const { user } = useAuth();
   const [query, setQuery] = useState(initialQuery);
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -123,7 +126,9 @@ export default function SearchModal({
 
   const handleSelect = (url) => {
     onClose();
-    router.push(url);
+    // Visitors who have seen the ad-block wall get a real page load, so its check runs again (see AdBlockWall)
+    if (!user?.isPro && sawWall()) window.location.assign(url);
+    else router.push(url);
   };
 
   const assets = results?.asset || [];

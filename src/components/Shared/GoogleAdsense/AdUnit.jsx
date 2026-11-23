@@ -6,15 +6,25 @@ import { useAuth } from "@/contexts/AuthContext";
 const AD_SCRIPT_SRC =
   "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5557791257949251";
 
-// shortcut: the script loads only where an ad box shows (never for PRO), so AdSense Auto ads cannot run;
+let adScript = null;
+
+// Adds the script once per page and tells whether it loaded or failed ("loaded" | "error"); AdBlockWall reads this too.
+// shortcut: the script loads only from AdUnit and AdBlockWall (never for PRO), so AdSense Auto ads cannot run;
 // put the script back in layout.js before turning Auto ads on
-function loadAdScript() {
-  if (document.querySelector(`script[src="${AD_SCRIPT_SRC}"]`)) return;
-  const script = document.createElement("script");
-  script.async = true;
-  script.src = AD_SCRIPT_SRC;
-  script.crossOrigin = "anonymous";
-  document.head.appendChild(script);
+export function loadAdScript() {
+  adScript ??= new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = AD_SCRIPT_SRC;
+    script.crossOrigin = "anonymous";
+    script.onload = () => resolve("loaded");
+    script.onerror = () => {
+      adScript = null; // a failed load can be tried again (AdBlockWall retries once before calling it blocked)
+      resolve("error");
+    };
+    document.head.appendChild(script);
+  });
+  return adScript;
 }
 
 /**
