@@ -178,13 +178,13 @@ const Footer = ({ categories = [], footerPages = [], socials = [] }) => {
             </span>
             <div className="space-y-3.5 font-sans">
               <a
-                href="mailto:sketchshaper@gmail.com"
+                href="mailto:support@sketchshaper.com"
                 className="flex items-center gap-3 text-sm text-fg-secondary hover:text-action transition-colors group"
               >
                 <span className="text-action group-hover:scale-110 transition-transform flex-shrink-0">
                   {icons.email}
                 </span>
-                <span className="truncate">sketchshaper@gmail.com</span>
+                <span className="truncate">support@sketchshaper.com</span>
               </a>
 
               <Link

@@ -146,7 +146,7 @@ const AboutUs = async () => {
               <br />
               <br />
               The easiest way to get in touch with us is via email:{" "}
-              <strong className="text-fg">sketchshaper@gmail.com</strong>.
+              <strong className="text-fg">support@sketchshaper.com</strong>.
             </p>
           </div>
         </div>
