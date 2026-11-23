@@ -8,6 +8,7 @@ import { categoryPath } from "@/utils/paths";
 import { getOriginalImageUrl } from "@/utils/imageUrl";
 import { useAuth } from "@/contexts/AuthContext";
 import { sawWall } from "@/utils/adBlock";
+import { isAdFree } from "@/utils/membership";
 
 // Module-scope LRU cache: survives unmounts, capped at 40 entries
 const SEARCH_CACHE_MAX = 40;
@@ -127,7 +128,7 @@ export default function SearchModal({
   const handleSelect = (url) => {
     onClose();
     // Visitors who have seen the ad-block wall get a real page load, so its check runs again (see AdBlockWall)
-    if (!user?.isPro && sawWall()) window.location.assign(url);
+    if (!isAdFree(user) && sawWall()) window.location.assign(url);
     else router.push(url);
   };
 

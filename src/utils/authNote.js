@@ -1,9 +1,12 @@
+import { isAdFree } from "./membership.js";
+
 // A hint about who the visitor was last time, so the page can look right before the server answers.
 // It only decides what to show first: PRO access is still checked by the server on every download.
 export const AUTH_NOTE_KEY = "ss_auth";
 
-// "pro" (signed in with PRO), "in" (signed in without PRO) or null (signed out)
-export const authNoteFor = (user) => (!user ? null : user.isPro ? "pro" : "in");
+// "pro" (signed in, sees no ads: PRO or ad-free tier; globals.css hides .ad-slot for it),
+// "in" (signed in, sees ads) or null (signed out)
+export const authNoteFor = (user) => (!user ? null : isAdFree(user) ? "pro" : "in");
 
 // Runs in the page head before anything is drawn; sets <html data-auth="..."> for the CSS in globals.css.
 // shortcut: reads the note as is, so a stale note shows the wrong version until the server answers.

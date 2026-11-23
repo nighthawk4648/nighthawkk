@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { isAdFree } from "@/utils/membership";
 
 const AD_SCRIPT_SRC =
   "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5557791257949251";
@@ -49,7 +50,7 @@ export default function AdUnit({
   const [isVisible, setIsVisible] = useState(false);
   const { user, loading } = useAuth();
 
-  const isPatron = !!user?.isPro;
+  const isPatron = isAdFree(user); // PRO or an ad-free tier
   const isProduction =
     process.env.NODE_ENV === "production" ||
     process.env.NEXT_PUBLIC_ENABLE_ADSENSE === "true";

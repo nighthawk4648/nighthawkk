@@ -3,6 +3,7 @@
 import React from "react";
 import AdUnit from "@/components/Shared/GoogleAdsense/AdUnit";
 import { useAuth } from "@/contexts/AuthContext";
+import { isAdFree } from "@/utils/membership";
 
 /**
  * Normal-scroll vertical skyscraper ads placed in the outer margin/gutter space.
@@ -16,7 +17,7 @@ export default function BlogGutterAd({
   count = 2,
 }) {
   const { user, loading } = useAuth();
-  const isPatron = !!user?.isPro;
+  const isPatron = isAdFree(user);
 
   // Ad-free experience for Patreon supporters
   if (!loading && isPatron) {

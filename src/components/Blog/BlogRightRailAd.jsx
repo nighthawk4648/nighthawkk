@@ -3,13 +3,14 @@
 import React from "react";
 import AdUnit from "@/components/Shared/GoogleAdsense/AdUnit";
 import { useAuth } from "@/contexts/AuthContext";
+import { isAdFree } from "@/utils/membership";
 
 export default function BlogRightRailAd({
   slot = "2445550536",
   className = "",
 }) {
   const { user, loading } = useAuth();
-  const isPatron = !!user?.isPro;
+  const isPatron = isAdFree(user);
 
   // Ad-free experience for Patreon supporters
   if (!loading && isPatron) {

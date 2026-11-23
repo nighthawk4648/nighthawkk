@@ -50,6 +50,8 @@ test("PRO members never get the wall; free and paused members do", () => {
   assert.equal(shouldShowWall({ ...blockedVisitor, user: { isPro: true } }), false);
   assert.equal(shouldShowWall({ ...blockedVisitor, user: { isPro: false } }), true);
   assert.equal(shouldShowWall({ ...blockedVisitor, user: { isPro: false, proSource: "blocked" } }), true);
+  // Early Access: not PRO, but paid to remove ads, so no wall either
+  assert.equal(shouldShowWall({ ...blockedVisitor, user: { isPro: false, adFree: true, proSource: "patreon" } }), false);
 });
 
 test("no wall while the server has not said who is signed in", () => {

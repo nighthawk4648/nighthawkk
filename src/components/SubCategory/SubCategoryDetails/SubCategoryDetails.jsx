@@ -7,7 +7,7 @@ import { optimizedImageUrl, getOriginalImageUrl } from "@/utils/imageUrl";
 import slugify from "@/utils/slugify";
 import { buildAssetPath } from "@/utils/buildAssetPath";
 import { useAuth } from "@/contexts/AuthContext";
-import { patreonStartUrl, PATREON_JOIN_URL } from "@/utils/authApi";
+import { patreonStartUrl, PATREON_JOIN_URL, PATREON_MANAGE_URL } from "@/utils/authApi";
 import { membershipKind } from "@/utils/membership";
 import {
   FiDownload,
@@ -70,6 +70,9 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
   const isAuthenticated = mounted && !!user;
   const isPatron = isAuthenticated && !!user.isPro;
   const isBlocked = isAuthenticated && membershipKind(user) === "blocked";
+  // Paying for an ad-free-only tier (Early Access): no ads, but PRO models need a higher tier
+  const isAdFreeOnly = isAuthenticated && membershipKind(user) === "adfree";
+  const upgradeUrl = user?.proSource === "patreon" ? PATREON_MANAGE_URL : PATREON_JOIN_URL;
   // Where to come back to after signing in
   const here = typeof window !== "undefined" ? window.location.pathname + window.location.search : "/";
 
@@ -828,7 +831,7 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
                       className="w-full bg-[#FF424D] hover:bg-[#E63A42] active:scale-[0.99] text-white font-semibold text-sm py-3.5 px-4 rounded-xl shadow-lg shadow-red-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer font-sans"
                     >
                       {isBlocked ? <FiLock className="w-4 h-4" /> : <SiPatreon className="w-4 h-4" />}
-                      <span>{isBlocked ? "PRO access is paused" : "Subscribe on Patreon to Unlock"}</span>
+                      <span>{isBlocked ? "PRO access is paused" : isAdFreeOnly ? "Upgrade on Patreon to Unlock" : "Subscribe on Patreon to Unlock"}</span>
                     </button>
                   ) : (
                     <button
@@ -964,12 +967,14 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
               </div>
 
               <h2 className="text-2xl font-semibold tracking-tight-h2 font-sans text-fg">
-                {isBlocked ? "PRO access is paused" : isAuthenticated ? "Become an Active Patron" : "Sign in to download"}
+                {isBlocked ? "PRO access is paused" : isAdFreeOnly ? "Upgrade for PRO models" : isAuthenticated ? "Become an Active Patron" : "Sign in to download"}
               </h2>
 
               <p className="text-xs sm:text-sm text-fg-secondary leading-relaxed">
                 {isBlocked
                   ? "PRO downloads are paused for your account. Please contact us and we will sort it out."
+                  : isAdFreeOnly
+                  ? `Your ${user.membershipTier || "Early Access"} membership removes ads. PRO models need the Sketch shaper-Pro tier.`
                   : isAuthenticated
                   ? "Your account is not linked to an active Patreon subscription. Subscribe now to unlock this model and all premium 3D assets!"
                   : "PRO models are for our Patreon supporters. Sign in with Patreon or your email, or create a free account."}
@@ -1009,18 +1014,20 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
                 ) : isAuthenticated ? (
                   <>
                     <a
-                      href={PATREON_JOIN_URL}
+                      href={isAdFreeOnly ? upgradeUrl : PATREON_JOIN_URL}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-full bg-[#FF424D] hover:bg-[#E63A42] text-white font-mono text-xs uppercase tracking-wider font-semibold py-3.5 px-6 rounded-full flex items-center justify-center gap-2 transition-all shadow-lg"
                     >
-                      <span>Subscribe on Patreon</span>
+                      <span>{isAdFreeOnly ? "Upgrade on Patreon" : "Subscribe on Patreon"}</span>
                     </a>
                     <a
                       href={patreonStartUrl(here)}
                       className="text-center text-xs font-mono text-action hover:underline py-1"
                     >
-                      {user.patreonLinked ? "Just subscribed? Refresh my Patreon status" : "Already a patron? Connect your Patreon"}
+                      {user.patreonLinked
+                        ? `Just ${isAdFreeOnly ? "upgraded" : "subscribed"}? Refresh my Patreon status`
+                        : "Already a patron? Connect your Patreon"}
                     </a>
                   </>
                 ) : (

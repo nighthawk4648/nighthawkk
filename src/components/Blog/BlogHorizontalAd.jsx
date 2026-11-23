@@ -3,6 +3,7 @@
 import React from "react";
 import AdUnit from "@/components/Shared/GoogleAdsense/AdUnit";
 import { useAuth } from "@/contexts/AuthContext";
+import { isAdFree } from "@/utils/membership";
 
 export default function BlogHorizontalAd({
   slot = "2114378043",
@@ -11,7 +12,7 @@ export default function BlogHorizontalAd({
   fallback = null,
 }) {
   const { user, loading } = useAuth();
-  const isPatron = !!user?.isPro;
+  const isPatron = isAdFree(user);
 
   // Ad-free experience for Patreon supporters (renders fallback or null)
   if (!loading && isPatron) {

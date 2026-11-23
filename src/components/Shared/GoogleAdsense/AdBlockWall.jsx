@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { sendGAEvent } from "@next/third-parties/google";
 import { useAuth } from "@/contexts/AuthContext";
 import { PATREON_JOIN_URL, patreonStartUrl } from "@/utils/authApi";
+import { isAdFree } from "@/utils/membership";
 import {
   adBlockReason,
   adBoxState,
@@ -35,12 +36,12 @@ export default function AdBlockWall() {
   const wallRef = useRef(null);
   const reportedRef = useRef(false);
 
-  const isPro = !!user?.isPro;
+  const adFree = isAdFree(user); // paying members (PRO or an ad-free tier) never see ads or the wall
 
   // 1. Once per page load (never for PRO): load the real ad script, then check Google's own code ran.
   // uBlock in Firefox swaps the script for a stand-in that "loads" fine, so a load check alone misses it.
   useEffect(() => {
-    if (!enabled || !adsOn || loading || isPro || reason) return;
+    if (!enabled || !adsOn || loading || adFree || reason) return;
     let alive = true;
     const timer = setTimeout(async () => {
       let status = await loadAdScript();
@@ -63,12 +64,12 @@ export default function AdBlockWall() {
       alive = false;
       clearTimeout(timer);
     };
-  }, [loading, isPro, reason]);
+  }, [loading, adFree, reason]);
 
   // 2. On every page, page changes included: watch our own ad boxes (Google's extra boxes are not in .ad-slot).
   // Catches a blocker switched back on mid-visit: Google's code is still loaded, but its new ad requests never get an answer.
   useEffect(() => {
-    if (!enabled || !adsOn || loading || isPro || reason) return;
+    if (!enabled || !adsOn || loading || adFree || reason) return;
     let waitingSince = new Map();
     const timer = setInterval(() => {
       // background tabs load slowly, so only time spent on screen counts
@@ -98,7 +99,7 @@ export default function AdBlockWall() {
       waitingSince = stillWaiting;
     }, 3000);
     return () => clearInterval(timer);
-  }, [loading, isPro, reason]);
+  }, [loading, adFree, reason]);
 
   const show = shouldShowWall({
     enabled,
@@ -158,7 +159,7 @@ export default function AdBlockWall() {
   // 6. Visitors who have seen the wall get a real page load on link clicks, so check 1 runs on every page and
   // catches a blocker switched back on mid-visit. Everyone else keeps Next.js's instant page switching.
   useEffect(() => {
-    if (!enabled || !adsOn || isPro || !sawWall()) return;
+    if (!enabled || !adsOn || adFree || !sawWall()) return;
     const onClick = (e) => {
       const link = e.target.closest?.("a[href]");
       const plain =
@@ -178,7 +179,7 @@ export default function AdBlockWall() {
     };
     document.addEventListener("click", onClick, true);
     return () => document.removeEventListener("click", onClick, true);
-  }, [isPro]);
+  }, [adFree]);
 
   if (!show || !host) return null;
 

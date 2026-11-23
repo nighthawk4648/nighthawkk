@@ -11,6 +11,7 @@ const memory = () => {
 test("the note says pro, in or nothing", () => {
   assert.equal(authNoteFor({ isPro: true }), "pro");
   assert.equal(authNoteFor({ isPro: false }), "in");
+  assert.equal(authNoteFor({ isPro: false, adFree: true }), "pro", "an ad-free tier also hides ads early");
   assert.equal(authNoteFor({}), "in");
   assert.equal(authNoteFor(null), null);
 });

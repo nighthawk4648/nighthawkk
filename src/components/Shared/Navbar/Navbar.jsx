@@ -390,6 +390,11 @@ export default function Navbar({
                         PRO
                       </span>
                     )}
+                    {kind === "adfree" && (
+                      <span className="text-[10px] font-mono font-semibold border border-action text-action px-1.5 py-0.2 rounded">
+                        AD-FREE
+                      </span>
+                    )}
                   </button>
 
                   {isUserMenuOpen && (
@@ -432,6 +437,22 @@ export default function Navbar({
                               <SiPatreon aria-hidden="true" className="w-3 h-3" />
                               {siteUser.membershipTier ? `Membership: ${siteUser.membershipTier}` : "Membership"}
                             </a>
+                          )}
+                          {kind === "adfree" && (
+                            <>
+                              <div className="px-3 py-1.5 text-xs text-fg">
+                                Ad-free{siteUser.proSource === "manual" ? ` · ${proUntilText(siteUser)}` : siteUser.membershipTier ? ` · ${siteUser.membershipTier}` : ""}
+                              </div>
+                              <a
+                                href={PATREON_MANAGE_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
+                              >
+                                <SiPatreon aria-hidden="true" className="w-3 h-3" />
+                                Upgrade for PRO models
+                              </a>
+                            </>
                           )}
                           {kind === "free" && (
                             <a

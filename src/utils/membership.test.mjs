@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { membershipKind, proUntilText } from "./membership.js";
+import { isAdFree, membershipKind, proUntilText } from "./membership.js";
 
 test("tells blocked, manual, patron and free visitors apart", () => {
   assert.equal(membershipKind(null), "free");
@@ -21,4 +21,14 @@ test("writes the end date, or says there is none", () => {
   assert.equal(proUntilText({ proUntil: null }), "no end date");
   assert.equal(proUntilText({ proUntil: "nonsense" }), "no end date");
   assert.equal(proUntilText(null), "no end date");
+});
+
+test("Early Access members are ad-free without PRO; older server answers fall back to PRO", () => {
+  const early = { isPro: false, adFree: true, proSource: "patreon", membershipTier: "Early Access" };
+  assert.equal(membershipKind(early), "adfree");
+  assert.equal(isAdFree(early), true);
+  assert.equal(isAdFree({ isPro: true }), true);
+  assert.equal(isAdFree({ isPro: false }), false);
+  assert.equal(isAdFree({ isPro: true, adFree: false }), false);
+  assert.equal(isAdFree(null), false);
 });

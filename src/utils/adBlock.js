@@ -1,3 +1,5 @@
+import { isAdFree } from "./membership.js";
+
 // Pages a visitor needs to sign in or connect the extension; walling them would lock out someone who just paid
 export const WALL_FREE_PATHS = ["/login", "/signup", "/forgot-password", "/reset-password", "/verify-email", "/extension/connect"];
 
@@ -60,7 +62,7 @@ export function isPlainSiteLink({ button, modified, target, download, href, page
 }
 
 export function shouldShowWall({ enabled, adsOn, loading, user, pathname = "/", userAgent = "", blocked }) {
-  if (!enabled || !adsOn || !blocked || loading || user?.isPro) return false;
+  if (!enabled || !adsOn || !blocked || loading || isAdFree(user)) return false;
   if (BOT_UA.test(userAgent)) return false;
   return !WALL_FREE_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
 }
