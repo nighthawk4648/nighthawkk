@@ -206,11 +206,13 @@ export default function SearchModal({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-50 bg-canvas/80 backdrop-blur-md flex items-start justify-center pt-20 px-4 animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 animate-in fade-in duration-150"
     >
+      {/* The dimming is its own layer: a blur on the wrapper would stop the panel's glass from seeing the page */}
+      <div aria-hidden="true" className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-2xl glass-panel rounded-card border border-line-strong p-5 shadow-2xl animate-in zoom-in-95 duration-150 text-fg"
+        className="relative w-full max-w-2xl bg-[#0d1a14]/55 backdrop-blur-2xl rounded-card border border-white/10 p-5 shadow-2xl animate-in zoom-in-95 duration-150 text-fg"
       >
         {/* Search Input Form (Form submit handles Enter key natively on desktop & mobile) */}
         <form
@@ -218,7 +220,7 @@ export default function SearchModal({
             e.preventDefault();
             handleEnterPress();
           }}
-          className="h-14 w-full rounded-full bg-surface-raised border border-action px-5 flex items-center gap-3 mb-4 focus-within:ring-2 focus-within:ring-action/30 transition-all"
+          className="h-14 w-full rounded-full bg-white/5 border border-action px-5 flex items-center gap-3 mb-4 focus-within:ring-2 focus-within:ring-action/30 transition-all"
         >
           <svg
             className="w-5 h-5 text-action flex-shrink-0"
@@ -264,7 +266,7 @@ export default function SearchModal({
           <button
             type="button"
             onClick={onClose}
-            className="text-xs font-mono text-fg-secondary bg-surface px-2 py-0.5 rounded border border-line hover:text-fg hover:border-line-strong transition-colors cursor-pointer"
+            className="text-xs font-mono text-fg-secondary bg-white/5 px-2 py-0.5 rounded border border-white/10 hover:text-fg hover:border-line-strong transition-colors cursor-pointer"
           >
             ESC
           </button>
@@ -293,8 +295,8 @@ export default function SearchModal({
                             onClick={() => handleSelect(url)}
                             className={`flex items-center justify-between p-2 rounded-lg cursor-pointer group border transition-all ${
                               isSelected
-                                ? "bg-surface-raised border-action text-action shadow-sm"
-                                : "hover:bg-surface-raised border-line/60 text-fg"
+                                ? "bg-white/10 border-action text-action shadow-sm"
+                                : "hover:bg-white/10 border-line/60 text-fg"
                             }`}
                           >
                             <span className="text-sm font-medium truncate">
@@ -330,8 +332,8 @@ export default function SearchModal({
                             }
                             className={`flex items-center justify-between p-2 rounded-lg cursor-pointer group border transition-all ${
                               isSelected
-                                ? "bg-surface-raised border-action text-action shadow-sm"
-                                : "hover:bg-surface-raised border-line/60 text-fg"
+                                ? "bg-white/10 border-action text-action shadow-sm"
+                                : "hover:bg-white/10 border-line/60 text-fg"
                             }`}
                           >
                             <span className="text-sm font-medium truncate">
@@ -368,8 +370,8 @@ export default function SearchModal({
                             onClick={() => handleSelect(assetUrl)}
                             className={`flex items-center justify-between p-2.5 rounded-lg cursor-pointer group transition-all border ${
                               isSelected
-                                ? "bg-surface-raised border-action text-action shadow-sm"
-                                : "border-transparent hover:bg-surface-raised"
+                                ? "bg-white/10 border-action text-action shadow-sm"
+                                : "border-transparent hover:bg-white/10"
                             }`}
                           >
                             <div className="flex items-center gap-3 min-w-0">
@@ -431,7 +433,7 @@ export default function SearchModal({
                       setQuery(item.query);
                       inputRef.current?.focus();
                     }}
-                    className="flex items-center justify-between p-2 rounded-lg hover:bg-surface-raised cursor-pointer group text-sm text-fg"
+                    className="flex items-center justify-between p-2 rounded-lg hover:bg-white/10 cursor-pointer group text-sm text-fg"
                   >
                     <span className="group-hover:text-action truncate">
                       {item.title}

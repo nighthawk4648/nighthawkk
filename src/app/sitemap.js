@@ -63,6 +63,12 @@ export default async function sitemap() {
       priority: 0.8,
     },
     {
+      url: `${baseUrl}/pricing`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
       url: `${baseUrl}/about-us`,
       lastModified: now,
       changeFrequency: "monthly",

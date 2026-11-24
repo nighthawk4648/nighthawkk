@@ -94,7 +94,7 @@ export default function HeroSection({
               onFocus={() => {
                 import("@/components/Shared/Navbar/SearchModal");
               }}
-              className="h-14 sm:h-[60px] w-full rounded-full glass-panel pl-4 sm:pl-6 pr-1.5 sm:pr-2 flex items-center justify-between border border-line-control hover:border-action focus-within:border-action transition-all shadow-xl cursor-pointer group"
+              className="h-14 sm:h-[60px] w-full rounded-full bg-[#0d1a14]/55 backdrop-blur-2xl pl-4 sm:pl-6 pr-1.5 sm:pr-2 flex items-center justify-between border border-line-control hover:border-action focus-within:border-action transition-all shadow-xl cursor-pointer group"
             >
               <div className="flex items-center gap-3 sm:gap-3.5 flex-1 min-w-0">
                 <svg

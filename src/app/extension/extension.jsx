@@ -125,7 +125,7 @@ const ExtensionPage = ({ initialData }) => {
     },
     {
       q: "Do I need an account or subscription to download?",
-      a: "No registration or subscription is required. Sketch shaper is 100% free forever. You can download the .rbz bundle directly and start inserting 3D models immediately without signing in.",
+      a: "The extension and our free models are free to download, with no account or sign-in needed. Only PRO models are paid: to get them, create an account, then subscribe to a plan.",
     },
   ];
 

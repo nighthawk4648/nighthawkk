@@ -6,7 +6,11 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { SiPatreon } from "react-icons/si";
-import { patreonStartUrl, PATREON_JOIN_URL, PATREON_MANAGE_URL } from "@/utils/authApi";
+import {
+  patreonStartUrl,
+  PATREON_JOIN_URL,
+  PATREON_MANAGE_URL,
+} from "@/utils/authApi";
 import { membershipKind, proUntilText } from "@/utils/membership";
 import { formatAssetSize } from "@/utils/formatAssetSize";
 import dynamic from "next/dynamic";
@@ -21,10 +25,7 @@ const SearchModal = dynamic(() => import("./SearchModal"), {
   loading: () => null,
 });
 
-export default function Navbar({
-  categories = [],
-  featuredAsset = null,
-}) {
+export default function Navbar({ categories = [], featuredAsset = null }) {
   const { user: siteUser, loading: siteLoading, signOut, openAuth } = useAuth();
   const pathname = usePathname();
   const kind = membershipKind(siteUser);
@@ -88,7 +89,9 @@ export default function Navbar({
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("touchstart", handleClickOutside, { passive: true });
+    document.addEventListener("touchstart", handleClickOutside, {
+      passive: true,
+    });
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("touchstart", handleClickOutside);
@@ -143,7 +146,12 @@ export default function Navbar({
         ref={headerRef}
         className="sticky top-4 z-40 px-4 md:px-[0.5in] w-full transition-all duration-200 mb-4 sm:mb-6"
       >
-        <div className="glass-panel h-14 rounded-full px-3.5 sm:px-6 flex items-center justify-between shadow-2xl relative border border-line w-full">
+        <div className="h-14 rounded-full px-3.5 sm:px-6 flex items-center justify-between relative w-full">
+          {/* The glass is its own layer: a blur on this bar itself would stop the dropdowns inside it from blurring the page */}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 -z-10 rounded-full border border-white/10 bg-black/20 shadow-2xl backdrop-blur-md"
+          />
           {/* Left: Hamburger (Mobile) + Wordmark & Desktop Navigation */}
           <div className="flex items-center gap-2.5 sm:gap-4 md:gap-8 min-w-0">
             {/* Mobile Drawer Hamburger Button */}
@@ -219,7 +227,7 @@ export default function Navbar({
 
                 {/* Browse Flyout Panel (Golden Ratio Layout: 1.618fr : 1fr) */}
                 {isBrowseOpen && (
-                  <div className="absolute top-12 left-0 w-[780px] !bg-surface/95 backdrop-blur-2xl rounded-card p-6 shadow-2xl border border-line-strong transition-all z-50 text-fg">
+                  <div className="absolute top-12 left-0 w-[780px] !bg-[#0d1a14]/55 backdrop-blur-2xl rounded-card p-6 shadow-2xl border border-line-strong transition-all z-50 text-fg">
                     {/* Header bar inside Browse with compact, non-stretched Search Button */}
                     <div className="flex items-center justify-between pb-3.5 mb-5 border-b border-line/60">
                       <div className="flex items-center gap-2">
@@ -236,7 +244,7 @@ export default function Navbar({
                           setIsSearchOpen(true);
                         }}
                         onMouseEnter={preloadSearchModal}
-                        className="w-72 max-w-full flex items-center justify-between px-3 py-1.5 rounded-lg bg-surface-raised/80 hover:bg-surface-raised border border-line hover:border-action/40 transition-all text-left group"
+                        className="w-72 max-w-full flex items-center justify-between px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 hover:border-action/40 transition-all text-left group"
                       >
                         <div className="flex items-center gap-2 text-fg-secondary group-hover:text-fg text-xs truncate">
                           <svg
@@ -320,9 +328,7 @@ export default function Navbar({
                               className="object-cover group-hover:scale-105 transition-transform duration-300"
                             />
                             <span className="absolute top-2 left-2 px-2 py-0.5 rounded text-[11px] font-mono bg-action-tintBg text-action-tintFg border border-action-tintLine">
-                              {featuredAccessType === "paid"
-                                ? "PRO"
-                                : "Free"}
+                              {featuredAccessType === "paid" ? "PRO" : "Free"}
                             </span>
                           </div>
                         </Link>
@@ -349,6 +355,12 @@ export default function Navbar({
                 className="px-3.5 py-1.5 rounded-full hover:text-fg hover:bg-surface-raised transition-colors"
               >
                 Contact
+              </Link>
+              <Link
+                href="/pricing"
+                className="px-3.5 py-1.5 rounded-full font-bold text-white hover:bg-surface-raised transition-colors"
+              >
+                Pricing
               </Link>
             </nav>
           </div>
@@ -380,10 +392,13 @@ export default function Navbar({
                     className="flex items-center gap-2 glass-panel px-3 py-1 rounded-full border border-line hover:border-action transition-all cursor-pointer"
                   >
                     <div className="w-6 h-6 rounded-full bg-action/20 border border-action text-action flex items-center justify-center text-xs font-bold">
-                      {(siteUser.name || siteUser.email).charAt(0).toUpperCase()}
+                      {(siteUser.name || siteUser.email)
+                        .charAt(0)
+                        .toUpperCase()}
                     </div>
                     <span className="text-xs font-medium text-fg hidden sm:inline max-w-[100px] truncate">
-                      {siteUser.name?.split(" ")[0] || siteUser.email.split("@")[0]}
+                      {siteUser.name?.split(" ")[0] ||
+                        siteUser.email.split("@")[0]}
                     </span>
                     {siteUser.isPro && (
                       <span className="text-[10px] font-mono font-semibold bg-action text-canvas px-1.5 py-0.2 rounded">
@@ -434,14 +449,24 @@ export default function Navbar({
                               rel="noopener noreferrer"
                               className="flex items-center gap-2 px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
                             >
-                              <SiPatreon aria-hidden="true" className="w-3 h-3" />
-                              {siteUser.membershipTier ? `Membership: ${siteUser.membershipTier}` : "Membership"}
+                              <SiPatreon
+                                aria-hidden="true"
+                                className="w-3 h-3"
+                              />
+                              {siteUser.membershipTier
+                                ? `Membership: ${siteUser.membershipTier}`
+                                : "Membership"}
                             </a>
                           )}
                           {kind === "adfree" && (
                             <>
                               <div className="px-3 py-1.5 text-xs text-fg">
-                                Ad-free{siteUser.proSource === "manual" ? ` · ${proUntilText(siteUser)}` : siteUser.membershipTier ? ` · ${siteUser.membershipTier}` : ""}
+                                Ad-free
+                                {siteUser.proSource === "manual"
+                                  ? ` · ${proUntilText(siteUser)}`
+                                  : siteUser.membershipTier
+                                    ? ` · ${siteUser.membershipTier}`
+                                    : ""}
                               </div>
                               <a
                                 href={PATREON_MANAGE_URL}
@@ -449,7 +474,10 @@ export default function Navbar({
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-2 px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
                               >
-                                <SiPatreon aria-hidden="true" className="w-3 h-3" />
+                                <SiPatreon
+                                  aria-hidden="true"
+                                  className="w-3 h-3"
+                                />
                                 Upgrade for PRO models
                               </a>
                             </>
@@ -461,7 +489,10 @@ export default function Navbar({
                               rel="noopener noreferrer"
                               className="flex items-center gap-2 px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
                             >
-                              <SiPatreon aria-hidden="true" className="w-3 h-3" />
+                              <SiPatreon
+                                aria-hidden="true"
+                                className="w-3 h-3"
+                              />
                               Become a member
                             </a>
                           )}
@@ -469,7 +500,10 @@ export default function Navbar({
                             href={patreonStartUrl(pathname)}
                             className="block px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
                           >
-                            {siteUser.patreonLinked ? "Refresh Patreon status" : "Connect Patreon"} &rarr;
+                            {siteUser.patreonLinked
+                              ? "Refresh Patreon status"
+                              : "Connect Patreon"}{" "}
+                            &rarr;
                           </a>
                         </>
                       )}
@@ -488,7 +522,9 @@ export default function Navbar({
                 </div>
               ) : (
                 /* Signed Out State (Default); hidden until we know, so it does not flash for signed-in visitors */
-                <div className={`flex items-center gap-2 ${siteLoading ? "auth-pending" : ""}`}>
+                <div
+                  className={`flex items-center gap-2 ${siteLoading ? "auth-pending" : ""}`}
+                >
                   <Link
                     href="/login"
                     onClick={(e) => {
@@ -572,6 +608,13 @@ export default function Navbar({
                 className="p-2 rounded hover:bg-surface-raised"
               >
                 Contact
+              </Link>
+              <Link
+                href="/pricing"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-2 rounded font-bold text-white hover:bg-surface-raised"
+              >
+                Pricing
               </Link>
               <Link
                 href="/extension"
