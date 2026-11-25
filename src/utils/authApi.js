@@ -31,5 +31,9 @@ async function apiRequest(path, { method = "POST", body } = {}) {
 // Talks to the backend's /auth routes
 export const authRequest = (path, options) => apiRequest(`/auth${path}`, options);
 
+// Polar: the address of the payment page for a plan, and of the billing page for someone who bought one
+export const startCheckout = (plan, period) => apiRequest("/polar/checkout", { body: { plan, period } });
+export const openBilling = () => apiRequest("/polar/portal", { body: {} });
+
 // The signed-in visitor connects the SketchUp window that shows this code
 export const approveExtension = (code) => apiRequest("/extension/approve", { body: { code } });

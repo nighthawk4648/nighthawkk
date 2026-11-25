@@ -11,7 +11,8 @@ import {
   PATREON_JOIN_URL,
   PATREON_MANAGE_URL,
 } from "@/utils/authApi";
-import { membershipKind, proUntilText } from "@/utils/membership";
+import { membershipKind, polarText, proUntilText } from "@/utils/membership";
+import ManageBillingButton from "@/components/Pricing/ManageBillingButton";
 import { formatAssetSize } from "@/utils/formatAssetSize";
 import dynamic from "next/dynamic";
 import { getOriginalImageUrl } from "@/utils/imageUrl";
@@ -442,6 +443,14 @@ export default function Navbar({ categories = [], featuredAsset = null }) {
                               PRO &middot; {proUntilText(siteUser)}
                             </div>
                           )}
+                          {kind === "polar" && (
+                            <>
+                              <div className="px-3 py-1.5 text-xs text-fg">
+                                {polarText(siteUser.polar)}
+                              </div>
+                              <ManageBillingButton className="block w-full text-left px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors cursor-pointer" />
+                            </>
+                          )}
                           {kind === "patreon" && (
                             <a
                               href={PATREON_MANAGE_URL}
@@ -464,22 +473,37 @@ export default function Navbar({ categories = [], featuredAsset = null }) {
                                 Ad-free
                                 {siteUser.proSource === "manual"
                                   ? ` · ${proUntilText(siteUser)}`
-                                  : siteUser.membershipTier
-                                    ? ` · ${siteUser.membershipTier}`
-                                    : ""}
+                                  : siteUser.proSource === "polar"
+                                    ? ` · ${polarText(siteUser.polar)}`
+                                    : siteUser.membershipTier
+                                      ? ` · ${siteUser.membershipTier}`
+                                      : ""}
                               </div>
-                              <a
-                                href={PATREON_MANAGE_URL}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-2 px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
-                              >
-                                <SiPatreon
-                                  aria-hidden="true"
-                                  className="w-3 h-3"
-                                />
-                                Upgrade for PRO models
-                              </a>
+                              {siteUser.proSource === "polar" ? (
+                                <>
+                                  <Link
+                                    href="/pricing"
+                                    onClick={() => setIsUserMenuOpen(false)}
+                                    className="block px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
+                                  >
+                                    Upgrade for PRO models
+                                  </Link>
+                                  <ManageBillingButton className="block w-full text-left px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors cursor-pointer" />
+                                </>
+                              ) : (
+                                <a
+                                  href={PATREON_MANAGE_URL}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center gap-2 px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
+                                >
+                                  <SiPatreon
+                                    aria-hidden="true"
+                                    className="w-3 h-3"
+                                  />
+                                  Upgrade for PRO models
+                                </a>
+                              )}
                             </>
                           )}
                           {kind === "free" && (

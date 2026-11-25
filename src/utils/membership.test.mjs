@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { isAdFree, membershipKind, proUntilText } from "./membership.js";
+import { hasLivePolar, isAdFree, membershipKind, polarText, proUntilText } from "./membership.js";
 
 test("tells blocked, manual, patron and free visitors apart", () => {
   assert.equal(membershipKind(null), "free");
@@ -31,4 +31,21 @@ test("Early Access members are ad-free without PRO; older server answers fall ba
   assert.equal(isAdFree({ isPro: false }), false);
   assert.equal(isAdFree({ isPro: true, adFree: false }), false);
   assert.equal(isAdFree(null), false);
+});
+
+test("a plan bought on the Pricing page is its own kind, and cancelling keeps it until the period ends", () => {
+  assert.equal(membershipKind({ isPro: true, adFree: true, proSource: "polar" }), "polar");
+  assert.equal(membershipKind({ isPro: false, adFree: true, proSource: "polar" }), "adfree");
+  assert.equal(hasLivePolar({ polar: { status: "active", cancelsAtPeriodEnd: true } }), true);
+  assert.equal(hasLivePolar({ polar: { status: "canceled" } }), false);
+  assert.equal(hasLivePolar({ polar: null }), false);
+  assert.equal(hasLivePolar(null), false);
+});
+
+test("the plan line names the plan, its period and the date", () => {
+  const polar = { plan: "pro", period: "yearly", renewsAt: "2026-12-17T08:00:00Z", cancelsAtPeriodEnd: false };
+  assert.equal(polarText(polar), "Sketch shaper PRO · yearly · renews 17 Dec 2026");
+  assert.equal(polarText({ ...polar, cancelsAtPeriodEnd: true }), "Sketch shaper PRO · yearly · ends 17 Dec 2026");
+  assert.equal(polarText({ ...polar, renewsAt: null }), "Sketch shaper PRO · yearly");
+  assert.equal(polarText(null), "");
 });

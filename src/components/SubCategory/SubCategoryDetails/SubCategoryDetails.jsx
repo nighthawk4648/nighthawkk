@@ -1011,6 +1011,15 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
                   >
                     <span>Contact us</span>
                   </Link>
+                ) : isAdFreeOnly && user.proSource === "polar" ? (
+                  // Bought on our Pricing page, so the upgrade is there too, not on Patreon
+                  <Link
+                    href="/pricing"
+                    onClick={() => setShowModal(false)}
+                    className="w-full bg-action hover:bg-action-hover text-canvas font-mono text-xs uppercase tracking-wider font-semibold py-3.5 px-6 rounded-full flex items-center justify-center gap-2 transition-all shadow-lg"
+                  >
+                    <span>See plans</span>
+                  </Link>
                 ) : isAuthenticated ? (
                   <>
                     <a
