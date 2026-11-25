@@ -38,3 +38,7 @@ export const PLANS = [
 export const REQUEST_NOTE = "Model requests are reviewed by our team. Availability and timing are not guaranteed.";
 
 export const planName = (id) => PLANS.find((p) => p.id === id)?.name || id;
+
+// After paying, the page asks whether the membership is active: every 2 s for the first minute, then every 5 s,
+// for 5 minutes in all. Returns the wait before the next ask, or null to stop.
+export const nextCheckDelay = (waitedMs) => (waitedMs >= 300_000 ? null : waitedMs < 60_000 ? 2000 : 5000);

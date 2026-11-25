@@ -6,7 +6,7 @@ import { FiCheck } from "react-icons/fi";
 import { useAuth } from "@/contexts/AuthContext";
 import { authRequest, startCheckout } from "@/utils/authApi";
 import { hasLivePolar, isAdFree } from "@/utils/membership";
-import { PLANS, REQUEST_NOTE, yearlyPrice, yearlyFullPrice } from "@/utils/pricing";
+import { PLANS, REQUEST_NOTE, nextCheckDelay, yearlyPrice, yearlyFullPrice } from "@/utils/pricing";
 import ManageBillingButton from "./ManageBillingButton";
 
 const planButton = (popular) =>
@@ -20,6 +20,8 @@ export default function PricingClient() {
   const [busyPlan, setBusyPlan] = useState(null);
   const [error, setError] = useState("");
   const [paid, setPaid] = useState(false); // Polar sent the visitor back here after paying
+  const [slow, setSlow] = useState(false); // still not active after the whole waiting time
+  const [round, setRound] = useState(0); // "Check again" starts a new round of asking
   const period = yearly ? "yearly" : "monthly";
   const live = hasLivePolar(user);
   const toggle = (active) =>
@@ -34,14 +36,28 @@ export default function PricingClient() {
   // Polar tells our server about the payment a moment after the visitor returns, so ask again until it shows
   useEffect(() => {
     if (!paid || live) return;
-    let tries = 0;
-    const timer = setInterval(async () => {
+    const started = Date.now();
+    let stopped = false;
+    let timer;
+    const check = async () => {
       const res = await authRequest("/me", { method: "GET" });
+      if (stopped) return;
       if (res.data?.user) setUser(res.data.user);
-      if (++tries >= 20) clearInterval(timer);
-    }, 2000);
-    return () => clearInterval(timer);
-  }, [paid, live, setUser]);
+      const delay = nextCheckDelay(Date.now() - started);
+      if (delay === null) setSlow(true);
+      else timer = setTimeout(check, delay);
+    };
+    timer = setTimeout(check, nextCheckDelay(0));
+    return () => {
+      stopped = true;
+      clearTimeout(timer);
+    };
+  }, [paid, live, round, setUser]);
+
+  const checkAgain = () => {
+    setSlow(false);
+    setRound((r) => r + 1);
+  };
 
   const subscribe = async (plan) => {
     if (!user) return openAuth("signup"); // an account first, then the payment
@@ -69,9 +85,25 @@ export default function PricingClient() {
         </h1>
 
         {paid && (
-          <p role="status" className="mx-auto mt-6 max-w-xl rounded-xl border border-action bg-black/20 px-4 py-3 text-center text-sm">
-            {live ? "You're all set. Your membership is active." : "Payment received. Activating your membership…"}
-          </p>
+          <div role="status" className="mx-auto mt-6 max-w-xl rounded-xl border border-action bg-black/20 px-4 py-3 text-center text-sm">
+            {live ? (
+              "You're all set. Your membership is active."
+            ) : slow ? (
+              <>
+                This is taking longer than usual. Your payment is safe and your membership will appear shortly. You
+                can check again, or contact us if it doesn&apos;t show within a few minutes.
+                <button
+                  type="button"
+                  onClick={checkAgain}
+                  className="mx-auto mt-3 block rounded-full bg-action px-4 py-1.5 text-xs font-semibold text-canvas hover:bg-action-hover"
+                >
+                  Check again
+                </button>
+              </>
+            ) : (
+              "Payment received. Activating your membership…"
+            )}
+          </div>
         )}
         {user && isAdFree(user) && !live && !paid && (
           <p className="mx-auto mt-6 max-w-xl text-center text-sm text-fg-secondary">
