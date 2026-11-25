@@ -6,7 +6,7 @@ import { FiCheck } from "react-icons/fi";
 import { useAuth } from "@/contexts/AuthContext";
 import { authRequest, startCheckout } from "@/utils/authApi";
 import { hasLivePolar, isAdFree } from "@/utils/membership";
-import { PLANS, yearlyPrice, yearlyFullPrice } from "@/utils/pricing";
+import { PLANS, REQUEST_NOTE, yearlyPrice, yearlyFullPrice } from "@/utils/pricing";
 import ManageBillingButton from "./ManageBillingButton";
 
 const planButton = (popular) =>
@@ -147,6 +147,8 @@ export default function PricingClient() {
             );
           })}
         </div>
+
+        <p className="mt-6 text-center text-xs text-fg-secondary">{REQUEST_NOTE}</p>
 
         {error && (
           <p role="alert" className="mt-6 text-center text-sm text-danger">
