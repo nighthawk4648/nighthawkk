@@ -7,7 +7,7 @@ import { stripHtml } from "@/utils/sanitizeHtml";
 import { blogPath } from "@/utils/paths";
 
 /**
- * Similar Articles Grid (3 Cards) — matches SketchShaper CAD dark glass aesthetic.
+ * Similar Articles Grid (3 Cards) — matches Sketch shaper CAD dark glass aesthetic.
  *
  * Cleanup #2: The entire card is a single `<Link>` wrapper. Eliminates redundant tab stops
  *             and ensures any click on the card opens the article.

@@ -5,7 +5,8 @@ import { createPortal } from "react-dom";
 import { usePathname } from "next/navigation";
 import { sendGAEvent } from "@next/third-parties/google";
 import { useAuth } from "@/contexts/AuthContext";
-import { PATREON_JOIN_URL, patreonStartUrl } from "@/utils/authApi";
+import Link from "next/link";
+import { patreonStartUrl } from "@/utils/authApi";
 import { isAdFree } from "@/utils/membership";
 import {
   adBlockReason,
@@ -26,7 +27,7 @@ const adsOn = process.env.NODE_ENV === "production" || process.env.NEXT_PUBLIC_E
 const WALL_STYLE =
   "position:fixed;inset:0;z-index:60;outline:none;display:flex;align-items:center;justify-content:center;overflow-y:auto;padding:16px;background:rgba(0,0,0,0.75);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);";
 
-// Full-page wall for visitors who block ads: turn the blocker off and refresh, or go ad-free on Patreon.
+// Full-page wall for visitors who block ads: turn the blocker off and refresh, or become a member (the Pricing page has no wall, so they can pay).
 // shortcut: runs in the browser only, so a visitor who blocks this site's own scripts gets past it; lock downloads if that becomes common.
 export default function AdBlockWall() {
   const { user, loading, openAuth } = useAuth();
@@ -191,7 +192,7 @@ export default function AdBlockWall() {
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-fg-secondary">
           Sketch shaper stays free because of ads. Turn off your ad blocker (or your browser&apos;s ad shield) for this
-          site, then refresh the page. Want no ads at all? Become a member on Patreon.
+          site, then refresh the page. Want no ads at all? Become a member.
         </p>
         <div className="mt-6 flex flex-col space-y-2.5">
           <button
@@ -201,14 +202,12 @@ export default function AdBlockWall() {
           >
             I turned it off, refresh
           </button>
-          <a
-            href={PATREON_JOIN_URL}
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/pricing"
             className="flex w-full items-center justify-center rounded-full bg-[#FF424D] px-6 py-3.5 font-mono text-xs font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-[#E63A42]"
           >
-            Go ad-free with Patreon
-          </a>
+            Go ad-free
+          </Link>
           {user ? (
             <a href={patreonStartUrl(pathname)} className="py-1 text-center font-mono text-xs text-action hover:underline">
               Already a patron? Connect your Patreon

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { EXTENSION_DOWNLOAD_BASELINE } from "@/utils/constants";
+import { EXTENSION_DOWNLOAD_BASELINE, EXTENSION_FILE, EXTENSION_VERSION } from "@/utils/constants";
 import Link from "next/link";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
@@ -13,7 +13,9 @@ export default function ExtensionBanner({ initialDownloads = 0 }) {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
 
+  // The link is a real <a download>: the browser downloads the file, this only counts it
   const handleDownload = () => {
+    if (isDownloading) return;
     // 1. Optimistic increment
     setDownloadCount((prev) => prev + 1);
     setIsDownloading(true);
@@ -35,15 +37,7 @@ export default function ExtensionBanner({ initialDownloads = 0 }) {
         .catch((err) => console.error("Extension counter error:", err));
     }
 
-    // 3. Trigger file download of .rbz
-    const link = document.createElement("a");
-    link.href = "/assets/rbz/sketchshaper-1.5.0.rbz";
-    link.download = "sketchshaper-1.5.0.rbz";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    // 4. Reset download animation state
+    // 3. Reset download animation state
     setTimeout(() => {
       setIsDownloading(false);
     }, 2000);
@@ -97,7 +91,7 @@ export default function ExtensionBanner({ initialDownloads = 0 }) {
               {/* Metadata Chips */}
               <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-5 sm:mb-8 font-mono">
                 <span className="glass-panel px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[11px] sm:text-xs text-fg-secondary border border-white/10">
-                  v1.5.0
+                  v{EXTENSION_VERSION}
                 </span>
                 <span className="glass-panel px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[11px] sm:text-xs text-fg-secondary border border-white/10">
                   SketchUp 2022 &ndash; 2026
@@ -109,10 +103,10 @@ export default function ExtensionBanner({ initialDownloads = 0 }) {
 
               {/* Green Solid Action Button */}
               <div className="flex items-center gap-3.5 sm:gap-4 flex-wrap">
-                <button
-                  type="button"
+                <a
+                  href={`/assets/rbz/${EXTENSION_FILE}`}
+                  download={EXTENSION_FILE}
                   onClick={handleDownload}
-                  disabled={isDownloading}
                   className="px-5 py-2.5 sm:px-6 sm:py-3 rounded-full text-xs sm:text-sm font-semibold bg-action hover:bg-action-hover active:bg-action-pressed text-canvas transition-all shadow-lg shadow-action/10 font-sans cursor-pointer flex items-center gap-2"
                 >
                   {isDownloading ? (
@@ -141,7 +135,7 @@ export default function ExtensionBanner({ initialDownloads = 0 }) {
                   ) : (
                     <span>Download extension</span>
                   )}
-                </button>
+                </a>
                 <Link
                   href="/extension"
                   className="text-xs sm:text-sm font-medium text-fg-secondary hover:text-fg transition-colors font-sans"

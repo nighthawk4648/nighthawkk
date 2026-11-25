@@ -4,7 +4,7 @@ import img1 from "../../../public/assets/aboutus/img1.jpg";
 import img2 from "../../../public/assets/aboutus/img2.jpg";
 import img3 from "../../../public/assets/aboutus/img3.jpg";
 import { buildPageMetadata } from "@/utils/seo";
-import { JsonLd, generateBreadcrumbSchema } from "@/utils/schema";
+import { JsonLd, generateBreadcrumbSchema, ORG_REF } from "@/utils/schema";
 
 export const metadata = buildPageMetadata({
   title: "About Us & Team",
@@ -22,7 +22,10 @@ const aboutPageSchema = {
       url: "https://www.sketchshaper.com/about-us",
       description:
         "Learn about Sketch shaper, our creative team, and our mission to provide high-quality SketchUp 3D models, textures, and plugins.",
+      about: ORG_REF,
+      // Same "@id" as the site-wide Organization, so these details merge into it
       mainEntity: {
+        ...ORG_REF,
         "@type": "Organization",
         name: "Sketch shaper",
         url: "https://www.sketchshaper.com",

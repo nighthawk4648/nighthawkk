@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { hasLivePolar, isAdFree, membershipKind, polarText, proUntilText } from "./membership.js";
+import { hasLivePolar, isAdFree, membershipKind, planBadge, polarProblem, polarText, proUntilText } from "./membership.js";
 
 test("tells blocked, manual, patron and free visitors apart", () => {
   assert.equal(membershipKind(null), "free");
@@ -48,4 +48,24 @@ test("the plan line names the plan, its period and the date", () => {
   assert.equal(polarText({ ...polar, cancelsAtPeriodEnd: true }), "Sketch shaper PRO · yearly · ends 17 Dec 2026");
   assert.equal(polarText({ ...polar, renewsAt: null }), "Sketch shaper PRO · yearly");
   assert.equal(polarText(null), "");
+});
+
+test("the badge shows the highest plan from any source; older servers fall back to PRO / ad-free", () => {
+  assert.equal(planBadge({ isPro: true, adFree: true, proSource: "polar", plan: "sponsor" }), "SPONSOR");
+  assert.equal(planBadge({ isPro: true, adFree: true, proSource: "patreon", plan: "sponsor" }), "SPONSOR");
+  assert.equal(planBadge({ isPro: true, adFree: true, proSource: "manual", plan: "pro" }), "PRO");
+  assert.equal(planBadge({ isPro: false, adFree: true, proSource: "polar", plan: "early_access" }), "AD-FREE");
+  assert.equal(planBadge({ isPro: false, adFree: false, proSource: null, plan: null }), null);
+  assert.equal(planBadge({ isPro: false, proSource: "blocked", plan: null }), null);
+  assert.equal(planBadge({ isPro: true }), "PRO");
+  assert.equal(planBadge({ isPro: false, adFree: true }), "AD-FREE");
+  assert.equal(planBadge(null), null);
+});
+
+test("a failed Polar payment is a problem to fix; a cancelled or live plan is not", () => {
+  assert.equal(polarProblem({ polar: { status: "past_due" } }), true);
+  assert.equal(polarProblem({ polar: { status: "unpaid" } }), true);
+  assert.equal(polarProblem({ polar: { status: "active" } }), false);
+  assert.equal(polarProblem({ polar: { status: "canceled" } }), false);
+  assert.equal(polarProblem({ polar: null }), false);
 });

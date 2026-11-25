@@ -7,7 +7,7 @@ import Link from "next/link";
 import React from "react";
 import { notFound } from "next/navigation";
 import { buildPageMetadata, cleanText } from "@/utils/seo";
-import { JsonLd, generateBreadcrumbSchema } from "@/utils/schema";
+import { JsonLd, generateBreadcrumbSchema, ORG_REF } from "@/utils/schema";
 import { notFoundMeta } from "@/utils/validateSlug";
 import { FiArrowLeft, FiCalendar, FiClock, FiUser } from "react-icons/fi";
 import BlogLeftRail from "@/components/Blog/BlogLeftRail";
@@ -188,16 +188,6 @@ const BlogDetailPage = async ({ params }) => {
           name: post.name.trim(),
         };
 
-  const publisherObject = {
-    "@type": "Organization",
-    name: "Sketch shaper",
-    url: "https://www.sketchshaper.com",
-    logo: {
-      "@type": "ImageObject",
-      url: "https://www.sketchshaper.com/assets/navbar/navbar_logo.png",
-    },
-  };
-
   const coverUrl = post.image ? getOriginalImageUrl(post.image) : undefined;
   const postDescription =
     post.meta_description?.trim()
@@ -219,7 +209,7 @@ const BlogDetailPage = async ({ params }) => {
     url: canonicalUrl,
     keywords: post.keywords?.trim() || undefined,
     author: authorObject,
-    publisher: publisherObject,
+    publisher: ORG_REF,
   };
 
   const breadcrumbLd = generateBreadcrumbSchema([

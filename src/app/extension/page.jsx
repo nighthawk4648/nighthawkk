@@ -1,6 +1,7 @@
 import Extension from './extension';
 import { getOptional } from '@/utils/getData';
 import { buildPageMetadata } from '@/utils/seo';
+import { EXTENSION_FILE, EXTENSION_VERSION } from '@/utils/constants';
 import {
   JsonLd,
   generateBreadcrumbSchema,
@@ -28,7 +29,7 @@ const extensionFaqs = [
   },
   {
     q: 'How do I install the .rbz extension file in SketchUp?',
-    a: 'Do not unzip or extract the .rbz file. In SketchUp, go to Extensions > Extension Manager (or Window > Extension Manager in older releases), click "Install Extension" at the bottom, select "sketchshaper-1.5.0.rbz", and click Open. The toolbar docks automatically.',
+    a: `Do not unzip or extract the .rbz file. In SketchUp, go to Extensions > Extension Manager (or Window > Extension Manager in older releases), click "Install Extension" at the bottom, select "${EXTENSION_FILE}", and click Open. The toolbar docks automatically.`,
   },
   {
     q: 'Are the 3D models and textures free for commercial rendering?',
@@ -71,10 +72,9 @@ export default async function Page() {
     pathname: '/extension',
     applicationCategory: 'DesignApplication',
     operatingSystem: 'Windows 10/11 64-bit, macOS 12+ (Apple Silicon & Intel)',
-    softwareVersion: '1.5.0',
+    softwareVersion: EXTENSION_VERSION,
     fileFormat: 'application/x-ruby-zip (.rbz)',
-    downloadUrl:
-      'https://www.sketchshaper.com/assets/rbz/sketchshaper-1.5.0.rbz',
+    downloadUrl: `https://www.sketchshaper.com/assets/rbz/${EXTENSION_FILE}`,
     image:
       'https://www.sketchshaper.com/assets/extension/v1.jpg',
     isFree: true,

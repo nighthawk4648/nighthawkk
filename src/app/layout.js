@@ -9,6 +9,7 @@ import Providers from "@/components/Providers";
 import { AUTH_NOTE_SCRIPT } from "@/utils/authNote";
 import localFont from "next/font/local";
 import { cleanText } from "@/utils/seo";
+import { JsonLd, generateWebsiteAndOrgSchema } from "@/utils/schema";
 
 const geistSans = localFont({
   src: "../../public/fonts/geist-latin.woff2",
@@ -65,13 +66,15 @@ export default async function RootLayout({ children }) {
   const featuredAssetPromise = getOptional("assets/247");
   const footerPagesPromise = getData("pages");
   const socialsPromise = getData("social");
+  const settingsPromise = getOptional("general/application-settings");
 
   // Parallel fetch data required by Navbar and Footer
-  const [categories, featuredAsset, footerPages, socials] = await Promise.all([
+  const [categories, featuredAsset, footerPages, socials, settings] = await Promise.all([
     categoriesPromise,
     featuredAssetPromise,
     footerPagesPromise,
     socialsPromise,
+    settingsPromise,
   ]);
 
   // The Navbar is a client component: send only the fields its featured card reads
@@ -109,6 +112,11 @@ export default async function RootLayout({ children }) {
     );
   }
 
+  const socialUrls = (socials?.data || []).map((s) => s.url).filter(Boolean);
+  const description =
+    cleanText(settings?.data?.site_description, 300) ||
+    "Free and pro 3D models, textures, and plugins for SketchUp.";
+
   return (
     <html
       lang="en"
@@ -120,6 +128,7 @@ export default async function RootLayout({ children }) {
         <script data-cfasync="false" dangerouslySetInnerHTML={{ __html: AUTH_NOTE_SCRIPT }} />
       </head>
       <body className={geistSans.className}>
+        <JsonLd data={generateWebsiteAndOrgSchema(socialUrls, { description })} />
         <Providers>
           <Navbar
             categories={categories?.data || []}

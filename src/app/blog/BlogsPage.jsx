@@ -12,6 +12,7 @@ import BlogHorizontalAd from "@/components/Blog/BlogHorizontalAd";
 import BlogGutterAd from "@/components/Blog/BlogGutterAd";
 import AdUnit from "@/components/Shared/GoogleAdsense/AdUnit";
 import { blogPath } from "@/utils/paths";
+import { EXTENSION_VERSION } from "@/utils/constants";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
@@ -76,6 +77,13 @@ const BlogsPage = ({ initialData = null }) => {
   }, [blogs, searchQuery]);
 
   const hasSearch = Boolean(searchQuery.trim());
+
+  // Links to the neighbouring server-rendered pages of the list
+  const currentPage = initialData?.pagination?.currentPage || 1;
+  const totalPages = initialData?.pagination?.totalPage || 1;
+  const newerPage =
+    currentPage > 1 ? (currentPage === 2 ? "/blog" : `/blog?page=${currentPage - 1}`) : null;
+  const olderPage = currentPage < totalPages ? `/blog?page=${currentPage + 1}` : null;
   const featuredArticle = !hasSearch && blogs && blogs.length > 0 ? blogs[0] : null;
   const compactArticles = !hasSearch && blogs && blogs.length > 1 ? blogs.slice(1, 3) : [];
   const archiveArticles = hasSearch ? filteredArticles : (blogs ? blogs.slice(3) : []);
@@ -194,7 +202,7 @@ const BlogsPage = ({ initialData = null }) => {
                 {/* 3. Second Compact Article */}
                 {compactArticles[1] && <CompactArticle article={compactArticles[1]} />}
 
-                {/* 4. Official SketchShaper Extension Promo Card */}
+                {/* 4. Official Sketch shaper Extension Promo Card */}
                 <div className="p-4 sm:p-5 rounded-card border border-white/[0.08] hover:border-action/40 bg-surface/30 hover:bg-surface/40 backdrop-blur-2xl flex flex-col justify-between shadow-lg transition-all duration-300 relative overflow-hidden group">
                   <div className="absolute inset-0 bg-gradient-to-br from-action/[0.04] via-transparent to-transparent pointer-events-none" />
                   <div className="relative z-10">
@@ -203,7 +211,7 @@ const BlogsPage = ({ initialData = null }) => {
                         Official Plugin
                       </span>
                       <span className="text-[10px] font-mono text-fg-secondary/70">
-                        v1.5.0
+                        v{EXTENSION_VERSION}
                       </span>
                     </div>
                     <h4 className="text-sm font-semibold text-fg group-hover:text-action transition-colors mt-1 font-sans">
@@ -390,6 +398,25 @@ const BlogsPage = ({ initialData = null }) => {
                 End of articles &bull; Check back soon for new insights
               </p>
             </div>
+          )}
+
+          {/* Plain links so crawlers can reach every page; infinite scroll above is unchanged */}
+          {(olderPage || newerPage) && (
+            <nav
+              aria-label="Blog pages"
+              className="flex items-center justify-center gap-6 py-6 text-xs font-mono text-action"
+            >
+              {newerPage && (
+                <a href={newerPage} className="hover:underline">
+                  Newer articles
+                </a>
+              )}
+              {olderPage && (
+                <a href={olderPage} className="hover:underline">
+                  Older articles
+                </a>
+              )}
+            </nav>
           )}
 
           {/* Empty Search Filter State */}

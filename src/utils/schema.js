@@ -1,9 +1,35 @@
 import React from "react";
 import { cleanText } from "./seo.js";
 import { getOriginalImageUrl } from "./imageUrl.js";
+import { EXTENSION_VERSION } from "./constants.js";
+import { PLANS, yearlyPrice } from "./pricing.js";
 
 const SITE_URL = "https://www.sketchshaper.com";
 const DEFAULT_LOGO = `${SITE_URL}/assets/navbar/navbar_logo.png`;
+const ORG_ID = `${SITE_URL}/#organization`;
+const WEBSITE_ID = `${SITE_URL}/#website`;
+
+// Other schemas point at the Organization / WebSite nodes the layout renders on every page
+export const ORG_REF = { "@id": ORG_ID };
+export const WEBSITE_REF = { "@id": WEBSITE_ID };
+
+const OFFER_AVAILABILITY = "https://schema.org/InStock";
+
+// Offers stay valid until the end of next year
+export function priceValidUntil(now = new Date()) {
+  return `${now.getUTCFullYear() + 1}-12-31`;
+}
+
+const absoluteUrl = (url) =>
+  url.startsWith("http") ? url : `${SITE_URL}${url.startsWith("/") ? url : `/${url}`}`;
+
+// Price per one month (MON) or one year (ANN)
+const recurringPrice = (price, unitCode) => ({
+  "@type": "UnitPriceSpecification",
+  price,
+  priceCurrency: "USD",
+  referenceQuantity: { "@type": "QuantitativeValue", value: 1, unitCode },
+});
 
 /**
  * Escapes unsafe HTML characters to prevent XSS in embedded JSON-LD scripts
@@ -53,7 +79,7 @@ export function generateBreadcrumbSchema(items = []) {
 /**
  * Generates Schema.org WebSite + Organization
  */
-export function generateWebsiteAndOrgSchema(socialUrls = []) {
+export function generateWebsiteAndOrgSchema(socialUrls = [], { description } = {}) {
   const defaultSocials = [
     "https://www.facebook.com/sketchshaper",
     "https://twitter.com/sketchshaper",
@@ -71,19 +97,23 @@ export function generateWebsiteAndOrgSchema(socialUrls = []) {
     "@graph": [
       {
         "@type": "WebSite",
-        "@id": `${SITE_URL}/#website`,
+        "@id": WEBSITE_ID,
         name: "Sketch shaper",
         url: SITE_URL,
         description: "Free & Pro 3D Models, Textures, and Plugins for SketchUp",
-        publisher: {
-          "@id": `${SITE_URL}/#organization`,
-        },
+        publisher: ORG_REF,
       },
       {
         "@type": "Organization",
-        "@id": `${SITE_URL}/#organization`,
+        "@id": ORG_ID,
         name: "Sketch shaper",
         url: SITE_URL,
+        ...(description && { description }),
+        contactPoint: {
+          "@type": "ContactPoint",
+          contactType: "customer support",
+          url: `${SITE_URL}/contact`,
+        },
         logo: {
           "@type": "ImageObject",
           url: DEFAULT_LOGO,
@@ -128,6 +158,9 @@ export function generateAssetSchema(asset, { category, subCategory, pathname }) 
   }
 
   const isFree = asset.access_type !== "paid";
+  const proMonthlyPrice = Math.min(
+    ...PLANS.filter((p) => p.id === "pro" || p.id === "sponsor").map((p) => p.monthly),
+  );
   const catName = category?.name || "3D Models";
   const subName = subCategory?.name || "Assets";
   const title = cleanText(asset.name, 150) || "SketchUp 3D Model";
@@ -137,7 +170,7 @@ export function generateAssetSchema(asset, { category, subCategory, pathname }) 
 
   return {
     "@context": "https://schema.org",
-    "@type": "Product",
+    "@type": ["Product", "3DModel"],
     name: title,
     description,
     image: images.length > 0 ? images : [`${SITE_URL}/assets/seo/social-card.png`],
@@ -146,18 +179,31 @@ export function generateAssetSchema(asset, { category, subCategory, pathname }) 
       "@type": "Brand",
       name: "Sketch shaper",
     },
-    // PRO models come with a Patreon membership, not a per-model price, so they state no offer
-    ...(isFree && {
-      offers: {
-        "@type": "Offer",
-        url: canonicalUrl,
-        price: "0",
-        priceCurrency: "USD",
-        availability: "https://schema.org/InStock",
-        priceValidUntil: "2027-12-31",
-        itemCondition: "https://schema.org/NewCondition",
-      },
-    }),
+    publisher: ORG_REF,
+    encodingFormat: "application/vnd.sketchup.skp",
+    isAccessibleForFree: isFree,
+    license: `${SITE_URL}/license`,
+    // PRO models have no per-model price: they come with a membership, so the offer points at the cheapest plan that includes them
+    offers: isFree
+      ? {
+          "@type": "Offer",
+          url: canonicalUrl,
+          price: "0",
+          priceCurrency: "USD",
+          availability: OFFER_AVAILABILITY,
+          priceValidUntil: priceValidUntil(),
+          itemCondition: "https://schema.org/NewCondition",
+        }
+      : {
+          "@type": "Offer",
+          url: `${SITE_URL}/pricing`,
+          price: String(proMonthlyPrice),
+          priceCurrency: "USD",
+          availability: OFFER_AVAILABILITY,
+          priceValidUntil: priceValidUntil(),
+          priceSpecification: recurringPrice(proMonthlyPrice, "MON"),
+          description: "Included with a Sketch shaper PRO membership",
+        },
     additionalProperty: [
       {
         "@type": "PropertyValue",
@@ -191,7 +237,7 @@ export function generateSoftwareAppSchema({
   pathname = "/",
   applicationCategory = "DesignApplication",
   operatingSystem = "Windows 10/11 64-bit, macOS 12+",
-  softwareVersion = "1.5.0",
+  softwareVersion = EXTENSION_VERSION,
   fileFormat,
   downloadUrl,
   image = DEFAULT_LOGO,
@@ -211,11 +257,7 @@ export function generateSoftwareAppSchema({
     ...(fileFormat ? { fileFormat } : {}),
     ...(downloadUrl ? { downloadUrl } : {}),
     image,
-    publisher: {
-      "@type": "Organization",
-      name: "Sketch shaper",
-      url: SITE_URL,
-    },
+    publisher: ORG_REF,
     offers: {
       "@type": "Offer",
       price: isFree ? "0" : "9.99",
@@ -236,18 +278,15 @@ export function generateWebPageSchema({ title, description, pathname = "/" }) {
     name: cleanText(title, 150),
     description: cleanText(description, 250),
     url: fullUrl,
-    publisher: {
-      "@type": "Organization",
-      name: "Sketch shaper",
-      url: SITE_URL,
-    },
+    publisher: ORG_REF,
+    isPartOf: WEBSITE_REF,
   };
 }
 
 /**
  * Generates Schema.org CollectionPage
  */
-export function generateCollectionSchema({ name, description, pathname = "/" }) {
+export function generateCollectionSchema({ name, description, pathname = "/", items = [] }) {
   const fullUrl = `${SITE_URL}${pathname.startsWith("/") ? pathname : `/${pathname}`}`;
   return {
     "@context": "https://schema.org",
@@ -255,7 +294,42 @@ export function generateCollectionSchema({ name, description, pathname = "/" }) 
     name: cleanText(name, 150),
     description: cleanText(description, 250),
     url: fullUrl,
+    isPartOf: WEBSITE_REF,
+    ...(items.length > 0 && {
+      mainEntity: {
+        "@type": "ItemList",
+        itemListElement: items.map((it, i) => ({
+          "@type": "ListItem",
+          position: i + 1,
+          name: cleanText(it.name, 150),
+          url: absoluteUrl(it.url),
+        })),
+      },
+    }),
   };
+}
+
+/**
+ * Generates one Schema.org Product per membership plan, with a monthly and a yearly offer
+ */
+export function generatePlanSchemas(plans = []) {
+  const offer = (price, unitCode) => ({
+    "@type": "Offer",
+    url: `${SITE_URL}/pricing`,
+    price: String(price),
+    priceCurrency: "USD",
+    availability: OFFER_AVAILABILITY,
+    priceSpecification: recurringPrice(price, unitCode),
+  });
+
+  return plans.map((plan) => ({
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: plan.name,
+    description: plan.features.join(". "),
+    brand: { "@type": "Brand", name: "Sketch shaper" },
+    offers: [offer(plan.monthly, "MON"), offer(yearlyPrice(plan.monthly), "ANN")],
+  }));
 }
 
 

@@ -3,6 +3,7 @@ export const revalidate = 300;
 import SingleSubCategoryPage from "@/components/SubCategory/SubCategory/SingleSubCategoryPage";
 import { notFound, redirect } from "next/navigation";
 import getData from "@/utils/getData";
+import { buildAssetPath } from "@/utils/buildAssetPath";
 import { validateSubCategory, notFoundMeta } from "@/utils/validateSlug";
 import {
   JsonLd,
@@ -116,6 +117,10 @@ const Page = async ({ params, searchParams }) => {
       result.subCategoryData?.data?.meta_description ||
       `Download free and PRO ${subName} 3D models for SketchUp.`,
     pathname: `/${category}/${subCategoryName}`,
+    items: paginatedAssets.map((asset) => ({
+      name: asset.name,
+      url: buildAssetPath(asset),
+    })),
   });
 
   return (

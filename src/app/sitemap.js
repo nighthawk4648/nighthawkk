@@ -12,6 +12,16 @@ function parseDate(dateValue, fallback) {
   return isNaN(d.getTime()) ? fallback : d;
 }
 
+// Newest updated_at (or created_at) among the items, or null when there is none
+function newestDate(items) {
+  let newest = null;
+  for (const item of items) {
+    const d = parseDate(item?.updated_at || item?.created_at, null);
+    if (d && (!newest || d > newest)) newest = d;
+  }
+  return newest;
+}
+
 function toAbsoluteImageUrl(imagePath) {
   if (!imagePath || typeof imagePath !== "string") return null;
   const trimmed = imagePath.trim();
@@ -29,76 +39,6 @@ function toAbsoluteImageUrl(imagePath) {
 export default async function sitemap() {
   const baseUrl = "https://www.sketchshaper.com";
   const now = new Date();
-
-  // Core static pages
-  const staticRoutes = [
-    {
-      url: `${baseUrl}`,
-      lastModified: now,
-      changeFrequency: "daily",
-      priority: 1.0,
-    },
-    {
-      url: `${baseUrl}/gallery`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/extension`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/blog`,
-      lastModified: now,
-      changeFrequency: "daily",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/contact`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/pricing`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/about-us`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/rbzconverter`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/license`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.5,
-    },
-    {
-      url: `${baseUrl}/privacy`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.5,
-    },
-    {
-      url: `${baseUrl}/terms-and-conditions`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.5,
-    },
-  ];
 
   // Fetch dynamic content in parallel with resilient fallbacks
   const [categoriesRes, assetsRes, blogsRes, pagesRes] =
@@ -131,6 +71,69 @@ export default async function sitemap() {
     pagesRes.status === "fulfilled" && pagesRes.value?.data
       ? pagesRes.value.data
       : [];
+
+  // Core static pages: only the home page and the blog change when content is added, the rest state no date
+  const homeModified = newestDate(assets);
+  const blogModified = newestDate(blogs);
+  const staticRoutes = [
+    {
+      url: `${baseUrl}`,
+      ...(homeModified && { lastModified: homeModified }),
+      changeFrequency: "daily",
+      priority: 1.0,
+    },
+    {
+      url: `${baseUrl}/gallery`,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/extension`,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/blog`,
+      ...(blogModified && { lastModified: blogModified }),
+      changeFrequency: "daily",
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/contact`,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/pricing`,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/about-us`,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/rbzconverter`,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/license`,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/privacy`,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/terms-and-conditions`,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+  ];
 
   // Lookup maps for fast and accurate hierarchy traversal
   const categoryMap = new Map();

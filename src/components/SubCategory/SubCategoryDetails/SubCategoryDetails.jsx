@@ -2,13 +2,13 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { SiPatreon } from "react-icons/si";
 import { optimizedImageUrl, getOriginalImageUrl } from "@/utils/imageUrl";
 import slugify from "@/utils/slugify";
 import { buildAssetPath } from "@/utils/buildAssetPath";
 import { useAuth } from "@/contexts/AuthContext";
-import { patreonStartUrl, PATREON_JOIN_URL, PATREON_MANAGE_URL } from "@/utils/authApi";
-import { membershipKind } from "@/utils/membership";
+import { patreonStartUrl, PATREON_MANAGE_URL } from "@/utils/authApi";
+import { membershipKind, polarProblem } from "@/utils/membership";
+import ManageBillingButton from "@/components/Pricing/ManageBillingButton";
 import {
   FiDownload,
   FiBox,
@@ -36,6 +36,7 @@ import LinkedAssetsSection from "@/components/Shared/LinkedAssets/LinkedAssetsSe
 import InFeedAd from "@/components/Shared/GoogleAdsense/InFeedAd";
 import ResponsiveBannerAd from "@/components/Shared/GoogleAdsense/ResponsiveBannerAd";
 import { formatAssetSize } from "@/utils/formatAssetSize";
+import { EXTENSION_VERSION } from "@/utils/constants";
 
 const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
   const [mounted, setMounted] = useState(false);
@@ -72,7 +73,9 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
   const isBlocked = isAuthenticated && membershipKind(user) === "blocked";
   // Paying for an ad-free-only tier (Early Access): no ads, but PRO models need a higher tier
   const isAdFreeOnly = isAuthenticated && membershipKind(user) === "adfree";
-  const upgradeUrl = user?.proSource === "patreon" ? PATREON_MANAGE_URL : PATREON_JOIN_URL;
+  // Bought through Patreon: the upgrade happens there. Everyone else picks a plan on our Pricing page.
+  const upgradesOnPatreon = isAdFreeOnly && user.proSource === "patreon";
+  const paymentProblem = isAuthenticated && polarProblem(user);
   // Where to come back to after signing in
   const here = typeof window !== "undefined" ? window.location.pathname + window.location.search : "/";
 
@@ -830,8 +833,8 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
                       onClick={() => setShowModal(true)}
                       className="w-full bg-[#FF424D] hover:bg-[#E63A42] active:scale-[0.99] text-white font-semibold text-sm py-3.5 px-4 rounded-xl shadow-lg shadow-red-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer font-sans"
                     >
-                      {isBlocked ? <FiLock className="w-4 h-4" /> : <SiPatreon className="w-4 h-4" />}
-                      <span>{isBlocked ? "PRO access is paused" : isAdFreeOnly ? "Upgrade on Patreon to Unlock" : "Subscribe on Patreon to Unlock"}</span>
+                      <FiLock className="w-4 h-4" />
+                      <span>{isBlocked ? "PRO access is paused" : isAdFreeOnly ? "Upgrade to Unlock" : "Get PRO to Unlock"}</span>
                     </button>
                   ) : (
                     <button
@@ -943,7 +946,7 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
 
       </div>
 
-      {/* Patreon Access Modal */}
+      {/* PRO Access Modal */}
       {showModal && (
         <div
           className="fixed inset-0 bg-canvas/80 backdrop-blur-md flex items-center justify-center z-50 p-4"
@@ -963,21 +966,23 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
 
             <div className="relative z-10 space-y-4">
               <div className="inline-flex items-center gap-2 rounded-full border border-extension-tintLine bg-extension-tintBg px-3 py-1 font-mono text-xs text-extension">
-                <span>Patreon Pro Asset</span>
+                <span>PRO Asset</span>
               </div>
 
               <h2 className="text-2xl font-semibold tracking-tight-h2 font-sans text-fg">
-                {isBlocked ? "PRO access is paused" : isAdFreeOnly ? "Upgrade for PRO models" : isAuthenticated ? "Become an Active Patron" : "Sign in to download"}
+                {isBlocked ? "PRO access is paused" : isAdFreeOnly ? "Upgrade for PRO models" : paymentProblem ? "Payment problem" : isAuthenticated ? "Become a member" : "Sign in to download"}
               </h2>
 
               <p className="text-xs sm:text-sm text-fg-secondary leading-relaxed">
                 {isBlocked
                   ? "PRO downloads are paused for your account. Please contact us and we will sort it out."
                   : isAdFreeOnly
-                  ? `Your ${user.membershipTier || "Early Access"} membership removes ads. PRO models need the Sketch shaper-Pro tier.`
+                  ? `Your ${user.membershipTier || "Early Access"} plan removes ads. PRO models need the Sketch shaper PRO plan or higher.`
+                  : paymentProblem
+                  ? "Your last payment didn't go through. Update your card in Manage billing and PRO models unlock again."
                   : isAuthenticated
-                  ? "Your account is not linked to an active Patreon subscription. Subscribe now to unlock this model and all premium 3D assets!"
-                  : "PRO models are for our Patreon supporters. Sign in with Patreon or your email, or create a free account."}
+                  ? "Your account doesn't have PRO access yet. Choose a plan to unlock this model and every PRO model."
+                  : "PRO models are for our members. Sign in or create a free account, then choose a plan."}
               </p>
 
               {!isBlocked && (
@@ -990,13 +995,13 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
                     <span className="text-action font-bold">✓</span> Direct .SKP download for all PRO models
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-action font-bold">✓</span> SketchUp native layers and clean textures
+                    <span className="text-action font-bold">✓</span> PRO models directly in the SketchUp extension
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-action font-bold">✓</span> Ad-free experience across the platform
+                    <span className="text-action font-bold">✓</span> Ad-free browsing across Sketch shaper
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-action font-bold">✓</span> Priority model requests &amp; fast support
+                    <span className="text-action font-bold">✓</span> One model request per month for our library
                   </li>
                 </ul>
               </div>
@@ -1011,33 +1016,39 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
                   >
                     <span>Contact us</span>
                   </Link>
-                ) : isAdFreeOnly && user.proSource === "polar" ? (
-                  // Bought on our Pricing page, so the upgrade is there too, not on Patreon
-                  <Link
-                    href="/pricing"
-                    onClick={() => setShowModal(false)}
-                    className="w-full bg-action hover:bg-action-hover text-canvas font-mono text-xs uppercase tracking-wider font-semibold py-3.5 px-6 rounded-full flex items-center justify-center gap-2 transition-all shadow-lg"
-                  >
-                    <span>See plans</span>
-                  </Link>
                 ) : isAuthenticated ? (
                   <>
-                    <a
-                      href={isAdFreeOnly ? upgradeUrl : PATREON_JOIN_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-full bg-[#FF424D] hover:bg-[#E63A42] text-white font-mono text-xs uppercase tracking-wider font-semibold py-3.5 px-6 rounded-full flex items-center justify-center gap-2 transition-all shadow-lg"
-                    >
-                      <span>{isAdFreeOnly ? "Upgrade on Patreon" : "Subscribe on Patreon"}</span>
-                    </a>
-                    <a
-                      href={patreonStartUrl(here)}
-                      className="text-center text-xs font-mono text-action hover:underline py-1"
-                    >
-                      {user.patreonLinked
-                        ? `Just ${isAdFreeOnly ? "upgraded" : "subscribed"}? Refresh my Patreon status`
-                        : "Already a patron? Connect your Patreon"}
-                    </a>
+                    {upgradesOnPatreon ? (
+                      <a
+                        href={PATREON_MANAGE_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full bg-[#FF424D] hover:bg-[#E63A42] text-white font-mono text-xs uppercase tracking-wider font-semibold py-3.5 px-6 rounded-full flex items-center justify-center gap-2 transition-all shadow-lg"
+                      >
+                        <span>Upgrade on Patreon</span>
+                      </a>
+                    ) : paymentProblem ? (
+                      <ManageBillingButton className="w-full bg-action hover:bg-action-hover text-canvas font-mono text-xs uppercase tracking-wider font-semibold py-3.5 px-6 rounded-full flex items-center justify-center gap-2 transition-all shadow-lg cursor-pointer" />
+                    ) : (
+                      <Link
+                        href="/pricing"
+                        onClick={() => setShowModal(false)}
+                        className="w-full bg-action hover:bg-action-hover text-canvas font-mono text-xs uppercase tracking-wider font-semibold py-3.5 px-6 rounded-full flex items-center justify-center gap-2 transition-all shadow-lg"
+                      >
+                        <span>See plans</span>
+                      </Link>
+                    )}
+                    {/* Patreon only for patrons: someone who pays on our site never needs it */}
+                    {(user.patreonLinked || (!isAdFreeOnly && !user.polar)) && (
+                      <a
+                        href={patreonStartUrl(here)}
+                        className="text-center text-xs font-mono text-action hover:underline py-1"
+                      >
+                        {user.patreonLinked
+                          ? `Just ${isAdFreeOnly ? "upgraded" : "joined"} on Patreon? Refresh my Patreon status`
+                          : "Already a patron? Connect your Patreon"}
+                      </a>
+                    )}
                   </>
                 ) : (
                   <button
@@ -1300,7 +1311,7 @@ function ExtensionPromoCard() {
           {/* Top-Right Version Chip */}
           <div className="absolute top-2 right-2 z-10 pointer-events-none">
             <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-semibold bg-white/5 text-fg-secondary/80 border border-white/10 shadow-sm">
-              v1.5.0
+              v{EXTENSION_VERSION}
             </span>
           </div>
         </Link>

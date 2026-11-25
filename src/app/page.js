@@ -9,10 +9,9 @@ import SupportDesk from "@/components/Home/SupportDesk";
 import SupportedBy from "@/components/Shared/SupportedBy/SupportedBy";
 import getData, { getOptional } from "@/utils/getData";
 import { buildPageMetadata } from "@/utils/seo";
-import { JsonLd, generateWebsiteAndOrgSchema } from "@/utils/schema";
 
 export const metadata = buildPageMetadata({
-  title: "Free 3D Models, Textures & SketchUp Plugins",
+  title: "Sketch shaper: Free SketchUp 3D Models, Textures & Plugins",
   description:
     "Discover free and pro SketchUp 3D models, high-quality textures, and helpful plugins for your next creative project.",
   pathname: "/",
@@ -27,7 +26,6 @@ export default async function Home() {
   const supportedByPromise = getData("supportedby");
   const innovativesPromise = getData("innovative");
   const aboutUsPromise = getData("general/about-us");
-  const socialsPromise = getData("social");
 
   const [
     carousels,
@@ -38,7 +36,6 @@ export default async function Home() {
     supportedby,
     innovatives,
     aboutUs,
-    socials,
   ] = await Promise.all([
     carouselsPromise,
     categoriesPromise,
@@ -48,11 +45,7 @@ export default async function Home() {
     supportedByPromise,
     innovativesPromise,
     aboutUsPromise,
-    socialsPromise,
   ]);
-
-  const socialUrls = (socials?.data || []).map((s) => s.url).filter(Boolean);
-  const websiteSchema = generateWebsiteAndOrgSchema(socialUrls);
 
   // Calculate live total models from database or fallback to 4,280
   const totalAssets =
@@ -86,7 +79,6 @@ export default async function Home() {
 
   return (
     <main className="w-full overflow-x-hidden selection:bg-action selection:text-canvas">
-      <JsonLd data={websiteSchema} />
       {/* 1. Hero Section (CAD Viewport Golden Split 1fr : 1.618fr) */}
       <HeroSection
         sliders={carousels?.data || []}

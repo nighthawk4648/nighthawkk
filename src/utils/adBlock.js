@@ -1,7 +1,7 @@
 import { isAdFree } from "./membership.js";
 
-// Pages a visitor needs to sign in or connect the extension; walling them would lock out someone who just paid
-export const WALL_FREE_PATHS = ["/login", "/signup", "/forgot-password", "/reset-password", "/verify-email", "/extension/connect"];
+// Pages a visitor needs to sign in, connect the extension or pay; walling them would lock out someone who wants to pay or just paid
+export const WALL_FREE_PATHS = ["/login", "/signup", "/forgot-password", "/reset-password", "/verify-email", "/extension/connect", "/pricing"];
 
 const BOT_UA = /bot|crawl|spider|slurp|lighthouse|mediapartners/i;
 

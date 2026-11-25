@@ -8,7 +8,12 @@ import {
   generateSoftwareAppSchema,
   generateWebPageSchema,
   generateCollectionSchema,
+  generatePlanSchemas,
+  priceValidUntil,
+  ORG_REF,
+  WEBSITE_REF,
 } from "./schema.js";
+import { PLANS, yearlyPrice } from "./pricing.js";
 
 test("serializeJsonLd escapes '<' to prevent XSS", () => {
   const unsafe = { text: "<script>alert('xss')</script>" };
@@ -36,7 +41,9 @@ test("generateBreadcrumbSchema builds valid Schema.org ListItem hierarchy", () =
 });
 
 test("generateWebsiteAndOrgSchema includes WebSite and Organization logo (no SearchAction: the site has no crawlable search URL)", () => {
-  const schema = generateWebsiteAndOrgSchema(["https://twitter.com/sketchshaper"]);
+  const schema = generateWebsiteAndOrgSchema(["https://twitter.com/sketchshaper"], {
+    description: "A SketchUp model library.",
+  });
   assert.equal(schema["@graph"].length, 2);
 
   const website = schema["@graph"].find((item) => item["@type"] === "WebSite");
@@ -49,6 +56,17 @@ test("generateWebsiteAndOrgSchema includes WebSite and Organization logo (no Sea
   assert.equal(org.name, "Sketch shaper");
   assert.ok(org.logo.url.includes("navbar_logo.png"));
   assert.ok(org.sameAs.includes("https://twitter.com/sketchshaper"));
+  assert.equal(org.description, "A SketchUp model library.");
+  assert.equal(org.contactPoint.contactType, "customer support");
+  assert.equal(org.contactPoint.url, "https://www.sketchshaper.com/contact");
+  assert.deepEqual(website.publisher, ORG_REF);
+  assert.equal(org["@id"], ORG_REF["@id"]);
+  assert.equal(website["@id"], WEBSITE_REF["@id"]);
+});
+
+test("generateWebsiteAndOrgSchema leaves the description out when none is given", () => {
+  const org = generateWebsiteAndOrgSchema()["@graph"].find((i) => i["@type"] === "Organization");
+  assert.equal("description" in org, false);
 });
 
 test("generateAssetSchema outputs valid Product structure with free/paid offers and geometry", () => {
@@ -67,7 +85,12 @@ test("generateAssetSchema outputs valid Product structure with free/paid offers 
     pathname: "/furniture-1/chairs-5/wooden-chair-10",
   });
 
-  assert.equal(productSchema["@type"], "Product");
+  assert.deepEqual(productSchema["@type"], ["Product", "3DModel"]);
+  assert.equal(productSchema.encodingFormat, "application/vnd.sketchup.skp");
+  assert.equal(productSchema.isAccessibleForFree, true);
+  assert.equal(productSchema.license, "https://www.sketchshaper.com/license");
+  assert.deepEqual(productSchema.publisher, ORG_REF);
+  assert.equal(productSchema.offers.priceValidUntil, priceValidUntil());
   assert.equal(productSchema.name, "Classic Wooden Chair & Table");
   assert.ok(!productSchema.description.includes("<p>"));
   assert.ok(productSchema.description.includes("&"));
@@ -80,12 +103,31 @@ test("generateAssetSchema outputs valid Product structure with free/paid offers 
   );
 });
 
-test("generateAssetSchema states no price for PRO models", () => {
+test("generateAssetSchema offers PRO models at the cheapest PRO plan price", () => {
   const productSchema = generateAssetSchema(
     { name: "PRO Sofa", access_type: "paid" },
     { pathname: "/models-3/sofa-1/pro-sofa-9" },
   );
-  assert.equal(productSchema.offers, undefined);
+  const cheapest = Math.min(...PLANS.filter((p) => p.id === "pro" || p.id === "sponsor").map((p) => p.monthly));
+  const { offers } = productSchema;
+
+  assert.equal(cheapest, 5);
+  assert.equal(productSchema.isAccessibleForFree, false);
+  assert.deepEqual(productSchema["@type"], ["Product", "3DModel"]);
+  assert.deepEqual(productSchema.publisher, ORG_REF);
+  assert.equal(offers.url, "https://www.sketchshaper.com/pricing");
+  assert.equal(offers.price, "5");
+  assert.equal(offers.priceCurrency, "USD");
+  assert.equal(offers.priceValidUntil, priceValidUntil());
+  assert.equal(offers.priceSpecification["@type"], "UnitPriceSpecification");
+  assert.equal(offers.priceSpecification.price, 5);
+  assert.equal(offers.priceSpecification.referenceQuantity.unitCode, "MON");
+  assert.equal(offers.description, "Included with a Sketch shaper PRO membership");
+});
+
+test("priceValidUntil is December 31 of next year", () => {
+  assert.equal(priceValidUntil(new Date("2026-11-26T10:00:00Z")), "2027-12-31");
+  assert.equal(priceValidUntil(), `${new Date().getUTCFullYear() + 1}-12-31`);
 });
 
 test("generateSoftwareAppSchema generates valid application details", () => {
@@ -99,6 +141,7 @@ test("generateSoftwareAppSchema generates valid application details", () => {
   assert.equal(appSchema["@type"], "SoftwareApplication");
   assert.equal(appSchema.url, "https://www.sketchshaper.com/rbzconverter");
   assert.equal(appSchema.offers.price, "0");
+  assert.deepEqual(appSchema.publisher, ORG_REF);
 });
 
 test("generateWebPageSchema produces valid WebPage schema with publisher", () => {
@@ -111,7 +154,8 @@ test("generateWebPageSchema produces valid WebPage schema with publisher", () =>
   assert.equal(pageSchema["@type"], "WebPage");
   assert.equal(pageSchema.name, "License Agreement");
   assert.equal(pageSchema.url, "https://www.sketchshaper.com/license");
-  assert.equal(pageSchema.publisher.name, "Sketch shaper");
+  assert.deepEqual(pageSchema.publisher, ORG_REF);
+  assert.deepEqual(pageSchema.isPartOf, WEBSITE_REF);
 });
 
 test("generateCollectionSchema produces valid CollectionPage and sanitizes description", () => {
@@ -128,4 +172,56 @@ test("generateCollectionSchema produces valid CollectionPage and sanitizes descr
   assert.ok(collection.description.includes("&"));
 });
 
+test("generateCollectionSchema lists items as an ItemList with positions and absolute urls", () => {
+  const collection = generateCollectionSchema({
+    name: "Chairs",
+    description: "Chairs",
+    pathname: "/furniture-1/chairs-5",
+    items: [
+      { name: "Wooden <b>Chair</b>", url: "/furniture/chairs/wooden-chair-10" },
+      { name: "Sofa", url: "https://www.sketchshaper.com/furniture/chairs/sofa-11" },
+    ],
+  });
 
+  assert.deepEqual(collection.isPartOf, WEBSITE_REF);
+  const list = collection.mainEntity;
+  assert.equal(list["@type"], "ItemList");
+  assert.equal(list.itemListElement.length, 2);
+  assert.equal(list.itemListElement[0].position, 1);
+  assert.equal(list.itemListElement[0].name, "Wooden Chair");
+  assert.equal(
+    list.itemListElement[0].url,
+    "https://www.sketchshaper.com/furniture/chairs/wooden-chair-10",
+  );
+  assert.equal(list.itemListElement[1].position, 2);
+  assert.equal(list.itemListElement[1].url, "https://www.sketchshaper.com/furniture/chairs/sofa-11");
+});
+
+test("generateCollectionSchema has no mainEntity without items", () => {
+  const collection = generateCollectionSchema({ name: "Empty", description: "x", pathname: "/e", items: [] });
+  assert.equal(collection.mainEntity, undefined);
+});
+
+test("generatePlanSchemas builds a Product per plan with monthly and yearly offers", () => {
+  const schemas = generatePlanSchemas(PLANS);
+  assert.equal(schemas.length, PLANS.length);
+
+  schemas.forEach((schema, i) => {
+    const plan = PLANS[i];
+    assert.equal(schema["@type"], "Product");
+    assert.equal(schema.name, plan.name);
+    assert.equal(schema.description, plan.features.join(". "));
+    assert.equal(schema.brand.name, "Sketch shaper");
+
+    const [monthly, yearly] = schema.offers;
+    assert.equal(monthly.price, String(plan.monthly));
+    assert.equal(monthly.priceSpecification.referenceQuantity.unitCode, "MON");
+    assert.equal(yearly.price, String(yearlyPrice(plan.monthly)));
+    assert.equal(yearly.priceSpecification.referenceQuantity.unitCode, "ANN");
+    for (const offer of schema.offers) {
+      assert.equal(offer.url, "https://www.sketchshaper.com/pricing");
+      assert.equal(offer.priceCurrency, "USD");
+      assert.equal(offer.availability, "https://schema.org/InStock");
+    }
+  });
+});

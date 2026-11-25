@@ -5,7 +5,7 @@ import Link from "next/link";
 import { FiCheck } from "react-icons/fi";
 import { useAuth } from "@/contexts/AuthContext";
 import { authRequest, startCheckout } from "@/utils/authApi";
-import { hasLivePolar, isAdFree } from "@/utils/membership";
+import { hasLivePolar, isAdFree, polarProblem } from "@/utils/membership";
 import { PLANS, REQUEST_NOTE, nextCheckDelay, yearlyPrice, yearlyFullPrice } from "@/utils/pricing";
 import ManageBillingButton from "./ManageBillingButton";
 
@@ -24,6 +24,7 @@ export default function PricingClient() {
   const [round, setRound] = useState(0); // "Check again" starts a new round of asking
   const period = yearly ? "yearly" : "monthly";
   const live = hasLivePolar(user);
+  const problem = polarProblem(user); // a failed payment is fixed in billing, never by paying a second time
   const toggle = (active) =>
     `px-4 py-1.5 rounded-full text-xs font-semibold transition-colors ${
       active ? "bg-action text-canvas" : "text-fg-secondary hover:text-fg"
@@ -81,7 +82,7 @@ export default function PricingClient() {
         </nav>
 
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-[-0.03em] font-sans text-center">
-          Unlock Sketchshaper with these plans.
+          Unlock Sketch shaper with these plans.
         </h1>
 
         {paid && (
@@ -105,9 +106,15 @@ export default function PricingClient() {
             )}
           </div>
         )}
+        {problem && !paid && (
+          <p role="alert" className="mx-auto mt-6 max-w-xl text-center text-sm text-fg-secondary">
+            Your last payment didn&apos;t go through. Update your card in Manage billing and your plan continues.
+          </p>
+        )}
         {user && isAdFree(user) && !live && !paid && (
           <p className="mx-auto mt-6 max-w-xl text-center text-sm text-fg-secondary">
-            You already have access through {user.proSource === "manual" ? "a membership set by us" : "Patreon"}. Subscribing
+            You already have access through{" "}
+            {user.proSource === "manual" ? "a membership set by us" : user.proSource === "patreon" ? "Patreon" : "your membership"}. Subscribing
             here as well would charge you twice.
           </p>
         )}
@@ -124,7 +131,8 @@ export default function PricingClient() {
         <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-3">
           {PLANS.map((plan) => {
             const popular = plan.popular === period;
-            const current = live && user.polar.plan === plan.id && user.polar.period === period;
+            const samePlan = live && user.polar.plan === plan.id;
+            const current = samePlan && user.polar.period === period;
             return (
               <div
                 key={plan.id}
@@ -163,8 +171,10 @@ export default function PricingClient() {
                   <button type="button" disabled className={planButton(popular)}>
                     Current plan
                   </button>
-                ) : live ? (
-                  <ManageBillingButton className={planButton(popular)} />
+                ) : live || problem ? (
+                  <ManageBillingButton className={planButton(popular)}>
+                    {samePlan ? `Switch to ${period}` : "Manage billing"}
+                  </ManageBillingButton>
                 ) : (
                   <button
                     type="button"

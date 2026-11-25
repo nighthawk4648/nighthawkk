@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import useSWR from "swr";
-import { EXTENSION_DOWNLOAD_BASELINE } from "@/utils/constants";
+import { EXTENSION_DOWNLOAD_BASELINE, EXTENSION_FILE, EXTENSION_VERSION } from "@/utils/constants";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 const fetcher = (url) => fetch(url).then((res) => res.json());
@@ -33,7 +33,9 @@ const ExtensionPage = ({ initialData }) => {
   const totalDownloads =
     EXTENSION_DOWNLOAD_BASELINE + (downloadData?.data?.count || 0);
 
+  // The links are real <a download>: the browser downloads the file, this only counts it
   const handleDownload = () => {
+    if (isDownloading) return;
     // 1. Immediately increment the counter on screen (optimistic UI update)
     mutateDownloadData(
       (current) => ({
@@ -76,15 +78,7 @@ const ExtensionPage = ({ initialData }) => {
         });
     }
 
-    // 3. Trigger browser file download immediately
-    const link = document.createElement("a");
-    link.href = "/assets/rbz/sketchshaper-1.5.0.rbz";
-    link.download = "sketchshaper-1.5.0.rbz";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    // 4. Brief visual feedback on button
+    // 3. Brief visual feedback on button
     setIsDownloading(true);
     if (feedbackTimeoutRef.current) {
       clearTimeout(feedbackTimeoutRef.current);
@@ -109,7 +103,7 @@ const ExtensionPage = ({ initialData }) => {
     },
     {
       q: "How do I install the .rbz extension file in SketchUp?",
-      a: "Do not unzip or extract the .rbz file. In SketchUp, go to Extensions > Extension Manager (or Window > Extension Manager in older releases), click 'Install Extension' at the bottom, select 'sketchshaper-1.5.0.rbz', and click Open. The toolbar docks automatically.",
+      a: `Do not unzip or extract the .rbz file. In SketchUp, go to Extensions > Extension Manager (or Window > Extension Manager in older releases), click 'Install Extension' at the bottom, select '${EXTENSION_FILE}', and click Open. The toolbar docks automatically.`,
     },
     {
       q: "Are the 3D models and textures free for commercial rendering?",
@@ -155,10 +149,10 @@ const ExtensionPage = ({ initialData }) => {
 
         {/* Primary Download Button & Quick Install Link */}
         <div className="flex flex-col items-center justify-center gap-3.5 mb-8">
-          <button
-            type="button"
+          <a
+            href={`/assets/rbz/${EXTENSION_FILE}`}
+            download={EXTENSION_FILE}
             onClick={handleDownload}
-            disabled={isDownloading}
             className="w-full sm:w-auto px-9 py-4 rounded-full text-base font-semibold bg-action hover:bg-action-hover active:bg-action-pressed text-canvas transition-all duration-200 transform hover:-translate-y-0.5 shadow-xl shadow-action/25 flex items-center justify-center gap-3 cursor-pointer"
           >
             {isDownloading ? (
@@ -199,7 +193,7 @@ const ExtensionPage = ({ initialData }) => {
                 <span>Download Free Extension (.rbz)</span>
               </>
             )}
-          </button>
+          </a>
 
           <a
             href="#how-to-install"
@@ -214,7 +208,7 @@ const ExtensionPage = ({ initialData }) => {
         {/* Minimalist Telemetry Strip (Exact downloads count with no plus sign) */}
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs sm:text-sm font-mono text-fg-secondary mt-10 sm:mt-12 pt-6 sm:pt-7 border-t border-line/40 max-w-2xl mx-auto">
           <span>
-            Version <span className="text-fg font-medium">1.5.0</span>
+            Version <span className="text-fg font-medium">{EXTENSION_VERSION}</span>
           </span>
           <span className="text-line-strong hidden sm:inline">&bull;</span>
           <span>
@@ -404,19 +398,20 @@ const ExtensionPage = ({ initialData }) => {
               <p className="text-sm text-fg-secondary leading-relaxed font-sans mb-4">
                 Click download to get{" "}
                 <code className="text-action-tintFg bg-action-tintBg px-1.5 py-0.5 rounded text-xs font-mono">
-                  sketchshaper-1.5.0.rbz
+                  {EXTENSION_FILE}
                 </code>
                 . Do not unzip or extract the file.
               </p>
             </div>
-            <button
-              type="button"
+            <a
+              href={`/assets/rbz/${EXTENSION_FILE}`}
+              download={EXTENSION_FILE}
               onClick={handleDownload}
               className="mt-4 text-xs font-mono text-action hover:underline flex items-center gap-1.5 cursor-pointer"
             >
               <span>Download file now</span>
               <span>&rarr;</span>
-            </button>
+            </a>
           </div>
 
           {/* Step 2 */}

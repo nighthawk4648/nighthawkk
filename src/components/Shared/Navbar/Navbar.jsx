@@ -8,10 +8,9 @@ import { useAuth } from "@/contexts/AuthContext";
 import { SiPatreon } from "react-icons/si";
 import {
   patreonStartUrl,
-  PATREON_JOIN_URL,
   PATREON_MANAGE_URL,
 } from "@/utils/authApi";
-import { membershipKind, polarText, proUntilText } from "@/utils/membership";
+import { hasLivePolar, membershipKind, planBadge, polarProblem, polarText, proUntilText } from "@/utils/membership";
 import ManageBillingButton from "@/components/Pricing/ManageBillingButton";
 import { formatAssetSize } from "@/utils/formatAssetSize";
 import dynamic from "next/dynamic";
@@ -30,6 +29,7 @@ export default function Navbar({ categories = [], featuredAsset = null }) {
   const { user: siteUser, loading: siteLoading, signOut, openAuth } = useAuth();
   const pathname = usePathname();
   const kind = membershipKind(siteUser);
+  const badge = planBadge(siteUser);
 
   const [isBrowseOpen, setIsBrowseOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -366,7 +366,7 @@ export default function Navbar({ categories = [], featuredAsset = null }) {
             </nav>
           </div>
 
-          {/* Right: Extension pill (desktop), Patreon control */}
+          {/* Right: Extension pill (desktop), account control */}
           <div className="flex items-center gap-2 sm:gap-3">
             {/* Extension Pill (Action green tint, bolt icon, links to /extension) - desktop only */}
             <Link
@@ -382,7 +382,7 @@ export default function Navbar({ categories = [], featuredAsset = null }) {
               <span className="tracking-tight">Extension</span>
             </Link>
 
-            {/* Patreon Control Container */}
+            {/* Account Control Container */}
             <div className="relative" ref={userMenuRef}>
               {siteUser ? (
                 /* Signed in with an email account */
@@ -401,14 +401,13 @@ export default function Navbar({ categories = [], featuredAsset = null }) {
                       {siteUser.name?.split(" ")[0] ||
                         siteUser.email.split("@")[0]}
                     </span>
-                    {siteUser.isPro && (
-                      <span className="text-[10px] font-mono font-semibold bg-action text-canvas px-1.5 py-0.2 rounded">
-                        PRO
-                      </span>
-                    )}
-                    {kind === "adfree" && (
-                      <span className="text-[10px] font-mono font-semibold border border-action text-action px-1.5 py-0.2 rounded">
-                        AD-FREE
+                    {badge && (
+                      <span
+                        className={`text-[10px] font-mono font-semibold px-1.5 py-0.2 rounded ${
+                          badge === "AD-FREE" ? "border border-action text-action" : "bg-action text-canvas"
+                        }`}
+                      >
+                        {badge}
                       </span>
                     )}
                   </button>
@@ -438,97 +437,83 @@ export default function Navbar({ categories = [], featuredAsset = null }) {
                         </Link>
                       ) : (
                         <>
+                          {polarProblem(siteUser) && (
+                            <div className="px-3 py-1.5 text-xs text-fg">
+                              Payment problem &middot; please update your card in Manage billing
+                            </div>
+                          )}
                           {kind === "manual" && (
                             <div className="px-3 py-1.5 text-xs text-fg">
                               PRO &middot; {proUntilText(siteUser)}
                             </div>
                           )}
-                          {kind === "polar" && (
-                            <>
-                              <div className="px-3 py-1.5 text-xs text-fg">
-                                {polarText(siteUser.polar)}
-                              </div>
-                              <ManageBillingButton className="block w-full text-left px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors cursor-pointer" />
-                            </>
+                          {kind === "adfree" && siteUser.proSource === "manual" && (
+                            <div className="px-3 py-1.5 text-xs text-fg">
+                              Ad-free &middot; {proUntilText(siteUser)}
+                            </div>
                           )}
-                          {kind === "patreon" && (
+                          {hasLivePolar(siteUser) && (
+                            <div className="px-3 py-1.5 text-xs text-fg">
+                              {polarText(siteUser.polar)}
+                            </div>
+                          )}
+                          {siteUser.proSource === "patreon" && (
                             <a
                               href={PATREON_MANAGE_URL}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="flex items-center gap-2 px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
                             >
-                              <SiPatreon
-                                aria-hidden="true"
-                                className="w-3 h-3"
-                              />
-                              {siteUser.membershipTier
-                                ? `Membership: ${siteUser.membershipTier}`
-                                : "Membership"}
+                              <SiPatreon aria-hidden="true" className="w-3 h-3" />
+                              {/* with a Polar plan too, the tier name may be the Polar one */}
+                              {siteUser.membershipTier && !hasLivePolar(siteUser)
+                                ? `Patreon: ${siteUser.membershipTier}`
+                                : "Patreon membership"}
                             </a>
                           )}
-                          {kind === "adfree" && (
-                            <>
-                              <div className="px-3 py-1.5 text-xs text-fg">
-                                Ad-free
-                                {siteUser.proSource === "manual"
-                                  ? ` · ${proUntilText(siteUser)}`
-                                  : siteUser.proSource === "polar"
-                                    ? ` · ${polarText(siteUser.polar)}`
-                                    : siteUser.membershipTier
-                                      ? ` · ${siteUser.membershipTier}`
-                                      : ""}
-                              </div>
-                              {siteUser.proSource === "polar" ? (
-                                <>
-                                  <Link
-                                    href="/pricing"
-                                    onClick={() => setIsUserMenuOpen(false)}
-                                    className="block px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
-                                  >
-                                    Upgrade for PRO models
-                                  </Link>
-                                  <ManageBillingButton className="block w-full text-left px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors cursor-pointer" />
-                                </>
-                              ) : (
-                                <a
-                                  href={PATREON_MANAGE_URL}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex items-center gap-2 px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
-                                >
-                                  <SiPatreon
-                                    aria-hidden="true"
-                                    className="w-3 h-3"
-                                  />
-                                  Upgrade for PRO models
-                                </a>
-                              )}
-                            </>
+                          {kind === "adfree" &&
+                            (siteUser.proSource === "patreon" ? (
+                              <a
+                                href={PATREON_MANAGE_URL}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
+                              >
+                                Upgrade for PRO models
+                              </a>
+                            ) : (
+                              <Link
+                                href="/pricing"
+                                onClick={() => setIsUserMenuOpen(false)}
+                                className="block px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
+                              >
+                                Upgrade for PRO models
+                              </Link>
+                            ))}
+                          {siteUser.polar && (
+                            <ManageBillingButton className="block w-full text-left px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors cursor-pointer" />
                           )}
-                          {kind === "free" && (
-                            <a
-                              href={PATREON_JOIN_URL}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-2 px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
+                          {kind === "free" && !polarProblem(siteUser) && (
+                            <Link
+                              href="/pricing"
+                              onClick={() => setIsUserMenuOpen(false)}
+                              className="block px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
                             >
-                              <SiPatreon
-                                aria-hidden="true"
-                                className="w-3 h-3"
-                              />
                               Become a member
+                            </Link>
+                          )}
+                          {/* Patreon only for patrons: someone who pays on our site never needs it */}
+                          {(siteUser.patreonLinked || (kind === "free" && !siteUser.polar)) && (
+                            <a
+                              href={patreonStartUrl(pathname)}
+                              className="block px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
+                            >
+                              {siteUser.patreonLinked
+                                ? "Refresh Patreon status"
+                                : "Already a patron? Connect Patreon"}{" "}
+                              &rarr;
                             </a>
                           )}
-                          <a
-                            href={patreonStartUrl(pathname)}
-                            className="block px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
-                          >
-                            {siteUser.patreonLinked
-                              ? "Refresh Patreon status"
-                              : "Connect Patreon"}{" "}
-                            &rarr;
-                          </a>
                         </>
                       )}
                       <button
@@ -559,15 +544,12 @@ export default function Navbar({ categories = [], featuredAsset = null }) {
                   >
                     Sign in
                   </Link>
-                  <a
-                    href={PATREON_JOIN_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Link
+                    href="/pricing"
                     className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#FF424D] text-white hover:bg-[#E63A42] transition-colors"
                   >
-                    <SiPatreon aria-hidden="true" className="w-3 h-3" />
                     Become a member
-                  </a>
+                  </Link>
                 </div>
               )}
             </div>
@@ -660,15 +642,13 @@ export default function Navbar({ categories = [], featuredAsset = null }) {
                   >
                     Sign in
                   </Link>
-                  <a
-                    href={PATREON_JOIN_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Link
+                    href="/pricing"
+                    onClick={() => setIsMobileMenuOpen(false)}
                     className="p-2 rounded hover:bg-surface-raised flex items-center gap-2"
                   >
-                    <SiPatreon aria-hidden="true" className="w-3 h-3" />
                     Become a member
-                  </a>
+                  </Link>
                 </>
               )}
             </div>

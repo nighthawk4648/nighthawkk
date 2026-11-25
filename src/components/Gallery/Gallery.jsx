@@ -383,7 +383,7 @@ export const Gallery = ({ initialData = null }) => {
             className="w-full max-w-3xl mx-auto px-4 py-2.5 rounded-xl border border-white/10 bg-black/60 backdrop-blur-xl flex items-center justify-between text-xs font-mono text-zinc-300/80"
             onClick={(e) => e.stopPropagation()}
           >
-            <span>SKETCH SHAPER CAD RENDER ARCHIVE</span>
+            <span className="uppercase">Sketch shaper CAD render archive</span>
             <button
               type="button"
               onClick={closeModal}

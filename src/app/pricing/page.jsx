@@ -1,7 +1,8 @@
 import React from "react";
 import PricingClient from "@/components/Pricing/PricingClient";
 import { buildPageMetadata } from "@/utils/seo";
-import { JsonLd, generateBreadcrumbSchema } from "@/utils/schema";
+import { PLANS } from "@/utils/pricing";
+import { JsonLd, generateBreadcrumbSchema, generatePlanSchemas } from "@/utils/schema";
 
 export const metadata = buildPageMetadata({
   title: "Pricing: PRO Models & Ad-free Plans",
@@ -19,6 +20,7 @@ export default function PricingPage() {
   return (
     <>
       <JsonLd data={breadcrumbSchema} />
+      <JsonLd data={generatePlanSchemas(PLANS)} />
       <PricingClient />
     </>
   );

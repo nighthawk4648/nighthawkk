@@ -59,7 +59,7 @@ test("no wall while the server has not said who is signed in", () => {
 });
 
 test("sign-in pages and their sub-pages stay open", () => {
-  for (const pathname of ["/login", "/signup", "/forgot-password", "/reset-password", "/verify-email", "/extension/connect", "/reset-password/abc"]) {
+  for (const pathname of ["/login", "/signup", "/forgot-password", "/reset-password", "/verify-email", "/extension/connect", "/reset-password/abc", "/pricing"]) {
     assert.equal(shouldShowWall({ ...blockedVisitor, pathname }), false, pathname);
   }
   assert.equal(shouldShowWall({ ...blockedVisitor, pathname: "/extension" }), true);
