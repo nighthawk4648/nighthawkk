@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildLlmsTxt } from "./llms.js";
+import { buildLlmsTxt, unitFor } from "./llms.js";
 import { PLANS } from "./pricing.js";
 
 const site = "https://www.sketchshaper.com";
@@ -23,11 +23,31 @@ test("buildLlmsTxt lists categories with links, counts and nested subcategories"
 
   assert.ok(out.startsWith("# Sketch shaper\n\n> My library\n"));
   assert.ok(out.includes("## Library"));
-  assert.ok(out.includes(`- [Furniture](${site}/furniture-1): 42 models`));
-  assert.ok(out.includes(`  - [Chairs](${site}/furniture-1/chairs-5): 30 models`));
+  assert.ok(out.includes(`- [Furniture](${site}/furniture-1): 42 assets`));
+  assert.ok(out.includes(`  - [Chairs](${site}/furniture-1/chairs-5): 30 assets`));
   // No count data: the count is left out
   assert.ok(out.includes(`- [Plants](${site}/plants-2)\n`));
   assert.ok(out.includes(`  - [Trees](${site}/plants-2/trees-7)\n`));
+});
+
+test("counts are named after what the category holds: textures, plugins, models, otherwise assets", () => {
+  assert.equal(unitFor("Textures"), "textures");
+  assert.equal(unitFor("Sketchup plugins"), "plugins");
+  assert.equal(unitFor("SketchUp Extensions"), "plugins");
+  assert.equal(unitFor("Sketchup 3D models"), "models");
+  assert.equal(unitFor("HDRI"), "assets");
+  assert.equal(unitFor(undefined), "assets");
+
+  const out = buildLlmsTxt({
+    site,
+    categories: [
+      { id: 4, name: "Textures", slug: "textures", sub_categories: [{ id: 12, name: "Marble", slug: "marble", _count: { assets: 5 } }] },
+      { id: 5, name: "Sketchup plugins", slug: "sketchup-plugins", sub_categories: [{ id: 35, name: "Free", slug: "free", _count: { assets: 8 } }] },
+    ],
+  });
+  assert.ok(out.includes(`- [Textures](${site}/textures-4): 5 textures`));
+  assert.ok(out.includes(`  - [Marble](${site}/textures-4/marble-12): 5 textures`), "subcategories use their category's word");
+  assert.ok(out.includes(`- [Sketchup plugins](${site}/sketchup-plugins-5): 8 plugins`));
 });
 
 test("buildLlmsTxt lists key pages and plan prices", () => {

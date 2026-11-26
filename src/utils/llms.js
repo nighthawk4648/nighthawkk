@@ -5,9 +5,19 @@ import { yearlyPrice } from "./pricing.js";
 const FALLBACK_DESCRIPTION = "Free and pro 3D models, textures, and plugins for SketchUp.";
 const MAX_ARTICLES = 10;
 
-// "- [Name](url): N models"; the count is left out when the data has none
-const link = (name, url, count) =>
-  `- [${name}](${url})${count > 0 ? `: ${count.toLocaleString("en-US")} models` : ""}`;
+// What a category holds, read from its name; any other kind of category counts as "assets"
+export const unitFor = (categoryName = "") =>
+  /texture/i.test(categoryName)
+    ? "textures"
+    : /plugin|extension/i.test(categoryName)
+      ? "plugins"
+      : /model/i.test(categoryName)
+        ? "models"
+        : "assets";
+
+// "- [Name](url): N textures"; the count is left out when the data has none
+const link = (name, url, count, unit) =>
+  `- [${name}](${url})${count > 0 ? `: ${count.toLocaleString("en-US")} ${unit}` : ""}`;
 
 /**
  * Builds the llms.txt Markdown file that tells AI tools what the site offers.
@@ -29,9 +39,10 @@ export function buildLlmsTxt({ description, categories = [], plans = [], blogs =
     if (!cat?.name) continue;
     const subs = (cat.sub_categories || []).filter((sub) => sub?.name);
     const total = subs.reduce((sum, sub) => sum + (sub._count?.assets || 0), 0);
-    lines.push(link(cat.name, `${site}${categoryPath(cat)}`, total));
+    const unit = unitFor(cat.name); // subcategories hold the same kind as their category
+    lines.push(link(cat.name, `${site}${categoryPath(cat)}`, total, unit));
     for (const sub of subs) {
-      lines.push(`  ${link(sub.name, `${site}${subCategoryPath(cat, sub)}`, sub._count?.assets || 0)}`);
+      lines.push(`  ${link(sub.name, `${site}${subCategoryPath(cat, sub)}`, sub._count?.assets || 0, unit)}`);
     }
   }
 

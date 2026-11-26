@@ -843,7 +843,7 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
                       className={`w-full bg-[#FF424D] hover:bg-[#E63A42] active:scale-[0.99] text-white font-semibold text-sm py-3.5 px-4 rounded-xl shadow-lg shadow-red-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer font-sans ${authLoading ? "auth-pending" : ""}`}
                     >
                       <FiLock className="w-4 h-4" />
-                      <span>Sign in to Unlock</span>
+                      <span>Pay to Unlock</span>
                     </button>
                   )
                 ) : (
