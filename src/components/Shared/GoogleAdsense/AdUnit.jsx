@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { isAdFree } from "@/utils/membership";
+import { PHONE_QUERY, insSizeProps } from "@/utils/adSize";
 
 const AD_SCRIPT_SRC =
   "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5557791257949251";
@@ -42,12 +43,14 @@ export default function AdUnit({
   className = "",
   adTest = false,
   bare = false,
+  phoneSize = null, // { width, height }: exact ad size on phones, so the box never grows after load
 }) {
   const containerRef = useRef(null);
   const adRef = useRef(null);
   const pushedRef = useRef(false);
   const [mounted, setMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [fixedSize, setFixedSize] = useState(null); // chosen once, before the ad is pushed
   const { user, loading } = useAuth();
 
   const isPatron = isAdFree(user); // PRO or an ad-free tier
@@ -81,8 +84,14 @@ export default function AdUnit({
       return true;
     };
 
-    if (checkVisibility()) {
+    const show = () => {
+      if (pushedRef.current) return; // the pushed ad keeps its size
+      setFixedSize(phoneSize && window.matchMedia(PHONE_QUERY).matches ? phoneSize : null);
       setIsVisible(true);
+    };
+
+    if (checkVisibility()) {
+      show();
       return;
     }
 
@@ -90,7 +99,7 @@ export default function AdUnit({
       const observer = new ResizeObserver((entries) => {
         for (const entry of entries) {
           if (entry.contentRect.width >= minRequiredWidth) {
-            setIsVisible(true);
+            show();
             observer.disconnect();
             break;
           }
@@ -99,7 +108,7 @@ export default function AdUnit({
       observer.observe(el);
       return () => observer.disconnect();
     }
-  }, [mounted, loading, isPatron, minRequiredWidth]);
+  }, [mounted, loading, isPatron, minRequiredWidth, phoneSize]);
 
   // 2. Safe push to adsbygoogle: execute only AFTER browser completes layout and paint pass
   useEffect(() => {
@@ -139,29 +148,25 @@ export default function AdUnit({
     return null;
   }
 
+  const adIns = isProduction && isVisible && (
+    <ins
+      ref={adRef}
+      className="adsbygoogle"
+      data-ad-client="ca-pub-5557791257949251"
+      data-ad-slot={slot}
+      {...insSizeProps({ format, fullWidthResponsive, fixedSize })}
+      {...(layoutKey ? { "data-ad-layout-key": layoutKey } : {})}
+      {...(adTest ? { "data-adtest": "on" } : {})}
+    />
+  );
+
   if (bare) {
     return (
       <div
         ref={containerRef}
         className={`ad-slot relative z-10 w-full block text-center ${className}`}
       >
-        {isProduction && isVisible && (
-          <ins
-            ref={adRef}
-            className="adsbygoogle"
-            style={{
-              display: "block",
-              width: "100%",
-              minWidth: format === "fluid" ? "250px" : undefined,
-            }}
-            data-ad-client="ca-pub-5557791257949251"
-            data-ad-slot={slot}
-            data-ad-format={format}
-            {...(layoutKey ? { "data-ad-layout-key": layoutKey } : {})}
-            {...(fullWidthResponsive ? { "data-full-width-responsive": "true" } : { "data-full-width-responsive": "false" })}
-            {...(adTest ? { "data-adtest": "on" } : {})}
-          />
-        )}
+        {adIns}
       </div>
     );
   }
@@ -179,23 +184,7 @@ export default function AdUnit({
         className="relative z-10 w-full block py-1 text-center"
         style={{ minWidth: format === "fluid" ? "250px" : undefined }}
       >
-        {isProduction && isVisible && (
-          <ins
-            ref={adRef}
-            className="adsbygoogle"
-            style={{
-              display: "block",
-              width: "100%",
-              minWidth: format === "fluid" ? "250px" : undefined,
-            }}
-            data-ad-client="ca-pub-5557791257949251"
-            data-ad-slot={slot}
-            data-ad-format={format}
-            {...(layoutKey ? { "data-ad-layout-key": layoutKey } : {})}
-            {...(fullWidthResponsive ? { "data-full-width-responsive": "true" } : { "data-full-width-responsive": "false" })}
-            {...(adTest ? { "data-adtest": "on" } : {})}
-          />
-        )}
+        {adIns}
       </div>
     </div>
   );

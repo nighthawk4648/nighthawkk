@@ -136,6 +136,7 @@ const BlogsPage = ({ initialData = null }) => {
                           }
                           fill
                           priority
+                          fetchPriority="high"
                           sizes="(max-width: 1024px) 100vw, 60vw"
                           className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                         />

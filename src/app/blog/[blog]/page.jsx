@@ -293,6 +293,7 @@ const BlogDetailPage = async ({ params }) => {
                     }
                     fill
                     priority
+                    fetchPriority="high"
                     className="object-cover"
                     sizes="(max-width: 896px) 100vw, 896px"
                   />

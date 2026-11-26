@@ -544,7 +544,7 @@ export default function CatalogLayout({
 
               {/* Header Horizontal Banner Ad */}
               <div className="w-full xl:max-w-[760px] 2xl:max-w-[980px]">
-                <ResponsiveBannerAd />
+                <ResponsiveBannerAd fixedOnPhone />
               </div>
             </div>
 

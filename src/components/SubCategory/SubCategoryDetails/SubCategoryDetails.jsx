@@ -413,7 +413,7 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
         </div>
 
         {/* 2. TOP LEADERBOARD AD BANNER */}
-        <ResponsiveBannerAd className="mb-2" />
+        <ResponsiveBannerAd className="mb-2" fixedOnPhone />
 
         {/* 3. MAIN 12-COLUMN ASYMMETRIC SPLIT */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
