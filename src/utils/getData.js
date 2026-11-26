@@ -14,6 +14,8 @@ const getData = async (path, options = {}) => {
     const fetchOptions = {
       signal: options.signal || AbortSignal.timeout(timeoutMs),
       ...options,
+      // Backend then answers a deleted item with a cacheable 200 + x-not-found (Next.js never caches a 404)
+      headers: { ...options.headers, "x-soft-404": "1" },
     };
     // These are ours, not fetch options
     delete fetchOptions.timeout;
@@ -42,7 +44,7 @@ const getData = async (path, options = {}) => {
     );
 
     // A missing item is a normal answer, not an error worth logging
-    if (response.status === 404) return null;
+    if (response.status === 404 || response.headers.get("x-not-found")) return null;
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
