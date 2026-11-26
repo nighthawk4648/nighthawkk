@@ -603,6 +603,7 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
                     fill
                     sizes="(max-width: 1024px) 100vw, 65vw"
                     priority
+                    fetchPriority="high"
                     loading="eager"
                     onLoad={() => setIsAngleLoading(false)}
                     onError={() => setIsAngleLoading(false)}
