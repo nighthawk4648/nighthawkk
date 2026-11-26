@@ -336,6 +336,7 @@ export default function ContactPageClient() {
 
       const response = await fetch(`${backendUrl}/contact`, {
         method: "POST",
+        credentials: "include",
         body: formData,
       });
 

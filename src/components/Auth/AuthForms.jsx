@@ -6,7 +6,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { FcGoogle } from "react-icons/fc";
 import { SiPatreon } from "react-icons/si";
-import { approveExtension, authRequest, googleStartUrl, patreonStartUrl } from "@/utils/authApi";
+import { approveExtension, authRequest, googleStartUrl, patreonStartUrl, PATREON_MANAGE_URL } from "@/utils/authApi";
+import { hasLivePolar, membershipKind, planBadge, polarProblem, polarText, proUntilText } from "@/utils/membership";
+import { REQUEST_NOTE } from "@/utils/pricing";
+import ManageBillingButton from "@/components/Pricing/ManageBillingButton";
 import { cleanConnectCode, forgetConnect, recallConnectPath, rememberConnect } from "@/utils/extensionConnect";
 import { safeReturnPath } from "@/utils/safeReturnPath";
 
@@ -507,5 +510,183 @@ export function ResetPasswordForm() {
         </button>
       </form>
     </AuthCard>
+  );
+}
+
+// /account: membership, profile and password for a signed-in member
+function AccountCard({ title, children }) {
+  return (
+    <section className="rounded-[28px] bg-surface/80 border border-line p-6 sm:p-10 shadow-2xl backdrop-blur-md">
+      <h2 className="text-xl sm:text-2xl font-semibold tracking-tight font-sans mb-5">{title}</h2>
+      {children}
+    </section>
+  );
+}
+
+function MembershipCard({ user }) {
+  const kind = membershipKind(user);
+  const badge = planBadge(user);
+  const live = hasLivePolar(user);
+  const patron = user.proSource === "patreon";
+  return (
+    <AccountCard title="Membership">
+      <div className="space-y-3 text-sm text-fg">
+        {kind !== "blocked" && <p>{badge ? `Your plan: ${badge}` : "You are on the free plan."}</p>}
+        {kind === "blocked" ? (
+          <Link href="/contact" className={`${linkClass} block`}>PRO access is paused &middot; contact us &rarr;</Link>
+        ) : (
+          <>
+            {polarProblem(user) && <p>Payment problem &middot; please update your card in Manage billing</p>}
+            {kind === "manual" && <p>PRO &middot; {proUntilText(user)}</p>}
+            {kind === "adfree" && user.proSource === "manual" && <p>Ad-free &middot; {proUntilText(user)}</p>}
+            {live && <p>{polarText(user.polar)}</p>}
+            {patron && (
+              <a href={PATREON_MANAGE_URL} target="_blank" rel="noopener noreferrer" className={`${linkClass} flex items-center gap-2`}>
+                <SiPatreon aria-hidden="true" className="h-3 w-3" />
+                {/* with a Polar plan too, the tier name may be the Polar one */}
+                {user.membershipTier && !live ? `Patreon: ${user.membershipTier}` : "Patreon membership"}
+              </a>
+            )}
+            {kind === "adfree" &&
+              (patron ? (
+                <a href={PATREON_MANAGE_URL} target="_blank" rel="noopener noreferrer" className={`${linkClass} block`}>Upgrade for PRO models</a>
+              ) : (
+                <Link href="/pricing" className={`${linkClass} block`}>Upgrade for PRO models</Link>
+              ))}
+            {user.polar && <ManageBillingButton className={`${linkClass} cursor-pointer`} />}
+            {kind === "free" && !polarProblem(user) && <Link href="/pricing" className={`${linkClass} block`}>Become a member</Link>}
+            {/* Patreon only for patrons: someone who pays on our site never needs it */}
+            {(user.patreonLinked || (kind === "free" && !user.polar)) && (
+              <a href={patreonStartUrl("/account")} className={`${linkClass} block`}>
+                {user.patreonLinked ? "Refresh Patreon status" : "Already a patron? Connect Patreon"} &rarr;
+              </a>
+            )}
+            {user.plan && (
+              <div className="border-t border-line pt-3">
+                <Link href="/contact" className={`${linkClass} block`}>Request a model &rarr;</Link>
+                <p className="mt-1 text-xs text-fg-secondary">Members can request one model a month. {REQUEST_NOTE}</p>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </AccountCard>
+  );
+}
+
+function ProfileCard({ user, setUser }) {
+  const [saved, setSaved] = useState(false);
+  const [resent, setResent] = useState("");
+  const { busy, error, submit } = useSubmit(async (form) => {
+    setSaved(false);
+    const res = await authRequest("/profile", { body: { name: form.get("name") } });
+    if (res.ok) {
+      setUser(res.data.user);
+      setSaved(true);
+    }
+    return res;
+  });
+
+  const resend = async () => {
+    const res = await authRequest("/resend-verification", { body: { email: user.email } });
+    setResent(res.ok ? "We sent another link." : res.message);
+  };
+
+  return (
+    <AccountCard title="Profile">
+      <form onSubmit={submit} className="space-y-4" noValidate>
+        <Field label="Name" id="name" type="text" autoComplete="name" maxLength={100} defaultValue={user.name || ""} />
+        <p className="text-sm text-fg-secondary">Email: {user.email}</p>
+        {error && <Message>{error}</Message>}
+        {saved && <Message type="success">Saved.</Message>}
+        <button type="submit" disabled={busy} className={buttonClass}>{busy ? "Saving..." : "Save"}</button>
+      </form>
+      {!user.emailVerified && (
+        <div className="mt-5 space-y-2 border-t border-line pt-4 text-xs text-fg-secondary">
+          <p>Email not confirmed yet</p>
+          <button type="button" onClick={resend} className={linkClass}>Send the link again</button>
+          {resent && <p>{resent}</p>}
+        </div>
+      )}
+    </AccountCard>
+  );
+}
+
+function PasswordCard({ user, setUser }) {
+  const formRef = useRef(null);
+  const [done, setDone] = useState(false);
+  const [linkSent, setLinkSent] = useState(false);
+  const { busy, error, submit } = useSubmit(async (form) => {
+    setDone(false);
+    const res = await authRequest("/change-password", {
+      body: { currentPassword: form.get("currentPassword"), newPassword: form.get("newPassword") },
+    });
+    if (res.ok) {
+      setUser(res.data.user);
+      formRef.current?.reset(); // the form event is gone after the await
+      setDone(true);
+    }
+    return res;
+  });
+  const link = useSubmit(async () => {
+    const res = await authRequest("/forgot-password", { body: { email: user.email } });
+    if (res.ok) setLinkSent(true);
+    return res;
+  });
+
+  if (!user.hasPassword) {
+    return (
+      <AccountCard title="Password">
+        <form onSubmit={link.submit} className="space-y-4">
+          <p className="text-sm leading-relaxed text-fg-secondary">
+            You sign in with Google or Patreon. To also sign in with a password, we can email you a link to set one.
+          </p>
+          {link.error && <Message>{link.error}</Message>}
+          {linkSent ? (
+            <Message type="success">Check your email for the link.</Message>
+          ) : (
+            <button type="submit" disabled={link.busy} className={buttonClass}>{link.busy ? "Sending..." : "Email me a link"}</button>
+          )}
+        </form>
+      </AccountCard>
+    );
+  }
+  return (
+    <AccountCard title="Password">
+      <form ref={formRef} onSubmit={submit} className="space-y-4" noValidate>
+        <Field label="Current password" id="currentPassword" type="password" autoComplete="current-password" required />
+        <Field label="New password" id="newPassword" type="password" autoComplete="new-password" required minLength={8} placeholder="At least 8 characters" />
+        {error && <Message>{error}</Message>}
+        {done && <Message type="success">Password changed. Other devices were signed out.</Message>}
+        <button type="submit" disabled={busy} className={buttonClass}>{busy ? "Saving..." : "Change password"}</button>
+      </form>
+    </AccountCard>
+  );
+}
+
+export function AccountPage() {
+  const { user, loading, setUser, openAuth } = useAuth();
+
+  if (loading) return <PageShell><p className="text-sm text-fg-secondary">One moment.</p></PageShell>;
+
+  if (!user) {
+    return (
+      <AuthCard title="Sign in to see your account">
+        <div className="space-y-4">
+          <button type="button" onClick={() => openAuth("login", "/account")} className={buttonClass}>Sign in</button>
+          <p className="text-center text-xs"><Link href="/login?next=/account" className={linkClass}>Open the sign-in page</Link></p>
+        </div>
+      </AuthCard>
+    );
+  }
+
+  return (
+    <div className="min-h-[70vh] px-4 py-12 sm:py-16 text-fg">
+      <div className="mx-auto w-full max-w-2xl space-y-6">
+        <MembershipCard user={user} />
+        <ProfileCard user={user} setUser={setUser} />
+        <PasswordCard user={user} setUser={setUser} />
+      </div>
+    </div>
   );
 }

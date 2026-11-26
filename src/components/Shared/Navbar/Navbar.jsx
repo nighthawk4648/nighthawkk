@@ -427,6 +427,13 @@ export default function Navbar({ categories = [], featuredAsset = null }) {
                           </div>
                         )}
                       </div>
+                      <Link
+                        href="/account"
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="block px-3 py-1.5 text-xs rounded hover:bg-surface-raised hover:text-action transition-colors"
+                      >
+                        My account
+                      </Link>
                       {kind === "blocked" ? (
                         <Link
                           href="/contact"
