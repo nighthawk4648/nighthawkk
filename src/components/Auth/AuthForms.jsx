@@ -7,8 +7,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { FcGoogle } from "react-icons/fc";
 import { SiPatreon } from "react-icons/si";
 import { approveExtension, authRequest, googleStartUrl, patreonStartUrl, PATREON_MANAGE_URL } from "@/utils/authApi";
-import { hasLivePolar, membershipKind, planBadge, polarProblem, polarText, proUntilText } from "@/utils/membership";
-import { REQUEST_NOTE } from "@/utils/pricing";
+import { accountStatus, membershipFacts, membershipKind, planBadge, polarProblem } from "@/utils/membership";
+import { planName, REQUEST_NOTE } from "@/utils/pricing";
 import ManageBillingButton from "@/components/Pricing/ManageBillingButton";
 import { cleanConnectCode, forgetConnect, recallConnectPath, rememberConnect } from "@/utils/extensionConnect";
 import { safeReturnPath } from "@/utils/safeReturnPath";
@@ -514,63 +514,148 @@ export function ResetPasswordForm() {
 }
 
 // /account: membership, profile and password for a signed-in member
-function AccountCard({ title, children }) {
+const cardClass = "rounded-xl border border-line bg-black/20 p-5 backdrop-blur-md sm:p-6";
+const primaryBtn =
+  "inline-flex items-center justify-center rounded-full bg-action px-4 py-2 text-sm font-semibold text-canvas transition-colors hover:bg-action-hover cursor-pointer disabled:opacity-60";
+const secondaryBtn =
+  "inline-flex items-center justify-center rounded-full border border-line-strong px-4 py-2 text-sm font-medium text-fg transition-colors hover:border-action hover:text-action cursor-pointer disabled:opacity-60";
+const TONES = {
+  ok: ["border-action/30 text-action", "bg-action"],
+  warn: ["border-amber-400/30 text-amber-300", "bg-amber-400"],
+  danger: ["border-danger/30 text-danger", "bg-danger"],
+};
+
+function Chip({ tone, children }) {
   return (
-    <section className="rounded-[28px] bg-surface/80 border border-line p-6 sm:p-10 shadow-2xl backdrop-blur-md">
-      <h2 className="text-xl sm:text-2xl font-semibold tracking-tight font-sans mb-5">{title}</h2>
+    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs ${TONES[tone][0]}`}>
+      <span className={`h-1.5 w-1.5 rounded-full ${TONES[tone][1]}`} />
+      {children}
+    </span>
+  );
+}
+
+function AccountShell({ subtitle, children, narrow = false }) {
+  return (
+    <div className="mx-auto w-full max-w-6xl px-4 py-8 text-fg sm:py-12 md:px-8">
+      <nav className="mb-6 flex items-center gap-2 font-mono text-xs text-fg-secondary">
+        <Link href="/" className="hover:text-action transition-colors">Home</Link>
+        <span>/</span>
+        <span className="text-fg">Account</span>
+      </nav>
+      <h1 className="text-2xl font-semibold tracking-[-0.03em] sm:text-3xl">Account</h1>
+      {subtitle && <p className="mt-2 text-sm text-fg-secondary">{subtitle}</p>}
+      <div className={`mt-8 ${narrow ? "max-w-xl" : ""}`}>{children}</div>
+    </div>
+  );
+}
+
+function Section({ id, title, children }) {
+  return (
+    <section id={id} className="scroll-mt-24">
+      <h2 className="mb-3 font-mono text-[11px] uppercase tracking-wider text-fg-secondary">{title}</h2>
       {children}
     </section>
   );
 }
 
-function MembershipCard({ user }) {
-  const kind = membershipKind(user);
-  const badge = planBadge(user);
-  const live = hasLivePolar(user);
-  const patron = user.proSource === "patreon";
+// A settings row: label on the left, the control on the right
+function Row({ label, hint, children }) {
   return (
-    <AccountCard title="Membership">
-      <div className="space-y-3 text-sm text-fg">
-        {kind !== "blocked" && <p>{badge ? `Your plan: ${badge}` : "You are on the free plan."}</p>}
-        {kind === "blocked" ? (
-          <Link href="/contact" className={`${linkClass} block`}>PRO access is paused &middot; contact us &rarr;</Link>
-        ) : (
-          <>
-            {polarProblem(user) && <p>Payment problem &middot; please update your card in Manage billing</p>}
-            {kind === "manual" && <p>PRO &middot; {proUntilText(user)}</p>}
-            {kind === "adfree" && user.proSource === "manual" && <p>Ad-free &middot; {proUntilText(user)}</p>}
-            {live && <p>{polarText(user.polar)}</p>}
-            {patron && (
-              <a href={PATREON_MANAGE_URL} target="_blank" rel="noopener noreferrer" className={`${linkClass} flex items-center gap-2`}>
-                <SiPatreon aria-hidden="true" className="h-3 w-3" />
-                {/* with a Polar plan too, the tier name may be the Polar one */}
-                {user.membershipTier && !live ? `Patreon: ${user.membershipTier}` : "Patreon membership"}
-              </a>
+    <div className="flex flex-col gap-3 py-4 first:pt-0 last:pb-0 sm:flex-row sm:items-start sm:justify-between">
+      <div className="shrink-0 sm:w-56">
+        <p className="text-sm font-medium">{label}</p>
+        {hint && <p className="mt-0.5 text-xs text-fg-secondary">{hint}</p>}
+      </div>
+      <div className="min-w-0 flex-1">{children}</div>
+    </div>
+  );
+}
+
+function IdentityCard({ user }) {
+  const badge = planBadge(user);
+  const status = accountStatus(user);
+  return (
+    <div className={`${cardClass} flex items-center gap-4 lg:flex-col lg:items-start`}>
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-action/15 font-semibold text-action lg:h-16 lg:w-16 lg:text-xl">
+        {(user.name || user.email).charAt(0).toUpperCase()}
+      </div>
+      <div className="min-w-0 space-y-1">
+        <p className="truncate text-base font-semibold">{user.name || user.email.split("@")[0]}</p>
+        <p className="break-all text-sm text-fg-secondary">{user.email}</p>
+        {(badge || status) && (
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            {badge && (
+              <span className={`rounded px-2 py-0.5 font-mono text-[11px] font-semibold ${badge === "AD-FREE" ? "border border-action text-action" : "bg-action text-canvas"}`}>
+                {badge}
+              </span>
             )}
-            {kind === "adfree" &&
-              (patron ? (
-                <a href={PATREON_MANAGE_URL} target="_blank" rel="noopener noreferrer" className={`${linkClass} block`}>Upgrade for PRO models</a>
-              ) : (
-                <Link href="/pricing" className={`${linkClass} block`}>Upgrade for PRO models</Link>
-              ))}
-            {user.polar && <ManageBillingButton className={`${linkClass} cursor-pointer`} />}
-            {kind === "free" && !polarProblem(user) && <Link href="/pricing" className={`${linkClass} block`}>Become a member</Link>}
-            {/* Patreon only for patrons: someone who pays on our site never needs it */}
-            {(user.patreonLinked || (kind === "free" && !user.polar)) && (
-              <a href={patreonStartUrl("/account")} className={`${linkClass} block`}>
-                {user.patreonLinked ? "Refresh Patreon status" : "Already a patron? Connect Patreon"} &rarr;
-              </a>
-            )}
-            {user.plan && (
-              <div className="border-t border-line pt-3">
-                <Link href="/contact" className={`${linkClass} block`}>Request a model &rarr;</Link>
-                <p className="mt-1 text-xs text-fg-secondary">Members can request one model a month. {REQUEST_NOTE}</p>
-              </div>
-            )}
-          </>
+            {status && <Chip tone={status.tone}>{status.label}</Chip>}
+          </div>
         )}
       </div>
-    </AccountCard>
+    </div>
+  );
+}
+
+function MembershipCard({ user }) {
+  const kind = membershipKind(user);
+  const problem = polarProblem(user);
+  const patron = user.proSource === "patreon";
+  const facts = membershipFacts(user);
+  return (
+    <div className={cardClass}>
+      <p className="text-lg font-semibold">{kind === "blocked" ? "Membership paused" : user.plan ? planName(user.plan) : "Free plan"}</p>
+      {kind === "free" && <p className="mt-1 text-sm text-fg-secondary">Upgrade for ad-free browsing and PRO models.</p>}
+      {kind === "blocked" ? (
+        <div className="mt-4">
+          <Message>Your PRO access is paused. Please <Link href="/contact" className="underline">contact us</Link>.</Message>
+        </div>
+      ) : (
+        <>
+          {problem && (
+            <div className="mt-4">
+              <Message>Your last payment failed. Update your card in Manage billing to get access back.</Message>
+            </div>
+          )}
+          {facts.length > 0 && (
+            <dl className="mt-5 grid grid-cols-2 gap-4 border-t border-line pt-5 sm:grid-cols-3 xl:grid-cols-4">
+              {facts.map(({ label, value }) => (
+                <div key={label}>
+                  <dt className="font-mono text-[11px] uppercase tracking-wide text-fg-secondary">{label}</dt>
+                  <dd className="mt-1 text-sm text-fg">{value}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          <div className="mt-5 flex flex-wrap gap-2">
+            {kind === "free" && !problem && <Link href="/pricing" className={primaryBtn}>Become a member</Link>}
+            {kind === "adfree" &&
+              (patron ? (
+                <a href={PATREON_MANAGE_URL} target="_blank" rel="noopener noreferrer" className={primaryBtn}>Upgrade for PRO models</a>
+              ) : (
+                <Link href="/pricing" className={primaryBtn}>Upgrade for PRO models</Link>
+              ))}
+            {user.polar && <ManageBillingButton className={secondaryBtn} />}
+            {patron && (
+              <a href={PATREON_MANAGE_URL} target="_blank" rel="noopener noreferrer" className={`${secondaryBtn} gap-2`}>
+                <SiPatreon aria-hidden="true" className="h-3 w-3" />
+                Patreon membership
+              </a>
+            )}
+            {user.plan && <Link href="/contact" className={secondaryBtn}>Request a model &rarr;</Link>}
+          </div>
+          {/* Patreon only for patrons: someone who pays on our site never needs it */}
+          {(user.patreonLinked || (kind === "free" && !user.polar)) && (
+            <p className="mt-3 text-xs">
+              <a href={patreonStartUrl("/account")} className={linkClass}>
+                {user.patreonLinked ? "Refresh Patreon status" : "Already a patron? Connect Patreon"} &rarr;
+              </a>
+            </p>
+          )}
+          {user.plan && <p className="mt-3 text-xs text-fg-secondary">Members can request one model a month. {REQUEST_NOTE}</p>}
+        </>
+      )}
+    </div>
   );
 }
 
@@ -593,100 +678,158 @@ function ProfileCard({ user, setUser }) {
   };
 
   return (
-    <AccountCard title="Profile">
-      <form onSubmit={submit} className="space-y-4" noValidate>
-        <Field label="Name" id="name" type="text" autoComplete="name" maxLength={100} defaultValue={user.name || ""} />
-        <p className="text-sm text-fg-secondary">Email: {user.email}</p>
-        {error && <Message>{error}</Message>}
-        {saved && <Message type="success">Saved.</Message>}
-        <button type="submit" disabled={busy} className={buttonClass}>{busy ? "Saving..." : "Save"}</button>
-      </form>
-      {!user.emailVerified && (
-        <div className="mt-5 space-y-2 border-t border-line pt-4 text-xs text-fg-secondary">
-          <p>Email not confirmed yet</p>
-          <button type="button" onClick={resend} className={linkClass}>Send the link again</button>
-          {resent && <p>{resent}</p>}
+    <div className={`${cardClass} divide-y divide-line`}>
+      <Row label="Name" hint="Shown on your account.">
+        <form onSubmit={submit} className="max-w-md" noValidate>
+          <div className="flex gap-2">
+            <input
+              name="name"
+              aria-label="Name"
+              type="text"
+              autoComplete="name"
+              maxLength={100}
+              defaultValue={user.name || ""}
+              className={`${inputClass} min-w-0 !py-2.5`}
+            />
+            <button type="submit" disabled={busy} className={primaryBtn}>{busy ? "Saving..." : "Save"}</button>
+          </div>
+          {(error || saved) && (
+            <div className="mt-3">{error ? <Message>{error}</Message> : <Message type="success">Saved.</Message>}</div>
+          )}
+        </form>
+      </Row>
+      <Row label="Email" hint="Used to sign in.">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <span className="break-all text-sm">{user.email}</span>
+          {user.emailVerified ? <Chip tone="ok">Confirmed</Chip> : <Chip tone="warn">Not confirmed</Chip>}
+          {!user.emailVerified && (
+            <button type="button" onClick={resend} className={`${linkClass} cursor-pointer text-xs`}>Send the link again</button>
+          )}
         </div>
-      )}
-    </AccountCard>
+        {resent && <p className="mt-2 text-xs text-fg-secondary">{resent}</p>}
+      </Row>
+    </div>
   );
 }
 
-function PasswordCard({ user, setUser }) {
-  const formRef = useRef(null);
-  const [done, setDone] = useState(false);
-  const [linkSent, setLinkSent] = useState(false);
+// Mounted only while open, so closing it also clears what was typed and any error
+function PasswordForm({ setUser, onDone, onCancel }) {
   const { busy, error, submit } = useSubmit(async (form) => {
-    setDone(false);
     const res = await authRequest("/change-password", {
       body: { currentPassword: form.get("currentPassword"), newPassword: form.get("newPassword") },
     });
     if (res.ok) {
       setUser(res.data.user);
-      formRef.current?.reset(); // the form event is gone after the await
-      setDone(true);
+      onDone();
     }
     return res;
   });
+  return (
+    <form onSubmit={submit} className="max-w-md space-y-4" noValidate>
+      <Field label="Current password" id="currentPassword" type="password" autoComplete="current-password" required />
+      <Field label="New password" id="newPassword" type="password" autoComplete="new-password" required minLength={8} placeholder="At least 8 characters" />
+      {error && <Message>{error}</Message>}
+      <div className="flex gap-2">
+        <button type="submit" disabled={busy} className={primaryBtn}>{busy ? "Saving..." : "Update password"}</button>
+        <button type="button" onClick={onCancel} className={secondaryBtn}>Cancel</button>
+      </div>
+    </form>
+  );
+}
+
+function PasswordCard({ user, setUser }) {
+  const [open, setOpen] = useState(false);
+  const [done, setDone] = useState(false);
+  const [linkSent, setLinkSent] = useState(false);
   const link = useSubmit(async () => {
     const res = await authRequest("/forgot-password", { body: { email: user.email } });
     if (res.ok) setLinkSent(true);
     return res;
   });
 
-  if (!user.hasPassword) {
-    return (
-      <AccountCard title="Password">
-        <form onSubmit={link.submit} className="space-y-4">
-          <p className="text-sm leading-relaxed text-fg-secondary">
-            You sign in with Google or Patreon. To also sign in with a password, we can email you a link to set one.
-          </p>
-          {link.error && <Message>{link.error}</Message>}
-          {linkSent ? (
-            <Message type="success">Check your email for the link.</Message>
-          ) : (
-            <button type="submit" disabled={link.busy} className={buttonClass}>{link.busy ? "Sending..." : "Email me a link"}</button>
-          )}
-        </form>
-      </AccountCard>
-    );
-  }
   return (
-    <AccountCard title="Password">
-      <form ref={formRef} onSubmit={submit} className="space-y-4" noValidate>
-        <Field label="Current password" id="currentPassword" type="password" autoComplete="current-password" required />
-        <Field label="New password" id="newPassword" type="password" autoComplete="new-password" required minLength={8} placeholder="At least 8 characters" />
-        {error && <Message>{error}</Message>}
-        {done && <Message type="success">Password changed. Other devices were signed out.</Message>}
-        <button type="submit" disabled={busy} className={buttonClass}>{busy ? "Saving..." : "Change password"}</button>
-      </form>
-    </AccountCard>
+    <div className={cardClass}>
+      {user.hasPassword ? (
+        <Row label="Password" hint="Change the password you sign in with.">
+          {open ? (
+            <PasswordForm
+              setUser={setUser}
+              onDone={() => {
+                setOpen(false);
+                setDone(true);
+              }}
+              onCancel={() => setOpen(false)}
+            />
+          ) : (
+            <div className="space-y-3">
+              {done && <Message type="success">Password changed. Other devices were signed out.</Message>}
+              <button
+                type="button"
+                onClick={() => {
+                  setDone(false);
+                  setOpen(true);
+                }}
+                className={secondaryBtn}
+              >
+                Change password
+              </button>
+            </div>
+          )}
+        </Row>
+      ) : (
+        <Row label="Password" hint="You sign in with Google or Patreon.">
+          <form onSubmit={link.submit} className="space-y-3">
+            {link.error && <Message>{link.error}</Message>}
+            {linkSent ? (
+              <Message type="success">Check your email for the link.</Message>
+            ) : (
+              <button type="submit" disabled={link.busy} className={secondaryBtn}>
+                {link.busy ? "Sending..." : "Email me a link to set one"}
+              </button>
+            )}
+          </form>
+        </Row>
+      )}
+    </div>
   );
 }
 
 export function AccountPage() {
   const { user, loading, setUser, openAuth } = useAuth();
 
-  if (loading) return <PageShell><p className="text-sm text-fg-secondary">One moment.</p></PageShell>;
+  if (loading) return <AccountShell><p className="text-sm text-fg-secondary">One moment.</p></AccountShell>;
 
   if (!user) {
     return (
-      <AuthCard title="Sign in to see your account">
-        <div className="space-y-4">
-          <button type="button" onClick={() => openAuth("login", "/account")} className={buttonClass}>Sign in</button>
-          <p className="text-center text-xs"><Link href="/login?next=/account" className={linkClass}>Open the sign-in page</Link></p>
+      <AccountShell narrow>
+        <div className={cardClass}>
+          <p className="text-sm text-fg-secondary">Sign in to see your membership, profile and password.</p>
+          <div className="mt-4 flex flex-wrap items-center gap-4">
+            <button type="button" onClick={() => openAuth("login", "/account")} className={primaryBtn}>Sign in</button>
+            <Link href="/login?next=/account" className={`${linkClass} text-sm`}>Open the sign-in page</Link>
+          </div>
         </div>
-      </AuthCard>
+      </AccountShell>
     );
   }
 
   return (
-    <div className="min-h-[70vh] px-4 py-12 sm:py-16 text-fg">
-      <div className="mx-auto w-full max-w-2xl space-y-6">
-        <MembershipCard user={user} />
-        <ProfileCard user={user} setUser={setUser} />
-        <PasswordCard user={user} setUser={setUser} />
+    <AccountShell subtitle="Manage your membership, profile and password.">
+      <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] lg:items-start">
+        <div className="space-y-4 lg:sticky lg:top-24">
+          <IdentityCard user={user} />
+          <nav aria-label="Account sections" className={`${cardClass} hidden !p-2 lg:block`}>
+            {[["membership", "Membership"], ["profile", "Profile"], ["security", "Security"]].map(([id, label]) => (
+              <a key={id} href={`#${id}`} className="block rounded-lg px-3 py-2 text-sm text-fg-secondary hover:bg-surface-raised hover:text-fg">{label}</a>
+            ))}
+          </nav>
+        </div>
+        <div className="min-w-0 space-y-8">
+          <Section id="membership" title="Membership"><MembershipCard user={user} /></Section>
+          <Section id="profile" title="Profile"><ProfileCard user={user} setUser={setUser} /></Section>
+          <Section id="security" title="Security"><PasswordCard user={user} setUser={setUser} /></Section>
+        </div>
       </div>
-    </div>
+    </AccountShell>
   );
 }

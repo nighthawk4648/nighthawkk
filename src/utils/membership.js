@@ -26,13 +26,18 @@ export function planBadge(user) {
   return user.isPro ? "PRO" : isAdFree(user) ? "AD-FREE" : null;
 }
 
-// "until 17 Dec 2026", or "no end date" for PRO that never ends
-export function proUntilText(user) {
-  if (!user?.proUntil) return "no end date";
-  const date = new Date(user.proUntil);
-  if (Number.isNaN(date.getTime())) return "no end date";
-  return `until ${date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" })}`;
+// "20 Nov 2027", or "" when the date is missing or not a date
+export function dayText(value) {
+  const date = new Date(value || NaN); // new Date(null) would be 1970
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 }
+
+// "until 17 Dec 2026", or "no end date" for PRO that never ends
+export const proUntilText = (user) => {
+  const day = dayText(user?.proUntil);
+  return day ? `until ${day}` : "no end date";
+};
 
 // A plan bought on our Pricing page that still counts (Polar keeps a cancelled one "active" until its paid period ends)
 export const hasLivePolar = (user) => ["active", "trialing"].includes(user?.polar?.status);
@@ -43,9 +48,35 @@ export const polarProblem = (user) => ["past_due", "unpaid"].includes(user?.pola
 // "Sketch shaper PRO · yearly · renews 17 Dec 2026", or "... · ends 17 Dec 2026" once cancelled
 export function polarText(polar) {
   if (!polar) return "";
-  const date = new Date(polar.renewsAt ?? NaN); // new Date(null) would be 1970
-  const when = Number.isNaN(date.getTime())
-    ? ""
-    : ` · ${polar.cancelsAtPeriodEnd ? "ends" : "renews"} ${date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" })}`;
+  const day = dayText(polar.renewsAt);
+  const when = day ? ` · ${polar.cancelsAtPeriodEnd ? "ends" : "renews"} ${day}` : "";
   return `${planName(polar.plan)} · ${polar.period}${when}`;
+}
+
+// The status chip on the account page: what is wrong or right with the plan, or null for a free visitor
+export function accountStatus(user) {
+  if (membershipKind(user) === "blocked") return { label: "Paused", tone: "danger" };
+  if (polarProblem(user)) return { label: "Payment problem", tone: "danger" };
+  if (hasLivePolar(user) && user.polar.cancelsAtPeriodEnd) return { label: "Cancelled", tone: "warn" };
+  if (user?.plan) return { label: "Active", tone: "ok" };
+  return null;
+}
+
+// The label / value pairs under the plan name on the account page
+export function membershipFacts(user) {
+  if (!user) return [];
+  const { polar } = user;
+  const billing = polar?.period ? { label: "Billing", value: polar.period[0].toUpperCase() + polar.period.slice(1) } : null;
+  const card = { label: "Paid via", value: "Card (Polar)" };
+  if (hasLivePolar(user)) {
+    const day = dayText(polar.renewsAt);
+    return [billing, day && { label: polar.cancelsAtPeriodEnd ? "Access until" : "Renews on", value: day }, card].filter(Boolean);
+  }
+  if (user.proSource === "manual") {
+    return [{ label: "Access until", value: dayText(user.proUntil) || "No end date" }, { label: "Granted by", value: "Sketch shaper team" }];
+  }
+  if (user.proSource === "patreon") {
+    return [{ label: "Paid via", value: "Patreon" }, user.membershipTier && { label: "Tier", value: user.membershipTier }].filter(Boolean);
+  }
+  return polarProblem(user) ? [billing, card].filter(Boolean) : [];
 }

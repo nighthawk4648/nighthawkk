@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { hasLivePolar, isAdFree, membershipKind, planBadge, polarProblem, polarText, proUntilText } from "./membership.js";
+import { accountStatus, dayText, hasLivePolar, isAdFree, membershipKind, planBadge, polarProblem, polarText, proUntilText, membershipFacts } from "./membership.js";
 
 test("tells blocked, manual, patron and free visitors apart", () => {
   assert.equal(membershipKind(null), "free");
@@ -68,4 +68,46 @@ test("a failed Polar payment is a problem to fix; a cancelled or live plan is no
   assert.equal(polarProblem({ polar: { status: "active" } }), false);
   assert.equal(polarProblem({ polar: { status: "canceled" } }), false);
   assert.equal(polarProblem({ polar: null }), false);
+});
+
+test("writes a day as 20 Nov 2027, or nothing", () => {
+  assert.equal(dayText("2027-11-20T23:59:59.000Z"), "20 Nov 2027");
+  assert.equal(dayText(null), "");
+  assert.equal(dayText("nonsense"), "");
+});
+
+test("the status chip follows blocked, payment problem, cancelled, active", () => {
+  assert.deepEqual(accountStatus({ proSource: "blocked", plan: "pro" }), { label: "Paused", tone: "danger" });
+  assert.deepEqual(accountStatus({ plan: "pro", polar: { status: "past_due" } }), { label: "Payment problem", tone: "danger" });
+  assert.deepEqual(accountStatus({ plan: "pro", polar: { status: "active", cancelsAtPeriodEnd: true } }), { label: "Cancelled", tone: "warn" });
+  assert.deepEqual(accountStatus({ plan: "pro", polar: { status: "active", cancelsAtPeriodEnd: false } }), { label: "Active", tone: "ok" });
+  assert.deepEqual(accountStatus({ plan: "early_access", proSource: "patreon" }), { label: "Active", tone: "ok" });
+  assert.equal(accountStatus({ plan: null }), null);
+  assert.equal(accountStatus(null), null);
+});
+
+test("the account facts depend on where the plan comes from", () => {
+  const polar = { status: "active", plan: "pro", period: "yearly", renewsAt: "2027-11-20T08:00:00Z", cancelsAtPeriodEnd: false };
+  assert.deepEqual(membershipFacts({ plan: "pro", proSource: "polar", polar }), [
+    { label: "Billing", value: "Yearly" },
+    { label: "Renews on", value: "20 Nov 2027" },
+    { label: "Paid via", value: "Card (Polar)" },
+  ]);
+  assert.equal(membershipFacts({ plan: "pro", polar: { ...polar, cancelsAtPeriodEnd: true } })[1].label, "Access until");
+  assert.deepEqual(membershipFacts({ proSource: "manual", proUntil: "2027-11-20T00:00:00Z" }), [
+    { label: "Access until", value: "20 Nov 2027" },
+    { label: "Granted by", value: "Sketch shaper team" },
+  ]);
+  assert.equal(membershipFacts({ proSource: "manual", proUntil: null })[0].value, "No end date");
+  assert.deepEqual(membershipFacts({ proSource: "patreon", membershipTier: "Pro" }), [
+    { label: "Paid via", value: "Patreon" },
+    { label: "Tier", value: "Pro" },
+  ]);
+  assert.deepEqual(membershipFacts({ proSource: "patreon", membershipTier: "" }), [{ label: "Paid via", value: "Patreon" }]);
+  assert.deepEqual(membershipFacts({ polar: { status: "past_due", period: "monthly" } }), [
+    { label: "Billing", value: "Monthly" },
+    { label: "Paid via", value: "Card (Polar)" },
+  ]);
+  assert.deepEqual(membershipFacts({ isPro: false, proSource: null, plan: null }), []);
+  assert.deepEqual(membershipFacts(null), []);
 });
