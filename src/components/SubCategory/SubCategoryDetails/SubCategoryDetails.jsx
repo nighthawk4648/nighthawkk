@@ -37,6 +37,16 @@ import InFeedAd from "@/components/Shared/GoogleAdsense/InFeedAd";
 import ResponsiveBannerAd from "@/components/Shared/GoogleAdsense/ResponsiveBannerAd";
 import { formatAssetSize } from "@/utils/formatAssetSize";
 import { EXTENSION_VERSION } from "@/utils/constants";
+import { canDownloadFree, countFreeDownload } from "@/utils/freeDownloads";
+
+// Reading window.localStorage can itself throw in some browsers
+const getStore = () => {
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+};
 
 const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
   const [mounted, setMounted] = useState(false);
@@ -76,6 +86,8 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
   // Bought through Patreon: the upgrade happens there. Everyone else picks a plan on our Pricing page.
   const upgradesOnPatreon = isAdFreeOnly && user.proSource === "patreon";
   const paymentProblem = isAuthenticated && polarProblem(user);
+  // Signed-out visitor who used up the free download(s): the modal asks for a sign-in, no PRO pitch
+  const freeLimit = !isAuthenticated && assetDetails?.access_type !== "paid";
   // Where to come back to after signing in
   const here = typeof window !== "undefined" ? window.location.pathname + window.location.search : "/";
 
@@ -288,6 +300,16 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
     if (assetDetails?.access_type === "paid" && !isPatron) {
       setShowModal(true);
       return;
+    }
+
+    // Signed-out visitors get a limited number of free downloads, counted in this browser
+    if (assetDetails?.access_type !== "paid" && !isAuthenticated && !authLoading) {
+      const store = getStore();
+      if (!canDownloadFree(store)) {
+        setShowModal(true);
+        return;
+      }
+      countFreeDownload(store);
     }
 
     setIsDownloading(true);
@@ -966,16 +988,20 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
             </button>
 
             <div className="relative z-10 space-y-4">
+              {!freeLimit && (
               <div className="inline-flex items-center gap-2 rounded-full border border-extension-tintLine bg-extension-tintBg px-3 py-1 font-mono text-xs text-extension">
                 <span>PRO Asset</span>
               </div>
+              )}
 
               <h2 className="text-2xl font-semibold tracking-tight-h2 font-sans text-fg">
-                {isBlocked ? "PRO access is paused" : isAdFreeOnly ? "Upgrade for PRO models" : paymentProblem ? "Payment problem" : isAuthenticated ? "Become a member" : "Sign in to download"}
+                {freeLimit ? "Sign in to keep downloading" : isBlocked ? "PRO access is paused" : isAdFreeOnly ? "Upgrade for PRO models" : paymentProblem ? "Payment problem" : isAuthenticated ? "Become a member" : "Sign in to download"}
               </h2>
 
               <p className="text-xs sm:text-sm text-fg-secondary leading-relaxed">
-                {isBlocked
+                {freeLimit
+                  ? "You've used your free download. Create a free Sketch shaper account or sign in to download more models. It's free."
+                  : isBlocked
                   ? "PRO downloads are paused for your account. Please contact us and we will sort it out."
                   : isAdFreeOnly
                   ? `Your ${user.membershipTier || "Early Access"} plan removes ads. PRO models need the Sketch shaper PRO plan or higher.`
@@ -986,7 +1012,7 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
                   : "PRO models are for our members. Sign in or create a free account, then choose a plan."}
               </p>
 
-              {!isBlocked && (
+              {!isBlocked && !freeLimit && (
               <div className="rounded-xl border border-line bg-canvas/50 p-4 space-y-2.5">
                 <h3 className="font-mono text-xs uppercase tracking-wider text-action font-semibold">
                   What PRO Members Receive:
@@ -1052,6 +1078,7 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
                     )}
                   </>
                 ) : (
+                  <>
                   <button
                     type="button"
                     onClick={() => {
@@ -1060,8 +1087,21 @@ const SubCategoryDetails = ({ assetDetails, relatedAssets = [] }) => {
                     }}
                     className="w-full bg-action hover:bg-action-hover text-canvas font-mono text-xs uppercase tracking-wider font-semibold py-3.5 px-6 rounded-full flex items-center justify-center gap-2 transition-all shadow-lg cursor-pointer"
                   >
-                    <span>Sign in or create an account</span>
+                    <span>{freeLimit ? "Sign in" : "Sign in or create an account"}</span>
                   </button>
+                  {freeLimit && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowModal(false);
+                        openAuth("signup", here);
+                      }}
+                      className="w-full bg-surface-raised hover:bg-surface border border-line text-fg font-mono text-xs uppercase tracking-wider font-semibold py-3.5 px-6 rounded-full flex items-center justify-center gap-2 transition-all cursor-pointer"
+                    >
+                      <span>Create free account</span>
+                    </button>
+                  )}
+                  </>
                 )}
 
                 <button
