@@ -8,8 +8,8 @@ const BOT_UA = /bot|crawl|spider|slurp|lighthouse|mediapartners/i;
 // Variables only Google's real ad code creates; uBlock's stand-in script creates none of them
 export const GOOGLE_AD_VARS = ["google_reactive_ads_global_state", "google_ad_modifications", "google_process_slots", "google_unique_id", "google_sa_queue"];
 
-// Google answers an ad box in about 1.5 s; this leaves plenty of room for slow connections
-export const BOX_TIMEOUT_MS = 15000;
+// Google answers an ad box in about 1.5 s (3-6 s on slow phones); below 8 s real visitors would get walled
+export const BOX_TIMEOUT_MS = 8000;
 
 // Page-load check: "network" (the ad script failed twice while this site still answered: extensions, Brave,
 // Vivaldi, DNS blockers), "fake" (it "loaded" but Google's code never ran: uBlock swaps in a stand-in) or null.
@@ -47,6 +47,15 @@ export function rememberWall(storage = globalThis.localStorage) {
     storage.setItem(WALL_NOTE_KEY, "1");
   } catch {
     /* blocked storage: nothing to remember */
+  }
+}
+
+// A page passed the check (blocker turned off): back to Next.js's instant page switching
+export function forgetWall(storage = globalThis.localStorage) {
+  try {
+    storage.removeItem(WALL_NOTE_KEY);
+  } catch {
+    /* blocked storage: nothing was remembered */
   }
 }
 

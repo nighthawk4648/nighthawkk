@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { adBlockReason, adBoxState, isPlainSiteLink, rememberWall, sawWall, shouldShowWall } from "./adBlock.js";
+import { adBlockReason, adBoxState, forgetWall, isPlainSiteLink, rememberWall, sawWall, shouldShowWall } from "./adBlock.js";
 
 const blockedVisitor = { enabled: true, adsOn: true, loading: false, user: null, pathname: "/", userAgent: "Mozilla/5.0 Chrome/130", blocked: true };
 
@@ -79,9 +79,13 @@ test("the kill switch and ads-off builds turn the wall off", () => {
 // Same in-memory storage stand-in as authNote.test.mjs
 const memory = () => {
   const items = new Map();
-  return { getItem: (k) => items.get(k) ?? null, setItem: (k, v) => items.set(k, v) };
+  return { getItem: (k) => items.get(k) ?? null, setItem: (k, v) => items.set(k, v), removeItem: (k) => items.delete(k) };
 };
-const blocked = { getItem() { throw new Error("blocked"); }, setItem() { throw new Error("blocked"); } };
+const blocked = {
+  getItem() { throw new Error("blocked"); },
+  setItem() { throw new Error("blocked"); },
+  removeItem() { throw new Error("blocked"); },
+};
 
 test("the browser remembers a visitor who has seen the wall; blocked storage never throws", () => {
   const storage = memory();
@@ -90,6 +94,14 @@ test("the browser remembers a visitor who has seen the wall; blocked storage nev
   assert.equal(sawWall(storage), true);
   assert.doesNotThrow(() => rememberWall(blocked));
   assert.equal(sawWall(blocked), false);
+});
+
+test("a page that passes the check forgets the wall, so page switching is instant again", () => {
+  const storage = memory();
+  rememberWall(storage);
+  forgetWall(storage);
+  assert.equal(sawWall(storage), false);
+  assert.doesNotThrow(() => forgetWall(blocked));
 });
 
 const PAGE = "https://www.sketchshaper.com/blog";

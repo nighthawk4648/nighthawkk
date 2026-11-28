@@ -12,6 +12,7 @@ import {
   adBlockReason,
   adBoxState,
   BOX_TIMEOUT_MS,
+  forgetWall,
   GOOGLE_AD_VARS,
   isPlainSiteLink,
   rememberWall,
@@ -22,6 +23,11 @@ import { loadAdScript } from "./AdUnit";
 
 const enabled = process.env.NEXT_PUBLIC_ADBLOCK_WALL !== "off";
 const adsOn = process.env.NODE_ENV === "production" || process.env.NEXT_PUBLIC_ENABLE_ADSENSE === "true";
+
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const googleReady = () => GOOGLE_AD_VARS.some((name) => name in window);
+// Some blockers and networks leave the ad request hanging instead of refusing it: give it 6 s at most
+const loadWithLimit = () => Promise.race([loadAdScript(), wait(6000).then(() => "timeout")]);
 
 // Inline, so cosmetic filters have no class or id to aim at; re-applied if someone edits it
 const WALL_STYLE =
@@ -45,22 +51,24 @@ export default function AdBlockWall() {
     if (!enabled || !adsOn || loading || adFree || reason) return;
     let alive = true;
     const timer = setTimeout(async () => {
-      let status = await loadAdScript();
+      let status = await loadWithLimit();
       if (status === "error") {
-        await new Promise((resolve) => setTimeout(resolve, 3000)); // a network blip gets a second try
-        status = await loadAdScript();
+        await wait(1000); // a network blip gets a second try
+        status = await loadWithLimit();
       }
       const siteReachable =
         status === "loaded" || (await fetch("/robots.txt", { cache: "no-store" }).then(() => true, () => false));
       if (!alive) return;
-      setReason(
-        adBlockReason({
-          scriptLoaded: status === "loaded",
-          googleReady: GOOGLE_AD_VARS.some((name) => name in window),
-          siteReachable,
-        })
-      );
-    }, 1500);
+      const result = adBlockReason({ scriptLoaded: status === "loaded", googleReady: googleReady(), siteReachable });
+      if (!result) forgetWall(); // blocker off: link clicks switch pages instantly again (see 6)
+      setReason(result);
+      // A very slow connection can pass the 6 s limit: if Google's script still arrives, take the wall down
+      if (status === "timeout") {
+        loadAdScript().then((late) => {
+          if (late === "loaded" && googleReady()) setReason((current) => (current === "network" ? null : current));
+        });
+      }
+    }, 300);
     return () => {
       alive = false;
       clearTimeout(timer);
@@ -98,7 +106,7 @@ export default function AdBlockWall() {
         stillWaiting.set(box, since);
       }
       waitingSince = stillWaiting;
-    }, 3000);
+    }, 1000);
     return () => clearInterval(timer);
   }, [loading, adFree, reason]);
 
@@ -158,10 +166,12 @@ export default function AdBlockWall() {
   }, [show, reason]);
 
   // 6. Visitors who have seen the wall get a real page load on link clicks, so check 1 runs on every page and
-  // catches a blocker switched back on mid-visit. Everyone else keeps Next.js's instant page switching.
+  // catches a blocker switched back on mid-visit. The note is cleared once a page passes check 1, so everyone
+  // else (and a visitor who turned the blocker off) keeps Next.js's instant page switching.
   useEffect(() => {
-    if (!enabled || !adsOn || adFree || !sawWall()) return;
+    if (!enabled || !adsOn || adFree) return;
     const onClick = (e) => {
+      if (!sawWall()) return; // read on each click: check 1 may have cleared it
       const link = e.target.closest?.("a[href]");
       const plain =
         link &&
